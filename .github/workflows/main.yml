@@ -1,0 +1,14 @@
+name: Build ROS2 for iPhone
+on: [push]
+# on: workflow_dispatch
+jobs:
+  build-ros2:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: ./build_ros2.sh
+      #- uses: actions/upload-artifact@v3
+      #  with:
+      #    name: Clibgit2.xcframework
+      #    path: Clibgit2.xcframework.zip
+
