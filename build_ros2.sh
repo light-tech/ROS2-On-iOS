@@ -17,7 +17,7 @@ export PATH=$PATH:/Users/runner/Library/Python/3.9/bin
 
 cd $REPO_ROOT
 mkdir -p src
-wget https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos
+# wget https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos
 vcs import src < ros2.repos
 
 cd $REPO_ROOT
