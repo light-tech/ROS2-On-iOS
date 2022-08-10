@@ -6,9 +6,13 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      - run: pip3 install -r requirements.txt
       - run: ./build_ros2.sh
       #- uses: actions/upload-artifact@v3
       #  with:
-      #    name: Clibgit2.xcframework
-      #    path: Clibgit2.xcframework.zip
-
+      #    name: install
+      #    path: install/

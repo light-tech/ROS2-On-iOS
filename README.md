@@ -22,3 +22,6 @@ Steps:
     ```
 
  3. Install the packages
+    ```shell
+    python3 -m pip install -r requirements.txt
+    ```
