@@ -6,6 +6,8 @@ Build ROS2 stack for iOS software development.
 
 Guides: https://docs.ros.org/en/humble/Installation/Alternatives/macOS-Development-Setup.html
 
+We are going to need CMake 3.23 until [this](https://github.com/ament/ament_cmake/pull/395) is sorted out, Python and Xcode installed.
+
  1. Create a new Python virtual environment
     ```shell
     export MY_PYTHON_ENV=usr_local
@@ -63,6 +65,8 @@ Guides: https://docs.ros.org/en/humble/Installation/Alternatives/macOS-Developme
     We need to update `rmw_fastrtps/rmw_fastrtps_shared_cpp/CMakeLists.txt` to take out `rosidl_typesupport_introspection_***` dependencies.
     Also need to comment out the relevant code in the source code `TypeSupport_Impl.cpp` of `rmw_fastrtps_shared_cpp`.
     See https://github.com/ros2/ros2/issues/468 and https://github.com/ros2/ros2/issues/306 and https://github.com/ros2/rosidl_typesupport/pull/10 .
+
+    Other relevant pages are https://docs.ros.org/en/humble/How-To-Guides/Working-with-multiple-RMW-implementations.html and https://docs.ros.org/en/humble/Concepts/About-Different-Middleware-Vendors.html and https://docs.ros.org/en/humble/Installation/DDS-Implementations.html
 
 According to `find src -maxdepth 2`, my final `src` directory contains:
 ```
