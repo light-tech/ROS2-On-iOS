@@ -60,6 +60,12 @@ We are going to need CMake 3.23 until [this](https://github.com/ament/ament_cmak
      - `BUILD_TESTING=NO` to disable all test packages (originally, I have to disable the package `src/ros2/rcl_interfaces/test_msgs` by manually adding `AMENT_IGNORE` but after checking some CMakeLists.txt, I found this great option to disable all test packages.)
 
  7. The final hurdle to overcome is that when building static libraries (desired for iOS), we run into the error of having both `typesupport` package (namely `rosidl_typesupport_fastrtps` and `rosidl/rosidl_typesupport_introspection`) which is impossible because we need dynamic libraries then to load them at runtime when needed.
+
+    > CMake Error at .../install/rosidl_typesupport_c/share/rosidl_typesupport_c/cmake/rosidl_typesupport_c_generate_interfaces.cmake:114 (message):
+    >   Multiple typesupports
+    >   [rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c] but
+    >   static linking was requested
+
     According to [this](https://docs.ros.org/en/humble/Concepts/About-Internal-Interfaces.html), the package `ros2/rosidl_typesupport` basically allows for resolving the right dynamic library `rosidl_typesupport_***` at run time.
     We only want **Static Type Support** here. So we remove the universal `rosidl/rosidl_typesupport_introspection_(c|cpp)` package for Dynamic Type Support as well as the implementation `rmw_fastrtps_dynamic_cpp`.
     We need to update `rmw_fastrtps/rmw_fastrtps_shared_cpp/CMakeLists.txt` to take out `rosidl_typesupport_introspection_***` dependencies.
@@ -115,3 +121,33 @@ src/eProsima/Fast-CDR
 ## Build ROS2 for iOS
 
 Guide: https://docs.ros.org/en/humble/How-To-Guides/Cross-compilation.html
+
+ 1. Make a new workspace and link source to save us the clone
+    ```shell
+    mkdir -p ros2_ios
+    cd ros2_ios
+    ln -s ../src src
+    ```
+
+ 2. Grab `CMAKE_TOOLCHAIN_FILE` for iOS from
+    ```shell
+    curl https://github.com/llvm-mirror/llvm/raw/master/cmake/platforms/iOS.cmake >iOS.cmake
+    ```
+
+ 3. Build with iOS SDK
+    ```shell
+    SYSROOT=`xcodebuild -version -sdk iphoneos Path`
+    colcon build --merge-install --cmake-force-configure --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO -DCOMPILE_TOOLS=NO -DCMAKE_OSX_SYSROOT=$SYSROOT -DCMAKE_OSX_ARCHITECTURES=arm64 # -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/iOS.cmake --executor sequential --event-handlers console_direct+
+    ```
+
+    Need to further
+
+     - Add `-DCOMPILE_TOOLS=NO` for `Fast-DDS` to **NOT** compile the fast discovery server executable. Without this, we are running into the _"compiling for iPhone but linking with macOS library"_ issue.
+     - Change `#include <net/if_arp.h>` (in `src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp`) into `#include <net/ethernet.h>` according to [this](https://stackoverflow.com/questions/10395041/getting-arp-table-on-iphone-ipad).
+     - Ignore the packages `ament/google_benchmark_vendor`, `ament/uncrustify_vendor`, `ros2/performance_test_fixture`.
+
+ 4. Similarly for iPhone simulator, we do
+    ```shell
+    SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
+    colcon build --symlink-install --cmake-force-configure --executor sequential --event-handlers console_direct+ --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO -DCOMPILE_TOOLS=NO -DCMAKE_SYSROOT=$SYSROOT -DCMAKE_OSX_SYSROOT=$SYSROOT -DCMAKE_OSX_ARCHITECTURES=x86_64
+    ```

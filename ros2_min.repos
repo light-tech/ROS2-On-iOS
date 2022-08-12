@@ -15,17 +15,9 @@ repositories:
     type: git
     url: https://github.com/ament/ament_package.git
     version: humble
-  ament/google_benchmark_vendor:
-    type: git
-    url: https://github.com/ament/google_benchmark_vendor.git
-    version: humble
   ament/googletest:
     type: git
     url: https://github.com/ament/googletest.git
-    version: humble
-  ament/uncrustify_vendor:
-    type: git
-    url: https://github.com/ament/uncrustify_vendor.git
     version: humble
   eProsima/Fast-CDR:
     type: git
@@ -63,10 +55,6 @@ repositories:
     type: git
     url: https://github.com/ros2/mimick_vendor.git
     version: humble
-  ros2/performance_test_fixture:
-    type: git
-    url: https://github.com/ros2/performance_test_fixture.git
-    version: main
   ros2/python_cmake_module:
     type: git
     url: https://github.com/ros2/python_cmake_module.git
