@@ -140,14 +140,14 @@ Guide: https://docs.ros.org/en/humble/How-To-Guides/Cross-compilation.html
     colcon build --merge-install --cmake-force-configure --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO -DCOMPILE_TOOLS=NO -DCMAKE_OSX_SYSROOT=$SYSROOT -DCMAKE_OSX_ARCHITECTURES=arm64 # -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/iOS.cmake --executor sequential --event-handlers console_direct+
     ```
 
-    Need to further
+    Compared to macOS, we further
 
      - Add `-DCOMPILE_TOOLS=NO` for `Fast-DDS` to **NOT** compile the fast discovery server executable. Without this, we are running into the _"compiling for iPhone but linking with macOS library"_ issue.
      - Change `#include <net/if_arp.h>` (in `src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp`) into `#include <net/ethernet.h>` according to [this](https://stackoverflow.com/questions/10395041/getting-arp-table-on-iphone-ipad).
-     - Ignore the packages `ament/google_benchmark_vendor`, `ament/uncrustify_vendor`, `ros2/performance_test_fixture`.
+     - Ignore the packages `ament/google_benchmark_vendor`, `ament/uncrustify_vendor`, `ament/googletest`, `osrf/osrf_testing_tools_cpp` and `ros2/performance_test_fixture`.
 
  4. Similarly for iPhone simulator, we do
     ```shell
     SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
-    colcon build --symlink-install --cmake-force-configure --executor sequential --event-handlers console_direct+ --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO -DCOMPILE_TOOLS=NO -DCMAKE_SYSROOT=$SYSROOT -DCMAKE_OSX_SYSROOT=$SYSROOT -DCMAKE_OSX_ARCHITECTURES=x86_64
+    colcon build --merge-install --cmake-force-configure --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO -DCOMPILE_TOOLS=NO -DCMAKE_SYSROOT=$SYSROOT -DCMAKE_OSX_SYSROOT=$SYSROOT -DCMAKE_OSX_ARCHITECTURES=x86_64
     ```
