@@ -7,10 +7,18 @@
 
 import SwiftUI
 
+let ros2 = ROS2Bridge()
+
 struct ContentView: View {
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        VStack {
+            Button("Start publishing", action: {
+                ros2.startPublishing()
+            })
+            Button("Start listening", action: {
+                ros2.startListening()
+            })
+        }
     }
 }
 

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B7928F6628A741BD000B40D4 /* ROS2Bridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B7928F6528A741BD000B40D4 /* ROS2Bridge.mm */; };
+		B7928F6928A743EC000B40D4 /* librcl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F6828A743EC000B40D4 /* librcl.a */; };
 		B7ACAC3328A6A23F00A537EB /* ROS2ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7ACAC3228A6A23F00A537EB /* ROS2ExampleApp.swift */; };
 		B7ACAC3528A6A23F00A537EB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7ACAC3428A6A23F00A537EB /* ContentView.swift */; };
 		B7ACAC3728A6A24000A537EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7ACAC3628A6A24000A537EB /* Assets.xcassets */; };
@@ -14,6 +16,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B7928F6428A741BD000B40D4 /* ROS2Bridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ROS2Bridge.h; sourceTree = "<group>"; };
+		B7928F6528A741BD000B40D4 /* ROS2Bridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ROS2Bridge.mm; sourceTree = "<group>"; };
+		B7928F6828A743EC000B40D4 /* librcl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcl.a; path = ros2/install/lib/librcl.a; sourceTree = SOURCE_ROOT; };
+		B7928F6B28A74865000B40D4 /* ros2.repos */ = {isa = PBXFileReference; lastKnownFileType = file; path = ros2.repos; sourceTree = SOURCE_ROOT; };
+		B7928F6C28A74865000B40D4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
+		B7928F6D28A74865000B40D4 /* build_ros2.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_ros2.sh; sourceTree = SOURCE_ROOT; };
+		B7928F6E28A74865000B40D4 /* ros2_min.repos */ = {isa = PBXFileReference; lastKnownFileType = file; path = ros2_min.repos; sourceTree = SOURCE_ROOT; };
+		B7928F6F28A74865000B40D4 /* requirements.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = requirements.txt; sourceTree = SOURCE_ROOT; };
+		B7928F7528A7491A000B40D4 /* main.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = main.yml; path = .github/workflows/main.yml; sourceTree = SOURCE_ROOT; };
 		B7ACAC2F28A6A23F00A537EB /* ROS2Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ROS2Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7ACAC3228A6A23F00A537EB /* ROS2ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROS2ExampleApp.swift; sourceTree = "<group>"; };
 		B7ACAC3428A6A23F00A537EB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -26,12 +37,34 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B7928F6928A743EC000B40D4 /* librcl.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B7928F6728A743A2000B40D4 /* ROS2Libs */ = {
+			isa = PBXGroup;
+			children = (
+				B7928F6828A743EC000B40D4 /* librcl.a */,
+			);
+			name = ROS2Libs;
+			sourceTree = "<group>";
+		};
+		B7928F6A28A7484E000B40D4 /* Miscs */ = {
+			isa = PBXGroup;
+			children = (
+				B7928F7528A7491A000B40D4 /* main.yml */,
+				B7928F6D28A74865000B40D4 /* build_ros2.sh */,
+				B7928F6C28A74865000B40D4 /* README.md */,
+				B7928F6F28A74865000B40D4 /* requirements.txt */,
+				B7928F6E28A74865000B40D4 /* ros2_min.repos */,
+				B7928F6B28A74865000B40D4 /* ros2.repos */,
+			);
+			name = Miscs;
+			sourceTree = "<group>";
+		};
 		B7ACAC2628A6A23F00A537EB = {
 			isa = PBXGroup;
 			children = (
@@ -51,6 +84,10 @@
 		B7ACAC3128A6A23F00A537EB /* ROS2Example */ = {
 			isa = PBXGroup;
 			children = (
+				B7928F6A28A7484E000B40D4 /* Miscs */,
+				B7928F6728A743A2000B40D4 /* ROS2Libs */,
+				B7928F6428A741BD000B40D4 /* ROS2Bridge.h */,
+				B7928F6528A741BD000B40D4 /* ROS2Bridge.mm */,
 				B7ACAC3228A6A23F00A537EB /* ROS2ExampleApp.swift */,
 				B7ACAC3428A6A23F00A537EB /* ContentView.swift */,
 				B7ACAC3628A6A24000A537EB /* Assets.xcassets */,
@@ -99,6 +136,7 @@
 				TargetAttributes = {
 					B7ACAC2E28A6A23F00A537EB = {
 						CreatedOnToolsVersion = 13.1;
+						LastSwiftMigration = 1310;
 					};
 				};
 			};
@@ -137,6 +175,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B7928F6628A741BD000B40D4 /* ROS2Bridge.mm in Sources */,
 				B7ACAC3528A6A23F00A537EB /* ContentView.swift in Sources */,
 				B7ACAC3328A6A23F00A537EB /* ROS2ExampleApp.swift in Sources */,
 			);
@@ -266,11 +305,21 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ROS2Example/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"${PROJECT_DIR}/ros2/install/include",
+					"${PROJECT_DIR}/ros2/install/include/rcl",
+					"${PROJECT_DIR}/ros2/install/include/rcutils",
+					"${PROJECT_DIR}/ros2/install/include/rmw",
+					"${PROJECT_DIR}/ros2/install/include/rcl_yaml_param_parser",
+					"${PROJECT_DIR}/ros2/install/include/rosidl_runtime_c",
+					"${PROJECT_DIR}/ros2/install/include/rosidl_typesupport_interface",
+				);
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -280,10 +329,16 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ros2/install/lib",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lightech.ROS2Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "${PROJECT_DIR}/ROS2Example/ROS2Bridge.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -294,11 +349,21 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ROS2Example/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"${PROJECT_DIR}/ros2/install/include",
+					"${PROJECT_DIR}/ros2/install/include/rcl",
+					"${PROJECT_DIR}/ros2/install/include/rcutils",
+					"${PROJECT_DIR}/ros2/install/include/rmw",
+					"${PROJECT_DIR}/ros2/install/include/rcl_yaml_param_parser",
+					"${PROJECT_DIR}/ros2/install/include/rosidl_runtime_c",
+					"${PROJECT_DIR}/ros2/install/include/rosidl_typesupport_interface",
+				);
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -308,10 +373,15 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ros2/install/lib",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.lightech.ROS2Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "${PROJECT_DIR}/ROS2Example/ROS2Bridge.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
