@@ -8,20 +8,13 @@ mkdir src
 # wget https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos
 vcs import src < $REPO_ROOT/ros2_min.repos
 
-cd $REPO_ROOT
-#colcon build --symlink-install --packages-skip-by-dep python_qt_binding --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO # --executor sequential --event-handlers console_direct+ -DAsio_INCLUDE_DIR=$REPO_ROOT/asio/asio/include/
+# Replace if_arp.h header with ethernet.h
+sed -i.bak 's/if_arp.h/ethernet.h/g' $REPO_ROOT/src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp
 
-sed -i.bak 's/if_arp\.h/ethernet\.h/g' src/cpp/utils/IPFinder.cpp
+# Ignore rcl_logging_spdlog package
+touch src/ros2/rcl_logging/rcl_logging_spdlog/AMENT_IGNORE
 
-mkdir -p ros2_ios
-cd ros2_ios
+mkdir -p ros2_ws
+cd ros2_ws
 ln -s ../src src
-SYSROOT=`xcodebuild -version -sdk iphoneos Path`
-colcon build --merge-install --cmake-force-configure --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO -DCOMPILE_TOOLS=NO -DCMAKE_OSX_SYSROOT=$SYSROOT -DCMAKE_OSX_ARCHITECTURES=arm64
-
-cd $REPO_ROOT
-mkdir -p ros2_iossim
-cd ros2_iossim
-ln -s ../src src
-SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
-colcon build --symlink-install --cmake-force-configure --executor sequential --event-handlers console_direct+ --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO -DCOMPILE_TOOLS=NO -DCMAKE_SYSROOT=$SYSROOT -DCMAKE_OSX_SYSROOT=$SYSROOT -DCMAKE_OSX_ARCHITECTURES=x86_64
+colcon build --merge-install --cmake-force-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/iOS_Simulator.cmake -DBUILD_TESTING=NO -DTHIRDPARTY=FORCE -DCOMPILE_TOOLS=NO -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_MEMORY_TOOLS=OFF -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop
