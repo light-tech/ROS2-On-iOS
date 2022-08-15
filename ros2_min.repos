@@ -103,10 +103,6 @@ repositories:
     type: git
     url: https://github.com/ros2/rosidl_typesupport_fastrtps.git
     version: humble
-  ros2/spdlog_vendor:
-    type: git
-    url: https://github.com/ros2/spdlog_vendor.git
-    version: humble
   ros2/test_interface_files:
     type: git
     url: https://github.com/ros2/test_interface_files.git

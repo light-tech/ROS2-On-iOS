@@ -162,7 +162,9 @@ Guide: https://docs.ros.org/en/humble/How-To-Guides/Cross-compilation.html
      * https://stackoverflow.com/questions/1085137/how-do-i-determine-the-target-architecture-of-static-library-a-on-mac-os-x
      * https://stackoverflow.com/questions/44188023/how-to-check-a-lib-static-or-dynamic-is-built-for-ios-simulator-or-mac-osx
 
-    Found out that `rcl_logging` has three possible backend. Only need one of them and I am using `noop` one to avoid one more dependency `spdlog`.
+    Found out that `rcl_logging` has three possible backend.
+    Only need one of them and I am using `noop` one to avoid one more dependency `spdlog`.
+    To do that, we need to define `RCL_LOGGING_IMPLEMENTATION=rcl_logging_noop` or building `rcl` will fail as it defaults to `spdlog` backend.
 
     Unfortunately, the `***_vendor` package cannot be built. Checking `libyaml_vendor/CMakeLists.txt` reveals that it does NOT pass along all our `CMAKE_***` options except for `CMAKE_C_FLAGS` and even force `BUILD_SHARED_LIBS=ON`.
     Moving the SYSROOT to `CMAKE_C_FLAGS` does not work because CMake then automatically adds MacOS SDK sysroot!
@@ -170,9 +172,9 @@ Guide: https://docs.ros.org/en/humble/How-To-Guides/Cross-compilation.html
 
     ```shell
     SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
-    VERBOSE=1 colcon build --merge-install --cmake-force-configure --executor sequential --event-handlers console_direct+ --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO -DCOMPILE_TOOLS=NO -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/iOS_Simulator.cmake -DBUILD_MEMORY_TOOLS=OFF -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DRCL_LOGGING_IMPL=rcl_logging_noop
+    colcon build --merge-install --cmake-force-configure --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO -DCOMPILE_TOOLS=NO -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/iOS_Simulator.cmake -DBUILD_MEMORY_TOOLS=OFF -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop
     ```
-    
+
     `-DBUILD_MEMORY_TOOLS=OFF` is for `foonathan_memory` to disable building `nodesize_db` program
     Add `set(_ARCH "x86_64")` to cloned `mimick_vendor` source code and remove `test` and `sample`
 
