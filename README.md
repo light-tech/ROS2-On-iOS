@@ -149,5 +149,32 @@ Guide: https://docs.ros.org/en/humble/How-To-Guides/Cross-compilation.html
  4. Similarly for iPhone simulator, we do
     ```shell
     SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
-    colcon build --merge-install --cmake-force-configure --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO -DCOMPILE_TOOLS=NO -DCMAKE_SYSROOT=$SYSROOT -DCMAKE_OSX_SYSROOT=$SYSROOT -DCMAKE_OSX_ARCHITECTURES=x86_64
+    VERBOSE=1 colcon build --merge-install --cmake-force-configure --executor sequential --event-handlers console_direct+ --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO -DCOMPILE_TOOLS=NO -DCMAKE_SYSROOT=$SYSROOT -DCMAKE_OSX_SYSROOT=$SYSROOT -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-target x86_64-apple-ios-simulator -mios-version-min=14.0" -DCMAKE_CXX_FLAGS="-target x86_64-apple-ios-simulator -mios-version-min=14.0"
     ```
+
+    I kept running into the issue with simulator vs macOS, for iOS I can simply check the architecture of the library with `lipo -info` to determine if it was built for iOS.
+    Passing explicit `-target` to compiler with `-DCMAKE_C_FLAGS="-target x86_64-apple-ios-simulator -mios-version-min=14.0" -DCMAKE_CXX_FLAGS="-target x86_64-apple-ios-simulator -mios-version-min=14.0"` helps solve the issue.
+    Note that without `-mios-version-min=14.0` we will run into missing `libstdc++` because it was for very old iOS version.
+
+     * https://answers.ros.org/question/363112/how-to-see-compiler-invocation-in-colcon-build/
+     * https://github.com/aseprite/aseprite/issues/2511
+     * https://stackoverflow.com/questions/56957632/could-not-find-module-for-target-x86-64-apple-ios-simulator
+     * https://stackoverflow.com/questions/1085137/how-do-i-determine-the-target-architecture-of-static-library-a-on-mac-os-x
+     * https://stackoverflow.com/questions/44188023/how-to-check-a-lib-static-or-dynamic-is-built-for-ios-simulator-or-mac-osx
+
+    Found out that `rcl_logging` has three possible backend. Only need one of them and I am using `noop` one to avoid one more dependency `spdlog`.
+
+    Unfortunately, the `***_vendor` package cannot be built. Checking `libyaml_vendor/CMakeLists.txt` reveals that it does NOT pass along all our `CMAKE_***` options except for `CMAKE_C_FLAGS` and even force `BUILD_SHARED_LIBS=ON`.
+    Moving the SYSROOT to `CMAKE_C_FLAGS` does not work because CMake then automatically adds MacOS SDK sysroot!
+    We need to pass along all desired options in `-DCMAKE_TOOLCHAIN_FILE`.
+
+    ```shell
+    SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
+    VERBOSE=1 colcon build --merge-install --cmake-force-configure --executor sequential --event-handlers console_direct+ --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO -DCOMPILE_TOOLS=NO -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/iOS_Simulator.cmake -DBUILD_MEMORY_TOOLS=OFF -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DRCL_LOGGING_IMPL=rcl_logging_noop
+    ```
+    
+    `-DBUILD_MEMORY_TOOLS=OFF` is for `foonathan_memory` to disable building `nodesize_db` program
+    Add `set(_ARCH "x86_64")` to cloned `mimick_vendor` source code and remove `test` and `sample`
+
+ 5. We should enable `ros2/common_interfaces` packages as this provides the commonly used packages such as `std_msgs`.
+
