@@ -11,6 +11,8 @@ vcs import src < $REPO_ROOT/ros2_min.repos
 cd $REPO_ROOT
 #colcon build --symlink-install --packages-skip-by-dep python_qt_binding --cmake-args -DTHIRDPARTY=FORCE -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_SHARED_LIBS=NO -DBUILD_TESTING=NO # --executor sequential --event-handlers console_direct+ -DAsio_INCLUDE_DIR=$REPO_ROOT/asio/asio/include/
 
+sed -i.bak 's/if_arp\.h/ethernet\.h/g' src/cpp/utils/IPFinder.cpp
+
 mkdir -p ros2_ios
 cd ros2_ios
 ln -s ../src src

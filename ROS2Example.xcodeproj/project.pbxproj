@@ -7,8 +7,50 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B755464E28A7A32E00F6D6CA /* librcl_yaml_param_parser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755464D28A7A32E00F6D6CA /* librcl_yaml_param_parser.a */; };
+		B755465428A7A35F00F6D6CA /* librosidl_typesupport_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755464F28A7A35F00F6D6CA /* librosidl_typesupport_c.a */; };
+		B755465528A7A35F00F6D6CA /* librosidl_runtime_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755465028A7A35F00F6D6CA /* librosidl_runtime_c.a */; };
+		B755465628A7A35F00F6D6CA /* librosidl_typesupport_cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755465128A7A35F00F6D6CA /* librosidl_typesupport_cpp.a */; };
+		B755465728A7A35F00F6D6CA /* librosidl_typesupport_fastrtps_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755465228A7A35F00F6D6CA /* librosidl_typesupport_fastrtps_c.a */; };
+		B755465828A7A35F00F6D6CA /* librosidl_typesupport_fastrtps_cpp.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B755465328A7A35F00F6D6CA /* librosidl_typesupport_fastrtps_cpp.dylib */; platformFilter = ios; };
+		B755466428A7A3AF00F6D6CA /* libyaml.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B755465928A7A3AE00F6D6CA /* libyaml.dylib */; platformFilter = ios; };
+		B755466528A7A3AF00F6D6CA /* librcl_action.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755465A28A7A3AE00F6D6CA /* librcl_action.a */; };
+		B755466628A7A3AF00F6D6CA /* librcl_interfaces__rosidl_generator_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755465B28A7A3AE00F6D6CA /* librcl_interfaces__rosidl_generator_c.a */; };
+		B755466728A7A3AF00F6D6CA /* librcl_interfaces__rosidl_typesupport_cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755465C28A7A3AE00F6D6CA /* librcl_interfaces__rosidl_typesupport_cpp.a */; };
+		B755466828A7A3AF00F6D6CA /* librcl_lifecycle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755465D28A7A3AE00F6D6CA /* librcl_lifecycle.a */; };
+		B755466928A7A3AF00F6D6CA /* librcl_interfaces__rosidl_typesupport_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755465E28A7A3AE00F6D6CA /* librcl_interfaces__rosidl_typesupport_c.a */; };
+		B755466A28A7A3AF00F6D6CA /* libtracetools.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755465F28A7A3AE00F6D6CA /* libtracetools.a */; };
+		B755466B28A7A3AF00F6D6CA /* librcl_interfaces__rosidl_typesupport_fastrtps_cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755466028A7A3AE00F6D6CA /* librcl_interfaces__rosidl_typesupport_fastrtps_cpp.a */; };
+		B755466C28A7A3AF00F6D6CA /* librcl_interfaces__rosidl_typesupport_fastrtps_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755466128A7A3AE00F6D6CA /* librcl_interfaces__rosidl_typesupport_fastrtps_c.a */; };
+		B755466D28A7A3AF00F6D6CA /* libtracetools_status.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755466228A7A3AE00F6D6CA /* libtracetools_status.a */; };
+		B755466E28A7A3AF00F6D6CA /* librcpputils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755466328A7A3AF00F6D6CA /* librcpputils.a */; };
+		B755467928A7A41400F6D6CA /* libbuiltin_interfaces__rosidl_generator_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755466F28A7A41300F6D6CA /* libbuiltin_interfaces__rosidl_generator_c.a */; };
+		B755467A28A7A41400F6D6CA /* libstd_msgs__rosidl_generator_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755467028A7A41300F6D6CA /* libstd_msgs__rosidl_generator_c.a */; };
+		B755467B28A7A41400F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_fastrtps_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755467128A7A41300F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_fastrtps_c.a */; };
+		B755467C28A7A41400F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755467228A7A41300F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_cpp.a */; };
+		B755467D28A7A41400F6D6CA /* libstd_msgs__rosidl_typesupport_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755467328A7A41300F6D6CA /* libstd_msgs__rosidl_typesupport_c.a */; };
+		B755467E28A7A41400F6D6CA /* libstd_msgs__rosidl_typesupport_fastrtps_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755467428A7A41300F6D6CA /* libstd_msgs__rosidl_typesupport_fastrtps_c.a */; };
+		B755467F28A7A41400F6D6CA /* libstd_msgs__rosidl_typesupport_fastrtps_cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755467528A7A41300F6D6CA /* libstd_msgs__rosidl_typesupport_fastrtps_cpp.a */; };
+		B755468028A7A41400F6D6CA /* libstd_msgs__rosidl_typesupport_cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755467628A7A41300F6D6CA /* libstd_msgs__rosidl_typesupport_cpp.a */; };
+		B755468128A7A41400F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755467728A7A41300F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_c.a */; };
+		B755468228A7A41400F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_fastrtps_cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B755467828A7A41400F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_fastrtps_cpp.a */; };
 		B7928F6628A741BD000B40D4 /* ROS2Bridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B7928F6528A741BD000B40D4 /* ROS2Bridge.mm */; };
 		B7928F6928A743EC000B40D4 /* librcl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F6828A743EC000B40D4 /* librcl.a */; };
+		B7928F7828A75964000B40D4 /* librmw.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F7628A75964000B40D4 /* librmw.a */; };
+		B7928F7928A75964000B40D4 /* librcutils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F7728A75964000B40D4 /* librcutils.a */; };
+		B7928F7C28A759C6000B40D4 /* librcl_logging_interface.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F7A28A759C6000B40D4 /* librcl_logging_interface.a */; };
+		B7928F7D28A759C6000B40D4 /* librcl_logging_noop.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F7B28A759C6000B40D4 /* librcl_logging_noop.a */; };
+		B7928F8628A75A32000B40D4 /* librmw_fastrtps_shared_cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F7E28A75A31000B40D4 /* librmw_fastrtps_shared_cpp.a */; };
+		B7928F8728A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F7F28A75A31000B40D4 /* librmw_dds_common__rosidl_typesupport_c.a */; };
+		B7928F8828A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_fastrtps_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F8028A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_fastrtps_c.a */; };
+		B7928F8928A75A32000B40D4 /* librmw_dds_common__rosidl_generator_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F8128A75A32000B40D4 /* librmw_dds_common__rosidl_generator_c.a */; };
+		B7928F8A28A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F8228A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_cpp.a */; };
+		B7928F8B28A75A32000B40D4 /* librmw_dds_common.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F8328A75A32000B40D4 /* librmw_dds_common.dylib */; platformFilter = ios; };
+		B7928F8C28A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_fastrtps_cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F8428A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_fastrtps_cpp.a */; };
+		B7928F8D28A75A32000B40D4 /* librmw_fastrtps_cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F8528A75A32000B40D4 /* librmw_fastrtps_cpp.a */; };
+		B7928F9028A75A5A000B40D4 /* libfastcdr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F8E28A75A59000B40D4 /* libfastcdr.a */; };
+		B7928F9128A75A5A000B40D4 /* libfastrtps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F8F28A75A59000B40D4 /* libfastrtps.a */; };
+		B7928F9328A75A91000B40D4 /* libfoonathan_memory-0.7.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7928F9228A75A91000B40D4 /* libfoonathan_memory-0.7.1.a */; };
 		B7ACAC3328A6A23F00A537EB /* ROS2ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7ACAC3228A6A23F00A537EB /* ROS2ExampleApp.swift */; };
 		B7ACAC3528A6A23F00A537EB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7ACAC3428A6A23F00A537EB /* ContentView.swift */; };
 		B7ACAC3728A6A24000A537EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B7ACAC3628A6A24000A537EB /* Assets.xcassets */; };
@@ -16,15 +58,57 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B755464D28A7A32E00F6D6CA /* librcl_yaml_param_parser.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcl_yaml_param_parser.a; path = ros2/install/lib/librcl_yaml_param_parser.a; sourceTree = SOURCE_ROOT; };
+		B755464F28A7A35F00F6D6CA /* librosidl_typesupport_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librosidl_typesupport_c.a; path = ros2/install/lib/librosidl_typesupport_c.a; sourceTree = SOURCE_ROOT; };
+		B755465028A7A35F00F6D6CA /* librosidl_runtime_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librosidl_runtime_c.a; path = ros2/install/lib/librosidl_runtime_c.a; sourceTree = SOURCE_ROOT; };
+		B755465128A7A35F00F6D6CA /* librosidl_typesupport_cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librosidl_typesupport_cpp.a; path = ros2/install/lib/librosidl_typesupport_cpp.a; sourceTree = SOURCE_ROOT; };
+		B755465228A7A35F00F6D6CA /* librosidl_typesupport_fastrtps_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librosidl_typesupport_fastrtps_c.a; path = ros2/install/lib/librosidl_typesupport_fastrtps_c.a; sourceTree = SOURCE_ROOT; };
+		B755465328A7A35F00F6D6CA /* librosidl_typesupport_fastrtps_cpp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librosidl_typesupport_fastrtps_cpp.dylib; path = ros2/install/lib/librosidl_typesupport_fastrtps_cpp.dylib; sourceTree = SOURCE_ROOT; };
+		B755465928A7A3AE00F6D6CA /* libyaml.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libyaml.dylib; path = ros2/install/lib/libyaml.dylib; sourceTree = SOURCE_ROOT; };
+		B755465A28A7A3AE00F6D6CA /* librcl_action.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcl_action.a; path = ros2/install/lib/librcl_action.a; sourceTree = SOURCE_ROOT; };
+		B755465B28A7A3AE00F6D6CA /* librcl_interfaces__rosidl_generator_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcl_interfaces__rosidl_generator_c.a; path = ros2/install/lib/librcl_interfaces__rosidl_generator_c.a; sourceTree = SOURCE_ROOT; };
+		B755465C28A7A3AE00F6D6CA /* librcl_interfaces__rosidl_typesupport_cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcl_interfaces__rosidl_typesupport_cpp.a; path = ros2/install/lib/librcl_interfaces__rosidl_typesupport_cpp.a; sourceTree = SOURCE_ROOT; };
+		B755465D28A7A3AE00F6D6CA /* librcl_lifecycle.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcl_lifecycle.a; path = ros2/install/lib/librcl_lifecycle.a; sourceTree = SOURCE_ROOT; };
+		B755465E28A7A3AE00F6D6CA /* librcl_interfaces__rosidl_typesupport_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcl_interfaces__rosidl_typesupport_c.a; path = ros2/install/lib/librcl_interfaces__rosidl_typesupport_c.a; sourceTree = SOURCE_ROOT; };
+		B755465F28A7A3AE00F6D6CA /* libtracetools.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtracetools.a; path = ros2/install/lib/libtracetools.a; sourceTree = SOURCE_ROOT; };
+		B755466028A7A3AE00F6D6CA /* librcl_interfaces__rosidl_typesupport_fastrtps_cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcl_interfaces__rosidl_typesupport_fastrtps_cpp.a; path = ros2/install/lib/librcl_interfaces__rosidl_typesupport_fastrtps_cpp.a; sourceTree = SOURCE_ROOT; };
+		B755466128A7A3AE00F6D6CA /* librcl_interfaces__rosidl_typesupport_fastrtps_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcl_interfaces__rosidl_typesupport_fastrtps_c.a; path = ros2/install/lib/librcl_interfaces__rosidl_typesupport_fastrtps_c.a; sourceTree = SOURCE_ROOT; };
+		B755466228A7A3AE00F6D6CA /* libtracetools_status.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtracetools_status.a; path = ros2/install/lib/libtracetools_status.a; sourceTree = SOURCE_ROOT; };
+		B755466328A7A3AF00F6D6CA /* librcpputils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcpputils.a; path = ros2/install/lib/librcpputils.a; sourceTree = SOURCE_ROOT; };
+		B755466F28A7A41300F6D6CA /* libbuiltin_interfaces__rosidl_generator_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbuiltin_interfaces__rosidl_generator_c.a; path = ros2/install/lib/libbuiltin_interfaces__rosidl_generator_c.a; sourceTree = SOURCE_ROOT; };
+		B755467028A7A41300F6D6CA /* libstd_msgs__rosidl_generator_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstd_msgs__rosidl_generator_c.a; path = ros2/install/lib/libstd_msgs__rosidl_generator_c.a; sourceTree = SOURCE_ROOT; };
+		B755467128A7A41300F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_fastrtps_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbuiltin_interfaces__rosidl_typesupport_fastrtps_c.a; path = ros2/install/lib/libbuiltin_interfaces__rosidl_typesupport_fastrtps_c.a; sourceTree = SOURCE_ROOT; };
+		B755467228A7A41300F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbuiltin_interfaces__rosidl_typesupport_cpp.a; path = ros2/install/lib/libbuiltin_interfaces__rosidl_typesupport_cpp.a; sourceTree = SOURCE_ROOT; };
+		B755467328A7A41300F6D6CA /* libstd_msgs__rosidl_typesupport_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstd_msgs__rosidl_typesupport_c.a; path = ros2/install/lib/libstd_msgs__rosidl_typesupport_c.a; sourceTree = SOURCE_ROOT; };
+		B755467428A7A41300F6D6CA /* libstd_msgs__rosidl_typesupport_fastrtps_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstd_msgs__rosidl_typesupport_fastrtps_c.a; path = ros2/install/lib/libstd_msgs__rosidl_typesupport_fastrtps_c.a; sourceTree = SOURCE_ROOT; };
+		B755467528A7A41300F6D6CA /* libstd_msgs__rosidl_typesupport_fastrtps_cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstd_msgs__rosidl_typesupport_fastrtps_cpp.a; path = ros2/install/lib/libstd_msgs__rosidl_typesupport_fastrtps_cpp.a; sourceTree = SOURCE_ROOT; };
+		B755467628A7A41300F6D6CA /* libstd_msgs__rosidl_typesupport_cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstd_msgs__rosidl_typesupport_cpp.a; path = ros2/install/lib/libstd_msgs__rosidl_typesupport_cpp.a; sourceTree = SOURCE_ROOT; };
+		B755467728A7A41300F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbuiltin_interfaces__rosidl_typesupport_c.a; path = ros2/install/lib/libbuiltin_interfaces__rosidl_typesupport_c.a; sourceTree = SOURCE_ROOT; };
+		B755467828A7A41400F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_fastrtps_cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbuiltin_interfaces__rosidl_typesupport_fastrtps_cpp.a; path = ros2/install/lib/libbuiltin_interfaces__rosidl_typesupport_fastrtps_cpp.a; sourceTree = SOURCE_ROOT; };
 		B7928F6428A741BD000B40D4 /* ROS2Bridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ROS2Bridge.h; sourceTree = "<group>"; };
 		B7928F6528A741BD000B40D4 /* ROS2Bridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ROS2Bridge.mm; sourceTree = "<group>"; };
 		B7928F6828A743EC000B40D4 /* librcl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcl.a; path = ros2/install/lib/librcl.a; sourceTree = SOURCE_ROOT; };
-		B7928F6B28A74865000B40D4 /* ros2.repos */ = {isa = PBXFileReference; lastKnownFileType = file; path = ros2.repos; sourceTree = SOURCE_ROOT; };
+		B7928F6B28A74865000B40D4 /* ros2.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = ros2.repos; sourceTree = SOURCE_ROOT; };
 		B7928F6C28A74865000B40D4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		B7928F6D28A74865000B40D4 /* build_ros2.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_ros2.sh; sourceTree = SOURCE_ROOT; };
-		B7928F6E28A74865000B40D4 /* ros2_min.repos */ = {isa = PBXFileReference; lastKnownFileType = file; path = ros2_min.repos; sourceTree = SOURCE_ROOT; };
+		B7928F6E28A74865000B40D4 /* ros2_min.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = ros2_min.repos; sourceTree = SOURCE_ROOT; };
 		B7928F6F28A74865000B40D4 /* requirements.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = requirements.txt; sourceTree = SOURCE_ROOT; };
 		B7928F7528A7491A000B40D4 /* main.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = main.yml; path = .github/workflows/main.yml; sourceTree = SOURCE_ROOT; };
+		B7928F7628A75964000B40D4 /* librmw.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librmw.a; path = ros2/install/lib/librmw.a; sourceTree = SOURCE_ROOT; };
+		B7928F7728A75964000B40D4 /* librcutils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcutils.a; path = ros2/install/lib/librcutils.a; sourceTree = SOURCE_ROOT; };
+		B7928F7A28A759C6000B40D4 /* librcl_logging_interface.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcl_logging_interface.a; path = ros2/install/lib/librcl_logging_interface.a; sourceTree = SOURCE_ROOT; };
+		B7928F7B28A759C6000B40D4 /* librcl_logging_noop.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librcl_logging_noop.a; path = ros2/install/lib/librcl_logging_noop.a; sourceTree = SOURCE_ROOT; };
+		B7928F7E28A75A31000B40D4 /* librmw_fastrtps_shared_cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librmw_fastrtps_shared_cpp.a; path = ros2/install/lib/librmw_fastrtps_shared_cpp.a; sourceTree = SOURCE_ROOT; };
+		B7928F7F28A75A31000B40D4 /* librmw_dds_common__rosidl_typesupport_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librmw_dds_common__rosidl_typesupport_c.a; path = ros2/install/lib/librmw_dds_common__rosidl_typesupport_c.a; sourceTree = SOURCE_ROOT; };
+		B7928F8028A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_fastrtps_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librmw_dds_common__rosidl_typesupport_fastrtps_c.a; path = ros2/install/lib/librmw_dds_common__rosidl_typesupport_fastrtps_c.a; sourceTree = SOURCE_ROOT; };
+		B7928F8128A75A32000B40D4 /* librmw_dds_common__rosidl_generator_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librmw_dds_common__rosidl_generator_c.a; path = ros2/install/lib/librmw_dds_common__rosidl_generator_c.a; sourceTree = SOURCE_ROOT; };
+		B7928F8228A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librmw_dds_common__rosidl_typesupport_cpp.a; path = ros2/install/lib/librmw_dds_common__rosidl_typesupport_cpp.a; sourceTree = SOURCE_ROOT; };
+		B7928F8328A75A32000B40D4 /* librmw_dds_common.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librmw_dds_common.dylib; path = ros2/install/lib/librmw_dds_common.dylib; sourceTree = SOURCE_ROOT; };
+		B7928F8428A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_fastrtps_cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librmw_dds_common__rosidl_typesupport_fastrtps_cpp.a; path = ros2/install/lib/librmw_dds_common__rosidl_typesupport_fastrtps_cpp.a; sourceTree = SOURCE_ROOT; };
+		B7928F8528A75A32000B40D4 /* librmw_fastrtps_cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librmw_fastrtps_cpp.a; path = ros2/install/lib/librmw_fastrtps_cpp.a; sourceTree = SOURCE_ROOT; };
+		B7928F8E28A75A59000B40D4 /* libfastcdr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfastcdr.a; path = ros2/install/lib/libfastcdr.a; sourceTree = SOURCE_ROOT; };
+		B7928F8F28A75A59000B40D4 /* libfastrtps.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfastrtps.a; path = ros2/install/lib/libfastrtps.a; sourceTree = SOURCE_ROOT; };
+		B7928F9228A75A91000B40D4 /* libfoonathan_memory-0.7.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libfoonathan_memory-0.7.1.a"; path = "ros2/install/lib/libfoonathan_memory-0.7.1.a"; sourceTree = SOURCE_ROOT; };
 		B7ACAC2F28A6A23F00A537EB /* ROS2Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ROS2Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7ACAC3228A6A23F00A537EB /* ROS2ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROS2ExampleApp.swift; sourceTree = "<group>"; };
 		B7ACAC3428A6A23F00A537EB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -37,7 +121,49 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B755467A28A7A41400F6D6CA /* libstd_msgs__rosidl_generator_c.a in Frameworks */,
+				B7928F8628A75A32000B40D4 /* librmw_fastrtps_shared_cpp.a in Frameworks */,
+				B755468128A7A41400F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_c.a in Frameworks */,
+				B7928F9128A75A5A000B40D4 /* libfastrtps.a in Frameworks */,
+				B755466628A7A3AF00F6D6CA /* librcl_interfaces__rosidl_generator_c.a in Frameworks */,
+				B7928F8828A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_fastrtps_c.a in Frameworks */,
+				B7928F7828A75964000B40D4 /* librmw.a in Frameworks */,
+				B755468228A7A41400F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_fastrtps_cpp.a in Frameworks */,
+				B755467D28A7A41400F6D6CA /* libstd_msgs__rosidl_typesupport_c.a in Frameworks */,
+				B7928F8C28A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_fastrtps_cpp.a in Frameworks */,
+				B7928F7928A75964000B40D4 /* librcutils.a in Frameworks */,
+				B755465728A7A35F00F6D6CA /* librosidl_typesupport_fastrtps_c.a in Frameworks */,
+				B755465628A7A35F00F6D6CA /* librosidl_typesupport_cpp.a in Frameworks */,
+				B755466E28A7A3AF00F6D6CA /* librcpputils.a in Frameworks */,
+				B755467928A7A41400F6D6CA /* libbuiltin_interfaces__rosidl_generator_c.a in Frameworks */,
+				B7928F8928A75A32000B40D4 /* librmw_dds_common__rosidl_generator_c.a in Frameworks */,
+				B755466728A7A3AF00F6D6CA /* librcl_interfaces__rosidl_typesupport_cpp.a in Frameworks */,
+				B755467C28A7A41400F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_cpp.a in Frameworks */,
+				B755468028A7A41400F6D6CA /* libstd_msgs__rosidl_typesupport_cpp.a in Frameworks */,
 				B7928F6928A743EC000B40D4 /* librcl.a in Frameworks */,
+				B755467F28A7A41400F6D6CA /* libstd_msgs__rosidl_typesupport_fastrtps_cpp.a in Frameworks */,
+				B755465528A7A35F00F6D6CA /* librosidl_runtime_c.a in Frameworks */,
+				B755466B28A7A3AF00F6D6CA /* librcl_interfaces__rosidl_typesupport_fastrtps_cpp.a in Frameworks */,
+				B7928F9328A75A91000B40D4 /* libfoonathan_memory-0.7.1.a in Frameworks */,
+				B755466928A7A3AF00F6D6CA /* librcl_interfaces__rosidl_typesupport_c.a in Frameworks */,
+				B755467B28A7A41400F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_fastrtps_c.a in Frameworks */,
+				B755464E28A7A32E00F6D6CA /* librcl_yaml_param_parser.a in Frameworks */,
+				B755466828A7A3AF00F6D6CA /* librcl_lifecycle.a in Frameworks */,
+				B7928F8B28A75A32000B40D4 /* librmw_dds_common.dylib in Frameworks */,
+				B7928F7D28A759C6000B40D4 /* librcl_logging_noop.a in Frameworks */,
+				B7928F8D28A75A32000B40D4 /* librmw_fastrtps_cpp.a in Frameworks */,
+				B755466428A7A3AF00F6D6CA /* libyaml.dylib in Frameworks */,
+				B755466A28A7A3AF00F6D6CA /* libtracetools.a in Frameworks */,
+				B7928F8728A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_c.a in Frameworks */,
+				B755465428A7A35F00F6D6CA /* librosidl_typesupport_c.a in Frameworks */,
+				B755467E28A7A41400F6D6CA /* libstd_msgs__rosidl_typesupport_fastrtps_c.a in Frameworks */,
+				B755466528A7A3AF00F6D6CA /* librcl_action.a in Frameworks */,
+				B7928F9028A75A5A000B40D4 /* libfastcdr.a in Frameworks */,
+				B7928F8A28A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_cpp.a in Frameworks */,
+				B755466C28A7A3AF00F6D6CA /* librcl_interfaces__rosidl_typesupport_fastrtps_c.a in Frameworks */,
+				B755465828A7A35F00F6D6CA /* librosidl_typesupport_fastrtps_cpp.dylib in Frameworks */,
+				B7928F7C28A759C6000B40D4 /* librcl_logging_interface.a in Frameworks */,
+				B755466D28A7A3AF00F6D6CA /* libtracetools_status.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,6 +173,48 @@
 		B7928F6728A743A2000B40D4 /* ROS2Libs */ = {
 			isa = PBXGroup;
 			children = (
+				B755466F28A7A41300F6D6CA /* libbuiltin_interfaces__rosidl_generator_c.a */,
+				B755467728A7A41300F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_c.a */,
+				B755467228A7A41300F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_cpp.a */,
+				B755467128A7A41300F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_fastrtps_c.a */,
+				B755467828A7A41400F6D6CA /* libbuiltin_interfaces__rosidl_typesupport_fastrtps_cpp.a */,
+				B755467028A7A41300F6D6CA /* libstd_msgs__rosidl_generator_c.a */,
+				B755467328A7A41300F6D6CA /* libstd_msgs__rosidl_typesupport_c.a */,
+				B755467628A7A41300F6D6CA /* libstd_msgs__rosidl_typesupport_cpp.a */,
+				B755467428A7A41300F6D6CA /* libstd_msgs__rosidl_typesupport_fastrtps_c.a */,
+				B755467528A7A41300F6D6CA /* libstd_msgs__rosidl_typesupport_fastrtps_cpp.a */,
+				B755465A28A7A3AE00F6D6CA /* librcl_action.a */,
+				B755465B28A7A3AE00F6D6CA /* librcl_interfaces__rosidl_generator_c.a */,
+				B755465E28A7A3AE00F6D6CA /* librcl_interfaces__rosidl_typesupport_c.a */,
+				B755465C28A7A3AE00F6D6CA /* librcl_interfaces__rosidl_typesupport_cpp.a */,
+				B755466128A7A3AE00F6D6CA /* librcl_interfaces__rosidl_typesupport_fastrtps_c.a */,
+				B755466028A7A3AE00F6D6CA /* librcl_interfaces__rosidl_typesupport_fastrtps_cpp.a */,
+				B755465D28A7A3AE00F6D6CA /* librcl_lifecycle.a */,
+				B755466328A7A3AF00F6D6CA /* librcpputils.a */,
+				B755466228A7A3AE00F6D6CA /* libtracetools_status.a */,
+				B755465F28A7A3AE00F6D6CA /* libtracetools.a */,
+				B755465928A7A3AE00F6D6CA /* libyaml.dylib */,
+				B755465028A7A35F00F6D6CA /* librosidl_runtime_c.a */,
+				B755464F28A7A35F00F6D6CA /* librosidl_typesupport_c.a */,
+				B755465128A7A35F00F6D6CA /* librosidl_typesupport_cpp.a */,
+				B755465228A7A35F00F6D6CA /* librosidl_typesupport_fastrtps_c.a */,
+				B755465328A7A35F00F6D6CA /* librosidl_typesupport_fastrtps_cpp.dylib */,
+				B755464D28A7A32E00F6D6CA /* librcl_yaml_param_parser.a */,
+				B7928F9228A75A91000B40D4 /* libfoonathan_memory-0.7.1.a */,
+				B7928F8E28A75A59000B40D4 /* libfastcdr.a */,
+				B7928F8F28A75A59000B40D4 /* libfastrtps.a */,
+				B7928F8128A75A32000B40D4 /* librmw_dds_common__rosidl_generator_c.a */,
+				B7928F7F28A75A31000B40D4 /* librmw_dds_common__rosidl_typesupport_c.a */,
+				B7928F8228A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_cpp.a */,
+				B7928F8028A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_fastrtps_c.a */,
+				B7928F8428A75A32000B40D4 /* librmw_dds_common__rosidl_typesupport_fastrtps_cpp.a */,
+				B7928F8328A75A32000B40D4 /* librmw_dds_common.dylib */,
+				B7928F8528A75A32000B40D4 /* librmw_fastrtps_cpp.a */,
+				B7928F7E28A75A31000B40D4 /* librmw_fastrtps_shared_cpp.a */,
+				B7928F7A28A759C6000B40D4 /* librcl_logging_interface.a */,
+				B7928F7B28A759C6000B40D4 /* librcl_logging_noop.a */,
+				B7928F7728A75964000B40D4 /* librcutils.a */,
+				B7928F7628A75964000B40D4 /* librmw.a */,
 				B7928F6828A743EC000B40D4 /* librcl.a */,
 			);
 			name = ROS2Libs;
@@ -319,6 +487,7 @@
 					"${PROJECT_DIR}/ros2/install/include/rcl_yaml_param_parser",
 					"${PROJECT_DIR}/ros2/install/include/rosidl_runtime_c",
 					"${PROJECT_DIR}/ros2/install/include/rosidl_typesupport_interface",
+					"${PROJECT_DIR}/ros2/install/include/std_msgs",
 				);
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -363,6 +532,7 @@
 					"${PROJECT_DIR}/ros2/install/include/rcl_yaml_param_parser",
 					"${PROJECT_DIR}/ros2/install/include/rosidl_runtime_c",
 					"${PROJECT_DIR}/ros2/install/include/rosidl_typesupport_interface",
+					"${PROJECT_DIR}/ros2/install/include/std_msgs",
 				);
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
