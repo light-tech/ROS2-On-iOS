@@ -18,3 +18,6 @@ mkdir -p ros2_ws
 cd ros2_ws
 ln -s ../src src
 colcon build --merge-install --cmake-force-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/iOS_Simulator.cmake -DBUILD_TESTING=NO -DTHIRDPARTY=FORCE -DCOMPILE_TOOLS=NO -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_MEMORY_TOOLS=OFF -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop
+
+cd $REPO_ROOT
+tar czf ros2_install.tar.xz ros2_ws/install/

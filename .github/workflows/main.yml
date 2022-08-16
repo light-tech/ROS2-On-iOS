@@ -20,4 +20,4 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: ros2_install
-          path: ros2_ws/install/
+          path: ros2_install.tar.xz # ros2_ws/install/
