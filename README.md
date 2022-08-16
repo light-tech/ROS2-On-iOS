@@ -2,6 +2,10 @@
 
 Build ROS2 stack for iOS software development.
 
+![Minimal Publisher/Subscriber Demo](https://user-images.githubusercontent.com/25411167/184833976-2287a315-0dd8-4d0c-82e6-c42bd7a53d66.mov)
+
+<video src="https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.0/MinimalExampleDemo.mov"></video>
+
 **Main guides**:
 
  * [Build ROS2 from source on macOS](https://docs.ros.org/en/humble/Installation/Alternatives/macOS-Development-Setup.html)
