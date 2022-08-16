@@ -7,6 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B787EE2928AB37840054E4D7 /* librclcpp_lifecycle.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B787EE2228AB37840054E4D7 /* librclcpp_lifecycle.dylib */; platformFilter = ios; };
+		B787EE2A28AB37840054E4D7 /* librclcpp_action.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B787EE2328AB37840054E4D7 /* librclcpp_action.dylib */; platformFilter = ios; };
+		B787EE2B28AB37840054E4D7 /* libclass_loader.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B787EE2428AB37840054E4D7 /* libclass_loader.dylib */; platformFilter = ios; };
+		B787EE2C28AB37840054E4D7 /* librclcpp.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B787EE2528AB37840054E4D7 /* librclcpp.dylib */; platformFilter = ios; };
+		B787EE2D28AB37840054E4D7 /* libconsole_bridge.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B787EE2628AB37840054E4D7 /* libconsole_bridge.1.0.dylib */; platformFilter = ios; };
+		B787EE2E28AB37840054E4D7 /* libcomponent_manager.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B787EE2728AB37840054E4D7 /* libcomponent_manager.dylib */; platformFilter = ios; };
+		B787EE2F28AB37840054E4D7 /* liblibstatistics_collector.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B787EE2828AB37840054E4D7 /* liblibstatistics_collector.dylib */; platformFilter = ios; };
+		B787EE3028AB37950054E4D7 /* libclass_loader.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = B787EE2428AB37840054E4D7 /* libclass_loader.dylib */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B787EE3128AB37960054E4D7 /* libcomponent_manager.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = B787EE2728AB37840054E4D7 /* libcomponent_manager.dylib */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B787EE3228AB379B0054E4D7 /* libconsole_bridge.1.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = B787EE2628AB37840054E4D7 /* libconsole_bridge.1.0.dylib */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B787EE3328AB379F0054E4D7 /* liblibstatistics_collector.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = B787EE2828AB37840054E4D7 /* liblibstatistics_collector.dylib */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B787EE3428AB37A50054E4D7 /* librclcpp_action.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = B787EE2328AB37840054E4D7 /* librclcpp_action.dylib */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B787EE3528AB37A60054E4D7 /* librclcpp_lifecycle.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = B787EE2228AB37840054E4D7 /* librclcpp_lifecycle.dylib */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B787EE3628AB37A80054E4D7 /* librclcpp.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = B787EE2528AB37840054E4D7 /* librclcpp.dylib */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		B7928F6628A741BD000B40D4 /* ROS2Bridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B7928F6528A741BD000B40D4 /* ROS2Bridge.mm */; };
 		B7ACAC3328A6A23F00A537EB /* ROS2ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7ACAC3228A6A23F00A537EB /* ROS2ExampleApp.swift */; };
 		B7ACAC3528A6A23F00A537EB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7ACAC3428A6A23F00A537EB /* ContentView.swift */; };
@@ -384,6 +398,7 @@
 				B7D2F0C128A9FB7000FB6ECC /* librmw_dds_common.dylib in Embed Libraries */,
 				B7D2F14328A9FC1F00FB6ECC /* libtrajectory_msgs__rosidl_typesupport_fastrtps_c.dylib in Embed Libraries */,
 				B7D2F0B128A9FB1900FB6ECC /* libaction_msgs__rosidl_typesupport_introspection_cpp.dylib in Embed Libraries */,
+				B787EE3328AB379F0054E4D7 /* liblibstatistics_collector.dylib in Embed Libraries */,
 				B7D2F0D628A9FBE800FB6ECC /* librcl_interfaces__rosidl_typesupport_fastrtps_c.dylib in Embed Libraries */,
 				B7D2F0C528A9FB9A00FB6ECC /* libstd_msgs__rosidl_generator_c.dylib in Embed Libraries */,
 				B7D2F0E128A9FC0C00FB6ECC /* libament_index_cpp.dylib in Embed Libraries */,
@@ -406,6 +421,7 @@
 				B7D2F10A28A9FC1400FB6ECC /* librcl_yaml_param_parser.dylib in Embed Libraries */,
 				B7D2F14728A9FC2000FB6ECC /* libvisualization_msgs__rosidl_generator_c.dylib in Embed Libraries */,
 				B7D2F0E028A9FC0C00FB6ECC /* libactionlib_msgs__rosidl_typesupport_introspection_cpp.dylib in Embed Libraries */,
+				B787EE3428AB37A50054E4D7 /* librclcpp_action.dylib in Embed Libraries */,
 				B7D2F13828A9FC1D00FB6ECC /* libstereo_msgs__rosidl_typesupport_c.dylib in Embed Libraries */,
 				B7D2F0AC28A9FB0E00FB6ECC /* libaction_msgs__rosidl_typesupport_c.dylib in Embed Libraries */,
 				B7D2F0CE28A9FBCF00FB6ECC /* liblifecycle_msgs__rosidl_typesupport_cpp.dylib in Embed Libraries */,
@@ -420,6 +436,7 @@
 				B7D2F14C28A9FC2100FB6ECC /* libvisualization_msgs__rosidl_typesupport_introspection_c.dylib in Embed Libraries */,
 				B7D2F12B28A9FC1B00FB6ECC /* libstatistics_msgs__rosidl_typesupport_cpp.dylib in Embed Libraries */,
 				B7D2F0E228A9FC0D00FB6ECC /* libbuiltin_interfaces__rosidl_generator_c.dylib in Embed Libraries */,
+				B787EE3228AB379B0054E4D7 /* libconsole_bridge.1.0.dylib in Embed Libraries */,
 				B7D2F10828A9FC1400FB6ECC /* librcl_logging_interface.dylib in Embed Libraries */,
 				B7D2F0EC28A9FC0E00FB6ECC /* libcomposition_interfaces__rosidl_typesupport_fastrtps_c.dylib in Embed Libraries */,
 				B7D2F11B28A9FC1800FB6ECC /* libsensor_msgs__rosidl_generator_c.dylib in Embed Libraries */,
@@ -442,6 +459,7 @@
 				B7D2F15128A9FCBF00FB6ECC /* libfastrtps.2.6.dylib in Embed Libraries */,
 				B7D2F0AA28A9FAF400FB6ECC /* libfastcdr.1.dylib in Embed Libraries */,
 				B7D2F0F028A9FC0F00FB6ECC /* libdiagnostic_msgs__rosidl_generator_c.dylib in Embed Libraries */,
+				B787EE3128AB37960054E4D7 /* libcomponent_manager.dylib in Embed Libraries */,
 				B7D2F12728A9FC1A00FB6ECC /* libshape_msgs__rosidl_typesupport_introspection_c.dylib in Embed Libraries */,
 				B7D2F0F228A9FC1000FB6ECC /* libdiagnostic_msgs__rosidl_typesupport_cpp.dylib in Embed Libraries */,
 				B7D2F13728A9FC1D00FB6ECC /* libstereo_msgs__rosidl_generator_c.dylib in Embed Libraries */,
@@ -461,8 +479,10 @@
 				B7D2F0C628A9FB9A00FB6ECC /* libstd_msgs__rosidl_typesupport_c.dylib in Embed Libraries */,
 				B7D2F14828A9FC2000FB6ECC /* libvisualization_msgs__rosidl_typesupport_c.dylib in Embed Libraries */,
 				B7D2F12528A9FC1900FB6ECC /* libshape_msgs__rosidl_typesupport_fastrtps_c.dylib in Embed Libraries */,
+				B787EE3028AB37950054E4D7 /* libclass_loader.dylib in Embed Libraries */,
 				B7D2F0A428A9FA3B00FB6ECC /* libunique_identifier_msgs__rosidl_typesupport_fastrtps_c.dylib in Embed Libraries */,
 				B7D2F13928A9FC1D00FB6ECC /* libstereo_msgs__rosidl_typesupport_cpp.dylib in Embed Libraries */,
+				B787EE3628AB37A80054E4D7 /* librclcpp.dylib in Embed Libraries */,
 				B7D2F0B328A9FB3900FB6ECC /* libtest_msgs__rosidl_typesupport_c.dylib in Embed Libraries */,
 				B7D2F0FA28A9FC1100FB6ECC /* libgeometry_msgs__rosidl_typesupport_cpp.dylib in Embed Libraries */,
 				B7D2F14A28A9FC2100FB6ECC /* libvisualization_msgs__rosidl_typesupport_fastrtps_c.dylib in Embed Libraries */,
@@ -514,6 +534,7 @@
 				B7D2F11228A9FC1600FB6ECC /* librosgraph_msgs__rosidl_typesupport_introspection_c.dylib in Embed Libraries */,
 				B7D2F0F628A9FC1000FB6ECC /* libdiagnostic_msgs__rosidl_typesupport_introspection_cpp.dylib in Embed Libraries */,
 				B7D2F0AB28A9FB0C00FB6ECC /* libaction_msgs__rosidl_generator_c.dylib in Embed Libraries */,
+				B787EE3528AB37A60054E4D7 /* librclcpp_lifecycle.dylib in Embed Libraries */,
 				B7D2F14528A9FC2000FB6ECC /* libtrajectory_msgs__rosidl_typesupport_introspection_c.dylib in Embed Libraries */,
 				B7D2F0A628A9FA4000FB6ECC /* libunique_identifier_msgs__rosidl_typesupport_c.dylib in Embed Libraries */,
 				B7D2F10F28A9FC1500FB6ECC /* librosgraph_msgs__rosidl_typesupport_cpp.dylib in Embed Libraries */,
@@ -545,7 +566,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		B775209E28AA33CB00774BEF /* iOS_Simulator.cmake */ = {isa = PBXFileReference; lastKnownFileType = file; path = iOS_Simulator.cmake; sourceTree = SOURCE_ROOT; };
+		B775209E28AA33CB00774BEF /* iOS_Simulator.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; path = iOS_Simulator.cmake; sourceTree = SOURCE_ROOT; };
+		B787EE2228AB37840054E4D7 /* librclcpp_lifecycle.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librclcpp_lifecycle.dylib; path = ros2/install/lib/librclcpp_lifecycle.dylib; sourceTree = SOURCE_ROOT; };
+		B787EE2328AB37840054E4D7 /* librclcpp_action.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librclcpp_action.dylib; path = ros2/install/lib/librclcpp_action.dylib; sourceTree = SOURCE_ROOT; };
+		B787EE2428AB37840054E4D7 /* libclass_loader.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libclass_loader.dylib; path = ros2/install/lib/libclass_loader.dylib; sourceTree = SOURCE_ROOT; };
+		B787EE2528AB37840054E4D7 /* librclcpp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librclcpp.dylib; path = ros2/install/lib/librclcpp.dylib; sourceTree = SOURCE_ROOT; };
+		B787EE2628AB37840054E4D7 /* libconsole_bridge.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libconsole_bridge.1.0.dylib; path = ros2/install/lib/libconsole_bridge.1.0.dylib; sourceTree = SOURCE_ROOT; };
+		B787EE2728AB37840054E4D7 /* libcomponent_manager.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcomponent_manager.dylib; path = ros2/install/lib/libcomponent_manager.dylib; sourceTree = SOURCE_ROOT; };
+		B787EE2828AB37840054E4D7 /* liblibstatistics_collector.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblibstatistics_collector.dylib; path = ros2/install/lib/liblibstatistics_collector.dylib; sourceTree = SOURCE_ROOT; };
 		B7928F6428A741BD000B40D4 /* ROS2Bridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ROS2Bridge.h; sourceTree = "<group>"; };
 		B7928F6528A741BD000B40D4 /* ROS2Bridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ROS2Bridge.mm; sourceTree = "<group>"; };
 		B7928F6B28A74865000B40D4 /* ros2.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = ros2.repos; sourceTree = SOURCE_ROOT; };
@@ -748,6 +776,7 @@
 				B7D2F02E28A9F96400FB6ECC /* liblifecycle_msgs__rosidl_generator_c.dylib in Frameworks */,
 				B7D2F08028A9F96500FB6ECC /* librcl_interfaces__rosidl_generator_c.dylib in Frameworks */,
 				B7D2F04028A9F96400FB6ECC /* librcl_interfaces__rosidl_typesupport_introspection_cpp.dylib in Frameworks */,
+				B787EE2E28AB37840054E4D7 /* libcomponent_manager.dylib in Frameworks */,
 				B7D2F01E28A9F96400FB6ECC /* libstd_srvs__rosidl_typesupport_introspection_c.dylib in Frameworks */,
 				B7D2F08B28A9F96500FB6ECC /* libunique_identifier_msgs__rosidl_typesupport_fastrtps_c.dylib in Frameworks */,
 				B7D2F02928A9F96400FB6ECC /* librosidl_runtime_c.dylib in Frameworks */,
@@ -773,6 +802,7 @@
 				B7D2F05D28A9F96500FB6ECC /* libshape_msgs__rosidl_typesupport_introspection_c.dylib in Frameworks */,
 				B7D2F00B28A9F96400FB6ECC /* libvisualization_msgs__rosidl_generator_c.dylib in Frameworks */,
 				B7D2F05F28A9F96500FB6ECC /* libaction_msgs__rosidl_typesupport_c.dylib in Frameworks */,
+				B787EE2C28AB37840054E4D7 /* librclcpp.dylib in Frameworks */,
 				B7D2F06428A9F96500FB6ECC /* librcl_interfaces__rosidl_typesupport_introspection_c.dylib in Frameworks */,
 				B7D2F00328A9F96400FB6ECC /* librosgraph_msgs__rosidl_generator_c.dylib in Frameworks */,
 				B7D2F09528A9F96500FB6ECC /* libshape_msgs__rosidl_typesupport_fastrtps_c.dylib in Frameworks */,
@@ -825,13 +855,16 @@
 				B7D2F00128A9F96400FB6ECC /* libbuiltin_interfaces__rosidl_typesupport_cpp.dylib in Frameworks */,
 				B7D2F02128A9F96400FB6ECC /* libstd_msgs__rosidl_typesupport_fastrtps_c.dylib in Frameworks */,
 				B7D2F05728A9F96500FB6ECC /* librmw_dds_common__rosidl_typesupport_introspection_c.dylib in Frameworks */,
+				B787EE2A28AB37840054E4D7 /* librclcpp_action.dylib in Frameworks */,
 				B7D2F03328A9F96400FB6ECC /* librcpputils.dylib in Frameworks */,
 				B7D2F15028A9FCB100FB6ECC /* libfastrtps.2.6.dylib in Frameworks */,
 				B7D2EFF528A9F96400FB6ECC /* libstd_msgs__rosidl_generator_c.dylib in Frameworks */,
 				B7D2F06A28A9F96500FB6ECC /* librosidl_typesupport_introspection_c.dylib in Frameworks */,
+				B787EE2D28AB37840054E4D7 /* libconsole_bridge.1.0.dylib in Frameworks */,
 				B7D2F01328A9F96400FB6ECC /* libstereo_msgs__rosidl_generator_c.dylib in Frameworks */,
 				B7D2F00228A9F96400FB6ECC /* libstd_msgs__rosidl_typesupport_fastrtps_cpp.dylib in Frameworks */,
 				B7D2F06128A9F96500FB6ECC /* liblifecycle_msgs__rosidl_typesupport_introspection_cpp.dylib in Frameworks */,
+				B787EE2928AB37840054E4D7 /* librclcpp_lifecycle.dylib in Frameworks */,
 				B7D2EFF028A9F96400FB6ECC /* libstd_msgs__rosidl_typesupport_introspection_cpp.dylib in Frameworks */,
 				B7D2F03B28A9F96400FB6ECC /* liblifecycle_msgs__rosidl_typesupport_fastrtps_cpp.dylib in Frameworks */,
 				B7D2F07728A9F96500FB6ECC /* libshape_msgs__rosidl_typesupport_fastrtps_cpp.dylib in Frameworks */,
@@ -868,6 +901,7 @@
 				B7D2F05628A9F96500FB6ECC /* librmw_dds_common__rosidl_typesupport_cpp.dylib in Frameworks */,
 				B7D2F07F28A9F96500FB6ECC /* libgeometry_msgs__rosidl_typesupport_introspection_c.dylib in Frameworks */,
 				B7D2F01828A9F96400FB6ECC /* libsensor_msgs__rosidl_typesupport_fastrtps_c.dylib in Frameworks */,
+				B787EE2F28AB37840054E4D7 /* liblibstatistics_collector.dylib in Frameworks */,
 				B7D2F04C28A9F96400FB6ECC /* librmw_fastrtps_shared_cpp.dylib in Frameworks */,
 				B7D2F06228A9F96500FB6ECC /* libshape_msgs__rosidl_typesupport_c.dylib in Frameworks */,
 				B7D2F09028A9F96500FB6ECC /* librcl_action.dylib in Frameworks */,
@@ -875,6 +909,7 @@
 				B7D2F05228A9F96500FB6ECC /* libsensor_msgs__rosidl_typesupport_c.dylib in Frameworks */,
 				B7D2F07028A9F96500FB6ECC /* librmw_dds_common__rosidl_typesupport_fastrtps_cpp.dylib in Frameworks */,
 				B7D2F03828A9F96400FB6ECC /* libyaml.dylib in Frameworks */,
+				B787EE2B28AB37840054E4D7 /* libclass_loader.dylib in Frameworks */,
 				B7D2F07C28A9F96500FB6ECC /* librcutils.dylib in Frameworks */,
 				B7D2EFEF28A9F96400FB6ECC /* libstd_srvs__rosidl_typesupport_c.dylib in Frameworks */,
 				B7D2F08928A9F96500FB6ECC /* libtrajectory_msgs__rosidl_typesupport_introspection_c.dylib in Frameworks */,
@@ -921,6 +956,13 @@
 		B7928F6728A743A2000B40D4 /* ROS2Libs */ = {
 			isa = PBXGroup;
 			children = (
+				B787EE2428AB37840054E4D7 /* libclass_loader.dylib */,
+				B787EE2728AB37840054E4D7 /* libcomponent_manager.dylib */,
+				B787EE2628AB37840054E4D7 /* libconsole_bridge.1.0.dylib */,
+				B787EE2828AB37840054E4D7 /* liblibstatistics_collector.dylib */,
+				B787EE2328AB37840054E4D7 /* librclcpp_action.dylib */,
+				B787EE2228AB37840054E4D7 /* librclcpp_lifecycle.dylib */,
+				B787EE2528AB37840054E4D7 /* librclcpp.dylib */,
 				B7D2F14F28A9FCB100FB6ECC /* libfastrtps.2.6.dylib */,
 				B7D2F0A828A9FAE900FB6ECC /* libfastcdr.1.dylib */,
 				B7D2EF6428A9F96100FB6ECC /* libaction_msgs__rosidl_generator_c.dylib */,
@@ -1368,6 +1410,14 @@
 					"${PROJECT_DIR}/ros2/install/include/rosidl_runtime_c",
 					"${PROJECT_DIR}/ros2/install/include/rosidl_typesupport_interface",
 					"${PROJECT_DIR}/ros2/install/include/std_msgs",
+					"${PROJECT_DIR}/ros2/install/include/rclcpp",
+					"${PROJECT_DIR}/ros2/install/include/rcpputils",
+					"${PROJECT_DIR}/ros2/install/include/builtin_interfaces",
+					"${PROJECT_DIR}/ros2/install/include/rosidl_runtime_cpp",
+					"${PROJECT_DIR}/ros2/install/include/tracetools",
+					"${PROJECT_DIR}/ros2/install/include/rcl_interfaces",
+					"${PROJECT_DIR}/ros2/install/include/libstatistics_collector",
+					"${PROJECT_DIR}/ros2/install/include/statistics_msgs",
 				);
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -1413,6 +1463,14 @@
 					"${PROJECT_DIR}/ros2/install/include/rosidl_runtime_c",
 					"${PROJECT_DIR}/ros2/install/include/rosidl_typesupport_interface",
 					"${PROJECT_DIR}/ros2/install/include/std_msgs",
+					"${PROJECT_DIR}/ros2/install/include/rclcpp",
+					"${PROJECT_DIR}/ros2/install/include/rcpputils",
+					"${PROJECT_DIR}/ros2/install/include/builtin_interfaces",
+					"${PROJECT_DIR}/ros2/install/include/rosidl_runtime_cpp",
+					"${PROJECT_DIR}/ros2/install/include/tracetools",
+					"${PROJECT_DIR}/ros2/install/include/rcl_interfaces",
+					"${PROJECT_DIR}/ros2/install/include/libstatistics_collector",
+					"${PROJECT_DIR}/ros2/install/include/statistics_msgs",
 				);
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
