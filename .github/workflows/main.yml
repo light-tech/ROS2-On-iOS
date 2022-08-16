@@ -17,7 +17,7 @@ jobs:
           cache: 'pip'
       - run: pip3 install -r requirements.txt
       - run: ./build_ros2.sh
-      #- uses: actions/upload-artifact@v3
-      #  with:
-      #    name: install
-      #    path: install/
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ros2_install
+          path: ros2_ws/install/

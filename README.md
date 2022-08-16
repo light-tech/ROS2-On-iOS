@@ -61,12 +61,7 @@ To do that,
     touch unused_src/AMENT_IGNORE       # So that colcon will not find packages in unused_src
     ```
 
- 2. Move the minimal packages to `src`
-
-       * `ros2/rcl`, `ros2/rmw`, `ros2/rosidl`: obvious
-       * `ros2/common_interfaces`: provides the commonly used packages such as `std_msgs`
-
-    to start
+ 2. Move the minimal packages `ros2/rcl`, `ros2/rmw`, `ros2/rosidl` to `src` to start
 
     ```shell
     mkdir -p src/ros2
@@ -78,12 +73,15 @@ To do that,
     mv unused_src/ros2/common_interfaces src/ros2/
     ```
 
+    It is good to have `ros2/common_interfaces` as it provides the commonly used packages such as `std_msgs`.
+
     Certain packages such as `rviz` are obviously not easy to port.
     We will run `colcon` commands (below) and add back more dependent packages.
 
     **Tip**: Do `find unused_src -name PKG_NAME` in `unused_src` to find the repository containing the needed package.
 
  3. The minimal list of repositories is available in the file `ros2_min.repos`.
+    So of course, one can simply import this instead.
 
  4. Create a new workspace and link the `src` in
 
@@ -92,6 +90,11 @@ To do that,
     cd ros2_ws
     ln -s $REPO_ROOT/src src
     ```
+
+ 5. It is good to have multiple workspace. In the base workspace, build `ament` packages and `source` it. Then in the next workspace, add `rcl` and its dependencies and in yet another, add other desired packages such as `rclcpp`. This way, one can minimize the amount of packages to rebuild.
+
+    For `rclcpp`, need to add `class_loader`, `console_bridge_vendor` and `libstatistics_collector`.
+    Added these using `opendiff ros2.repos ros2_min.repos`.
 
 ## Build ROS2 for iOS simulator
 
