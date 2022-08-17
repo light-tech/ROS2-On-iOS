@@ -2,9 +2,15 @@
 
 Build ROS2 stack for iOS software development.
 
-![Minimal Publisher/Subscriber Demo](https://user-images.githubusercontent.com/25411167/184833976-2287a315-0dd8-4d0c-82e6-c42bd7a53d66.mov)
+**For the impatient**: Instead of building ROS2 from source (see below), you can download [our prebuilt libs](https://github.com/light-tech/ROS2-On-iOS/releases) and extract it to the root of the repo. Then make a symlink
+```shell
+ln -s ros2_ws ros2
+```
+You should change the symlink target when switching between building for real iPhone and for simulator.
+You will need to delete the symlinks `libfastcdr.1.dylib` and `libfastrtps.2.6.dylib` in `install/lib` and rename the `libfastcdr.1.0.24.dylib` and `libfastrtps.2.6.2.dylib` to those.
+Now we can run the demo application: Run the app on **two** simulator instances, click on *Start publishing* on one and *Start listening* on the other.
 
-<video src="https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.0/MinimalExampleDemo.mov"></video>
+![Minimal Publisher/Subscriber Demo](https://user-images.githubusercontent.com/25411167/184833976-2287a315-0dd8-4d0c-82e6-c42bd7a53d66.mov)
 
 **Main guides**:
 
