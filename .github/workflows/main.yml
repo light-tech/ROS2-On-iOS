@@ -4,6 +4,9 @@ on: [push]
 jobs:
   build-ros2:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        platformArch: [iOS, iOS_Simulator]
     steps:
       - uses: actions/checkout@v3
       - name: Setup cmake
@@ -16,8 +19,8 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
       - run: pip3 install -r requirements.txt
-      - run: ./build_ros2.sh
+      - run: ./build_ros2.sh ${{ matrix.platformArch }}
       - uses: actions/upload-artifact@v3
         with:
-          name: ros2_install
-          path: ros2_install.tar.xz # ros2_ws/install/
+          name: ros2_install_${{ matrix.platformArch }}
+          path: ros2_install_${{ matrix.platformArch }}.tar.xz # ros2_ws/install/

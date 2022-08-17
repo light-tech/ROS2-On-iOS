@@ -566,6 +566,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B72B236C28AC81C300711C86 /* iOS.cmake */ = {isa = PBXFileReference; lastKnownFileType = file; path = iOS.cmake; sourceTree = SOURCE_ROOT; };
 		B775209E28AA33CB00774BEF /* iOS_Simulator.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; path = iOS_Simulator.cmake; sourceTree = SOURCE_ROOT; };
 		B787EE2228AB37840054E4D7 /* librclcpp_lifecycle.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librclcpp_lifecycle.dylib; path = ros2/install/lib/librclcpp_lifecycle.dylib; sourceTree = SOURCE_ROOT; };
 		B787EE2328AB37840054E4D7 /* librclcpp_action.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librclcpp_action.dylib; path = ros2/install/lib/librclcpp_action.dylib; sourceTree = SOURCE_ROOT; };
@@ -1143,6 +1144,7 @@
 		B7928F6A28A7484E000B40D4 /* Miscs */ = {
 			isa = PBXGroup;
 			children = (
+				B72B236C28AC81C300711C86 /* iOS.cmake */,
 				B775209E28AA33CB00774BEF /* iOS_Simulator.cmake */,
 				B7928F7528A7491A000B40D4 /* main.yml */,
 				B7928F6D28A74865000B40D4 /* build_ros2.sh */,

@@ -1,4 +1,5 @@
 REPO_ROOT=`pwd`
+PLATFORM_TO_BUILD=$1 # Either iOS or iOS_Simulator
 
 # Download local ASIO
 # git clone https://github.com/chriskohlhoff/asio
@@ -17,7 +18,8 @@ touch src/ros2/rcl_logging/rcl_logging_spdlog/AMENT_IGNORE
 mkdir -p ros2_ws
 cd ros2_ws
 ln -s ../src src
-colcon build --merge-install --cmake-force-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/iOS_Simulator.cmake -DBUILD_TESTING=NO -DTHIRDPARTY=FORCE -DCOMPILE_TOOLS=NO -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_MEMORY_TOOLS=OFF -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop
+colcon build --merge-install --cmake-force-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/$PLATFORM_TO_BUILD.cmake -DBUILD_TESTING=NO -DTHIRDPARTY=FORCE -DCOMPILE_TOOLS=NO -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_MEMORY_TOOLS=OFF -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop
+# -DCMAKE_SYSTEM_PROCESSOR=x86_64
 
 cd $REPO_ROOT
-tar czf ros2_install.tar.xz ros2_ws/install/
+tar czf ros2_install_$PLATFORM_TO_BUILD.tar.xz ros2_ws/install/
