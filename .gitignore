@@ -4,9 +4,8 @@ install/
 log/
 src/
 unused_src/
-ros2/
-ros2_ios/
-ros2_iossim/
+ros2
+ros2_ws/
 
 # Finder
 .DS_Store

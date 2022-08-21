@@ -2,9 +2,10 @@
 
 Build ROS2 stack for iOS software development.
 
-**For the impatient**: Instead of building ROS2 from source (see below), you can download [our prebuilt libs](https://github.com/light-tech/ROS2-On-iOS/releases) and extract it to the root of the repo. Then make a symlink
+**For the impatient**: Instead of building ROS2 from source (see below), you can download [our prebuilt libs](https://github.com/light-tech/ROS2-On-iOS/releases) and extract it to the root of the repo with `tar xzf`.
+Then make a symlink `ros2` pointing to `ros2_ws/install` where we can find the `lib` and `include` headers
 ```shell
-ln -s ros2_ws ros2
+ln -s ros2_ws/install ros2
 ```
 You should change the symlink target when switching between building for real iPhone and for simulator.
 You will need to delete the symlinks `libfastcdr.1.dylib` and `libfastrtps.2.6.dylib` in `install/lib` and rename the `libfastcdr.1.0.24.dylib` and `libfastrtps.2.6.2.dylib` to those.
@@ -16,10 +17,7 @@ Now we can run the demo application: Run the app on **two** simulator instances,
 
  * [Build ROS2 from source on macOS](https://docs.ros.org/en/humble/Installation/Alternatives/macOS-Development-Setup.html)
  * [Cross compiling ROS2](https://docs.ros.org/en/humble/How-To-Guides/Cross-compilation.html)
- * https://docs.ros.org/en/humble/Concepts/About-Internal-Interfaces.html
- * https://docs.ros.org/en/humble/How-To-Guides/Working-with-multiple-RMW-implementations.html
- * https://docs.ros.org/en/humble/Concepts/About-Different-Middleware-Vendors.html
- * https://docs.ros.org/en/humble/Installation/DDS-Implementations.html
+ * [Architecture](https://docs.ros.org/en/humble/Concepts/About-Internal-Interfaces.html)
 
 ## Tools preparation
 
@@ -92,6 +90,7 @@ To do that,
 
  3. The minimal list of repositories is available in the file `ros2_min.repos`.
     So of course, one can simply import this instead.
+    Here, I choose to use a single RMW implementation (via Fast-DDS).
 
  4. Create a new workspace and link the `src` in
 
@@ -124,13 +123,12 @@ cd ros2_ws
 colcon build --merge-install \
     --cmake-force-configure \
     --cmake-args \
-        -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/iOS_Simulator.cmake \
+        -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/iOS_Simulator.cmake \
         -DBUILD_TESTING=NO \
         -DTHIRDPARTY=FORCE \
         -DCOMPILE_TOOLS=NO \
         -DFORCE_BUILD_VENDOR_PKG=ON \
         -DBUILD_MEMORY_TOOLS=OFF \
-        -DCMAKE_SYSTEM_PROCESSOR=x86_64 \
         -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop
 ```
 
