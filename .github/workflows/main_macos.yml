@@ -1,15 +1,11 @@
-name: Build ROS2 for iPhone
+name: Build ROS2 (with Rviz) for macOS
 on:
   push:
     paths:
-      - 'build_ros2.sh'
-# on: workflow_dispatch
+      - 'build_ros2_macos.sh'
 jobs:
   build-ros2:
     runs-on: macos-latest
-    strategy:
-      matrix:
-        platformArch: [iOS, iOS_Simulator, iOS_Simulator_M1]
     steps:
       - uses: actions/checkout@v3
       - name: Setup cmake
@@ -22,8 +18,8 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
       - run: pip3 install -r requirements.txt
-      - run: ./build_ros2.sh ${{ matrix.platformArch }}
+      - run: ./build_ros2_macos.sh
       - uses: actions/upload-artifact@v3
         with:
-          name: ros2_install_${{ matrix.platformArch }}
-          path: ros2_install_${{ matrix.platformArch }}.tar.xz # ros2_ws/install/
+          name: ros2_base
+          path: ros2_base.tar.xz

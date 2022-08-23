@@ -1,0 +1,81 @@
+repositories:
+  ignition/ignition_cmake2_vendor:
+    type: git
+    url: https://github.com/ignition-release/ignition_cmake2_vendor.git
+    version: humble
+  ignition/ignition_math6_vendor:
+    type: git
+    url: https://github.com/ignition-release/ignition_math6_vendor.git
+    version: humble
+  ros-perception/image_common:
+    type: git
+    url: https://github.com/ros-perception/image_common.git
+    version: humble
+  ros-perception/laser_geometry:
+    type: git
+    url: https://github.com/ros-perception/laser_geometry.git
+    version: humble
+  ros-planning/navigation_msgs:
+    type: git
+    url: https://github.com/ros-planning/navigation_msgs.git
+    version: humble
+  ros-visualization/interactive_markers:
+    type: git
+    url: https://github.com/ros-visualization/interactive_markers.git
+    version: humble
+  ros/pluginlib:
+    type: git
+    url: https://github.com/ros/pluginlib.git
+    version: humble
+  ros/resource_retriever:
+    type: git
+    url: https://github.com/ros/resource_retriever.git
+    version: humble
+  ros/urdfdom:
+    type: git
+    url: https://github.com/ros/urdfdom.git
+    version: humble
+  ros/urdfdom_headers:
+    type: git
+    url: https://github.com/ros/urdfdom_headers.git
+    version: humble
+  ros2/eigen3_cmake_module:
+    type: git
+    url: https://github.com/ros2/eigen3_cmake_module.git
+    version: humble
+  ros2/geometry2:
+    type: git
+    url: https://github.com/ros2/geometry2.git
+    version: humble
+  ros2/message_filters:
+    type: git
+    url: https://github.com/ros2/message_filters.git
+    version: humble
+  ros2/orocos_kdl_vendor:
+    type: git
+    url: https://github.com/ros2/orocos_kdl_vendor.git
+    version: humble
+  ros2/pybind11_vendor:
+    type: git
+    url: https://github.com/ros2/pybind11_vendor.git
+    version: humble
+  ros2/rviz:
+    type: git
+    url: https://github.com/ros2/rviz.git
+    version: humble
+  ros2/tinyxml2_vendor:
+    type: git
+    url: https://github.com/ros2/tinyxml2_vendor.git
+    version: humble
+  ros2/tinyxml_vendor:
+    type: git
+    url: https://github.com/ros2/tinyxml_vendor.git
+    version: humble
+  ros2/urdf:
+    type: git
+    url: https://github.com/ros2/urdf.git
+    version: humble
+  ros2/yaml_cpp_vendor:
+    type: git
+    url: https://github.com/ros2/yaml_cpp_vendor.git
+    version: humble

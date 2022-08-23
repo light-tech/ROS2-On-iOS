@@ -1,3 +1,9 @@
+# Usage:
+#
+#      build_ros2.sh [Platform]
+#
+# where [Platform] should be either [iOS], [iOS_Simulator] or [iOS_Simulator_M1]
+
 REPO_ROOT=`pwd`
 PLATFORM_TO_BUILD=$1 # Either iOS or iOS_Simulator
 

@@ -17,7 +17,7 @@ Now we can run the demo application: Run the app on **two** simulator instances,
 
  * [Build ROS2 from source on macOS](https://docs.ros.org/en/humble/Installation/Alternatives/macOS-Development-Setup.html)
  * [Cross compiling ROS2](https://docs.ros.org/en/humble/How-To-Guides/Cross-compilation.html)
- * [Architecture](https://docs.ros.org/en/humble/Concepts/About-Internal-Interfaces.html)
+ * [ROS2 Architecture](https://docs.ros.org/en/humble/Concepts/About-Internal-Interfaces.html)
 
 ## Tools preparation
 
@@ -58,10 +58,8 @@ If you have other environment management such as Anaconda, remember to deactivat
 
 ## Source and workspace preparation
 
-We are going to disable most packages and add back only those that are necessary.
-To do that,
-
- 1. I deviate from the guide to get the sources into `unused_src` instead
+ 1. We are going to disable most packages and add back only those that are necessary.
+    To do that, I deviate from the guide to get the sources into `unused_src` instead
 
     ```shell
     mkdir unused_src
@@ -83,7 +81,7 @@ To do that,
 
     It is good to have `ros2/common_interfaces` as it provides the commonly used packages such as `std_msgs`.
 
-    Certain packages such as `rviz` are obviously not easy to port.
+    Certain heavy graphic-based packages such as `rviz` are obviously not easy to port.
     We will run `colcon` commands (below) and add back more dependent packages.
 
     **Tip**: Do `find unused_src -name PKG_NAME` in `unused_src` to find the repository containing the needed package.
@@ -100,12 +98,13 @@ To do that,
     ln -s $REPO_ROOT/src src
     ```
 
- 5. It is good to have multiple workspace. In the base workspace, build `ament` packages and `source` it. Then in the next workspace, add `rcl` and its dependencies and in yet another, add other desired packages such as `rclcpp`. This way, one can minimize the amount of packages to rebuild.
+ 5. It is good to have multiple workspaces such as
+     - `ament_ws`: move `ament` here, build and `source` it before moving on to
+     - `base_ws`: add `rcl` and its dependencies and once successful
+     - `rclcpp_ws`: add other desired packages such as `rclcpp`.
+    This way, one can minimize the amount of packages to rebuild.
 
-    For `rclcpp`, need to add `class_loader`, `console_bridge_vendor` and `libstatistics_collector`.
-    Added these using `opendiff ros2.repos ros2_min.repos`.
-
-## Build ROS2 for iOS simulator
+## Build ROS2 core packages for iOS
 
 Before building, we need to change the line `#include <net/if_arp.h>` in `src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp` into `#include <net/ethernet.h>` according to [this](https://stackoverflow.com/questions/10395041/getting-arp-table-on-iphone-ipad) as the original header is only available in the macOS SDK.
 
@@ -132,7 +131,7 @@ colcon build --merge-install \
         -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop
 ```
 
-For M1 Mac, you would need to change `iOS_Simulator.cmake` appropriately.
+For M1 Mac or for real iPhones, you would need to change `iOS_Simulator.cmake` appropriately.
 
 After my tons of failures, here is what went going on behind the above command:
 
@@ -161,3 +160,42 @@ After my tons of failures, here is what went going on behind the above command:
     Here, I am using `noop` one to avoid one more dependency `spdlog_vendor`.
 
  8. ROS2 depends significantly on dynamic linking. Do NOT add `BUILD_SHARED_LIBS=NO`, contrary to my other project [LLVM](https://github.com/light-tech/LLVM-On-iOS/) where building static libs is needed!
+
+## Build ROS2 graphical tools for macOS
+
+While there is an option, namely [RoboStack](https://robostack.github.io/GettingStarted.html), to install ROS2 for macOS without having to build it from source, their prebuilt graphical tools such as `rviz2` and `gazebo` do not work.
+
+So let us build ROS2 from source to use on macOS (Intel only) as well.
+
+First we install the required libs to the local location `$REPO_ROOT/deps`.
+
+ 1. Get the source code of [FreeType 2](https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz), [Eigen 3](https://eigen.tuxfamily.org/index.php?title=Main_Page), [TinyXML2](https://github.com/leethomason/tinyxml2) and [Bullet](https://github.com/bulletphysics/bullet3). Build and install with
+
+    ```shell
+    mkdir build && cd build
+    cmake -DCMAKE_INSTALL_PREFIX=$REPO_ROOT/deps/ ..
+    cmake --build . --target install
+    ```
+
+    For `FreeType2`, add `-DFT_DISABLE_HARFBUZZ=ON` and `-DFT_DISABLE_BZIP2=ON`.
+
+ 2. Get [Qt5](https://download.qt.io/archive/qt/5.15/5.15.5/submodules/) (we only need `qtbase`), extract and build with
+
+    ```shell
+    ./configure -prefix $REPO_ROOT/deps -no-framework
+    make
+    make install
+    ```
+
+ 4. Once again, `rviz_ogre_vendor` won't pass all CMake variables to `OGRE`. So change its `CMakeLists.txt` to pass along `-DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}` as well where it can find the dependencies such as `freetype`.
+
+    Likewise, `orocos_kdl_vendor` needs the right location for Eigen 3 headers by passing explicit `-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} -I ${CMAKE_PREFIX_PATH}/include/eigen3/`.
+
+    Also, disable `python_orocos_kdl_vendor`.
+
+ 5. Build ROS2 for macOS using the similar command but set `CMAKE_PREFIX_PATH` to the location where we install the above dependencies
+
+    ```shell
+    # --packages-select rviz_ogre_vendor
+    colcon build --merge-install --cmake-force-configure --cmake-args -DBUILD_TESTING=NO -DTHIRDPARTY=FORCE -DCOMPILE_TOOLS=NO -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_MEMORY_TOOLS=OFF -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop -DCMAKE_PREFIX_PATH=$REPO_ROOT/deps
+    ```
