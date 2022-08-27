@@ -55,10 +55,6 @@ repositories:
     type: git
     url: https://github.com/ros2/orocos_kdl_vendor.git
     version: humble
-  ros2/pybind11_vendor:
-    type: git
-    url: https://github.com/ros2/pybind11_vendor.git
-    version: humble
   ros2/rviz:
     type: git
     url: https://github.com/ros2/rviz.git
