@@ -199,10 +199,22 @@ First we install the required libs to the local location `$REPO_ROOT/deps`.
     colcon build --merge-install --cmake-force-configure --cmake-args -DBUILD_TESTING=NO -DTHIRDPARTY=FORCE -DCOMPILE_TOOLS=NO -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_MEMORY_TOOLS=OFF -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop -DCMAKE_PREFIX_PATH=$REPO_ROOT/deps
     ```
 
- 6. To build overlay workspace, you will need to
-    ```shell
-    colcon build --symlink-install --cmake-args -DCMAKE_PREFIX_PATH=$REPO_ROOT/deps
-    ```
+**Note**: To build overlaid workspace, you will want to
+```shell
+colcon build --symlink-install --cmake-args -DCMAKE_PREFIX_PATH=$REPO_ROOT/deps
+```
+to expose our system dependencies.
+
+Now because of [this issue](https://github.com/colcon/colcon-zsh/issues/12) where the generated `setup.zsh` might NOT set the library search path for system libraries (Qt, FreeType2, Bullet ...), tools that depend on our locally built `dylib` in `$REPO_ROOT/deps` will fail to load. (The original instruction works because `homebrew` will put the libraries in globally available location `/usr/local`.)
+To actually use your workspace you will need to first
+```shell
+source YOUR_WORKSPACE/install/setup.zsh
+```
+and then
+```shell
+export DYLD_LIBRARY_PATH=$REPO_ROOT/deps/lib:$DYLD_LIBRARY_PATH
+```
+You must do this in this order because `setup.zsh` does not extend but *overwrite* `DYLD_LIBRARY_PATH`.
 
 ## Build cartographer and cartographer-ros packages
 
