@@ -7,6 +7,7 @@ unused_src/
 ros2
 ros2_ws/
 deps/
+host_deps/
 
 # Finder
 .DS_Store

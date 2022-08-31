@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'build_ros2_macos.sh'
+      - 'build_deps.sh'
 jobs:
   build-ros2:
     runs-on: macos-latest
@@ -18,8 +19,13 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
       - run: pip3 install -r requirements.txt
-      - run: ./build_ros2_macos.sh
+      - run: ./build_deps.sh
       - uses: actions/upload-artifact@v3
         with:
-          name: ros2_base
-          path: ros2_base.tar.xz
+          name: deps
+          path: deps.tar.xz
+      # - run: ./build_ros2_macos.sh
+      #- uses: actions/upload-artifact@v3
+      #  with:
+      #    name: ros2_base
+      #    path: ros2_base.tar.xz
