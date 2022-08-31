@@ -16,56 +16,39 @@ SRC_PATH=$REPO_ROOT/deps/src/
 function getSource() {
     mkdir -p $DOWNLOAD_PATH
     cd $DOWNLOAD_PATH
-    wget https://github.com/abseil/abseil-cpp/archive/refs/tags/20220623.0.tar.gz
-    wget https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz
-    wget https://github.com/gflags/gflags/archive/refs/tags/v2.2.2.tar.gz
-    wget https://cairographics.org/releases/cairomm-1.16.0.tar.xz
-    wget https://cairographics.org/releases/pixman-0.40.0.tar.gz
-    wget https://github.com/bulletphysics/bullet3/archive/refs/tags/3.24.tar.gz
-    wget https://github.com/google/glog/archive/refs/tags/v0.6.0.tar.gz
-    wget https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
-    wget https://gmplib.org/download/gmp/gmp-6.2.1.tar.xz
-    wget https://github.com/protocolbuffers/protobuf/releases/download/v21.5/protobuf-cpp-3.21.5.tar.gz
-    wget https://download.sourceforge.net/libpng/libpng-1.6.37.tar.xz
-    wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2
-    wget https://www.lua.org/ftp/lua-5.4.4.tar.gz
-    wget https://github.com/leethomason/tinyxml2/archive/refs/tags/9.0.0.tar.gz
-    wget https://github.com/flann-lib/flann/archive/refs/tags/1.9.1.tar.gz
-    wget https://www.mpfr.org/mpfr-current/mpfr-4.1.0.tar.xz
-    wget https://zlib.net/zlib-1.2.12.tar.xz
-    wget https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz
-    wget https://github.com/PointCloudLibrary/pcl/releases/download/pcl-1.12.1/source.zip
-    wget https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz
-    wget https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/refs/tags/v5.12.0.tar.gz
-    wget http://ceres-solver.org/ceres-solver-2.0.0.tar.gz
+    # Need -L to download github releases according to https://stackoverflow.com/questions/46060010/download-github-release-with-curl
+    curl -s -L -o abseil-cpp.tar.gz https://github.com/abseil/abseil-cpp/archive/refs/tags/20220623.0.tar.gz \
+         -o boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz \
+         -o gflags.tar.gz https://github.com/gflags/gflags/archive/refs/tags/v2.2.2.tar.gz \
+         -o cairo.tar.xz https://cairographics.org/releases/cairomm-1.16.0.tar.xz \
+         -o pixman.tar.gz https://cairographics.org/releases/pixman-0.40.0.tar.gz \
+         -o bullet3.tar.gz https://github.com/bulletphysics/bullet3/archive/refs/tags/3.24.tar.gz \
+         -o glog.tar.gz https://github.com/google/glog/archive/refs/tags/v0.6.0.tar.gz \
+         -o pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz \
+         -o gmp.tar.xz https://gmplib.org/download/gmp/gmp-6.2.1.tar.xz \
+         -o protobuf.tar.gz https://github.com/protocolbuffers/protobuf/releases/download/v21.5/protobuf-cpp-3.21.5.tar.gz \
+         -o libpng.tar.xz https://download.sourceforge.net/libpng/libpng-1.6.37.tar.xz \
+         -o eigen.tar.bz2 https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2 \
+         -o lua.tar.gz https://www.lua.org/ftp/lua-5.4.4.tar.gz \
+         -o tinyxml2.tar.gz https://github.com/leethomason/tinyxml2/archive/refs/tags/9.0.0.tar.gz \
+         -o flann.tar.gz https://github.com/flann-lib/flann/archive/refs/tags/1.9.1.tar.gz \
+         -o mpfr.tar.xz https://www.mpfr.org/mpfr-current/mpfr-4.1.0.tar.xz \
+         -o zlib.tar.xz https://zlib.net/zlib-1.2.12.tar.xz \
+         -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz \
+         -o pcl.tar.gz https://github.com/PointCloudLibrary/pcl/releases/download/pcl-1.12.1/source.tar.gz \
+         -o googletest.tar.gz https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz \
+         -o SuiteSparse.tar.gz https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/refs/tags/v5.12.0.tar.gz \
+         -o ceres-solver.tar.gz http://ceres-solver.org/ceres-solver-2.0.0.tar.gz
 }
 
 function extractSource() {
     mkdir -p $SRC_PATH
     cd $SRC_PATH
-    tar xzf $DOWNLOAD_PATH/abseil-cpp-20220623.0.tar.gz
-    tar xzf $DOWNLOAD_PATH/boost_1_80_0.tar.gz
-    tar xzf $DOWNLOAD_PATH/gflags-2.2.2.tar.gz
-    tar xzf $DOWNLOAD_PATH/pixman-0.40.0.tar.gz
-    tar xzf $DOWNLOAD_PATH/bullet3-3.24.tar.gz
-    tar xzf $DOWNLOAD_PATH/glog-0.6.0.tar.gz
-    tar xzf $DOWNLOAD_PATH/pkg-config-0.29.2.tar.gz
-    tar xzf $DOWNLOAD_PATH/cairo-1.16.0.tar.xz
-    tar xzf $DOWNLOAD_PATH/gmp-6.2.1.tar.xz
-    tar xzf $DOWNLOAD_PATH/protobuf-cpp-3.21.5.tar.gz
-    tar xzf $DOWNLOAD_PATH/libpng-1.6.37.tar.xz
-    # tar xzf $DOWNLOAD_PATH/qtbase-everywhere-opensource-src-5.15.5.tar.xz
-    tar xzf $DOWNLOAD_PATH/eigen-3.4.0.tar.bz2
-    tar xzf $DOWNLOAD_PATH/lua-5.4.4.tar.gz
-    tar xzf $DOWNLOAD_PATH/tinyxml2-9.0.0.tar.gz
-    tar xzf $DOWNLOAD_PATH/flann-1.9.1.tar.gz
-    tar xzf $DOWNLOAD_PATH/mpfr-4.1.0.tar.xz
-    tar xzf $DOWNLOAD_PATH/zlib-1.2.12.tar.xz
-    tar xzf $DOWNLOAD_PATH/freetype-2.12.1.tar.xz
-    tar xzf $DOWNLOAD_PATH/pclsource.tar.gz
-    tar xzf $DOWNLOAD_PATH/googletest-release-1.12.1.tar.gz
-    tar xzf $DOWNLOAD_PATH/SuiteSparse-5.12.0.tar.gz
-    tar xzf $DOWNLOAD_PATH/ceres-solver-2.0.0.tar.gz
+    local src_files=`ls $DOWNLOAD_PATH`
+    for f in $src_files; do
+        echo "Extract " $f
+        tar xzf $DOWNLOAD_PATH/$f
+    done
 }
 
 function setupPlatform() {
@@ -200,7 +183,7 @@ function main() {
     cd $SRC_PATH/flann-1.9.1
     buildCMake -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_MATLAB_BINDINGS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF
 
-    # Build Point Cloud Library (PCL, needs: FLANN)
+    # Build Point Cloud Library (PCL, needs: Boost, FLANN, Eigen3)
     cd $SRC_PATH/pcl
     buildCMake
 }
