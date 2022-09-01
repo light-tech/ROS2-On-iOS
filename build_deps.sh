@@ -8,10 +8,10 @@ DEPS_SYSROOT=$REPO_ROOT/deps
 QT_HOST_PREFIX=$REPO_ROOT/host_deps/
 
 # Where we download the source archives
-DOWNLOAD_PATH=$REPO_ROOT/deps/download/
+DOWNLOAD_PATH=$REPO_ROOT/deps_download/
 
 # Location to extract the source
-SRC_PATH=$REPO_ROOT/deps/src/
+SRC_PATH=$REPO_ROOT/deps_src/
 
 function getSource() {
     mkdir -p $DOWNLOAD_PATH
@@ -39,6 +39,7 @@ function getSource() {
          -o googletest.tar.gz https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz \
          -o SuiteSparse.tar.gz https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/refs/tags/v5.12.0.tar.gz \
          -o ceres-solver.tar.gz http://ceres-solver.org/ceres-solver-2.0.0.tar.gz
+         # -o qtbase.tar.gz https://download.qt.io/archive/qt/5.15/5.15.5/submodules/qtbase-everywhere-opensource-src-5.15.5.tar.xz \
 }
 
 function extractSource() {
@@ -46,7 +47,6 @@ function extractSource() {
     cd $SRC_PATH
     local src_files=`ls $DOWNLOAD_PATH`
     for f in $src_files; do
-        echo "Extract " $f
         tar xzf $DOWNLOAD_PATH/$f
     done
 }
