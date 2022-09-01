@@ -1,18 +1,7 @@
 # Build ROS2 Base + Rviz for macOS
+# Assuming dependencies are built prior
 
 REPO_ROOT=`pwd`
-
-# Build dependencies
-
-mkdir deps
-cd deps
-
-wget https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz
-tar xzf freetype-2.12.1.tar.xz
-cd freetype-2.12.1
-mkdir build && cd build
-cmake -DCMAKE_INSTALL_PREFIX=$REPO_ROOT/deps/ -DFT_DISABLE_HARFBUZZ=ON -DFT_DISABLE_BZIP2=ON ..
-cmake --build . --target install
 
 cd $REPO_ROOT
 mkdir -p base_ws/src

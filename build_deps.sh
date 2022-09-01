@@ -38,8 +38,8 @@ function getSource() {
          -o pcl.tar.gz https://github.com/PointCloudLibrary/pcl/releases/download/pcl-1.12.1/source.tar.gz \
          -o googletest.tar.gz https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz \
          -o SuiteSparse.tar.gz https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/refs/tags/v5.12.0.tar.gz \
-         -o ceres-solver.tar.gz http://ceres-solver.org/ceres-solver-2.0.0.tar.gz
-         # -o qtbase.tar.gz https://download.qt.io/archive/qt/5.15/5.15.5/submodules/qtbase-everywhere-opensource-src-5.15.5.tar.xz \
+         -o ceres-solver.tar.gz http://ceres-solver.org/ceres-solver-2.0.0.tar.gz \
+         -o qtbase.tar.gz https://download.qt.io/archive/qt/5.15/5.15.5/submodules/qtbase-everywhere-opensource-src-5.15.5.tar.xz
 }
 
 function extractSource() {
@@ -68,7 +68,12 @@ function configureThenMake() {
 }
 
 function buildQt5Host() {
-    ./configure -prefix $QT_HOST_PREFIX -opensource -confirm-license
+    ./configure -prefix $QT_HOST_PREFIX -opensource -confirm-license -nomake examples -nomake tests
+    make && make install
+}
+
+function buildQt5() {
+    ./configure -prefix $DEPS_SYSROOT -opensource -confirm-license -nomake examples -nomake tests
     make && make install
 }
 
@@ -79,7 +84,7 @@ function buildQt6Host() {
 
 # Build Qt https://doc.qt.io/qt-6/ios-building-from-source.html
 function buildQt6() {
-    ./configure -prefix $DEPS_SYSROOT -opensource -confirm-license -platform macx-ios-clang -release -qt-host-path $QT_HOST_PREFIX #  -sysroot $DEPS_SYSROOT -system-zlib -system-libpng -system-freetype -pkg-config
+    ./configure -prefix $DEPS_SYSROOT -opensource -confirm-license -platform macx-ios-clang -release -qt-host-path $QT_HOST_PREFIX # -sysroot $DEPS_SYSROOT -system-zlib -system-libpng -system-freetype -pkg-config
     make && make install
 }
 
@@ -123,13 +128,8 @@ function main() {
     buildCMake
 
     # Build Qt5
-    #cd $SRC_PATH/qtbase-everywhere-src-5.15.5
-    #buildQt5Host
-
-    # Build Qt6
-    #cd $SRC_PATH/qtbase-everywhere-src-6.3.1
-    #buildQt6Host
-    #buildQt6
+    cd $SRC_PATH/qtbase-everywhere-src-5.15.5
+    buildQt5
 
     # Build gflags
     cd $SRC_PATH/gflags-2.2.2
