@@ -18,7 +18,7 @@ SRC_PATH=$REPO_ROOT/deps_src/
 
 export PATH=$PATH:$DEPS_SYSROOT/bin
 
-function getSource() {
+function getAndExtractSource() {
     mkdir -p $DOWNLOAD_PATH
     cd $DOWNLOAD_PATH
     # Need -L to download github releases according to https://stackoverflow.com/questions/46060010/download-github-release-with-curl
@@ -48,10 +48,8 @@ function getSource() {
          #-o autoconf.tar.gz http://ftpmirror.gnu.org/autoconf/autoconf-2.69.tar.gz \
          #-o automake.tar.gz http://ftpmirror.gnu.org/automake/automake-1.15.tar.gz \
          #-o libtool.tar.gz http://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.gz \
-         #-o mm-common.tar.gz https://github.com/GNOME/mm-common/archive/refs/tags/1.0.4.tar.gz \
-}
+         #-o mm-common.tar.gz https://github.com/GNOME/mm-common/archive/refs/tags/1.0.4.tar.gz
 
-function extractSource() {
     mkdir -p $SRC_PATH
     cd $SRC_PATH
     local src_files=`ls $DOWNLOAD_PATH`
@@ -65,7 +63,8 @@ function setupPlatform() {
         "iOS")
             ARCH=arm64
             SYSROOT=`xcodebuild -version -sdk iphoneos Path`
-            MAKE_HOST_TRIPLE=aarch64-apple-darwin # Note that we must use arm-apple and not arm64-apple thank to  https://gist.github.com/jvcleave/9d78de9bb27434bde2b0c3a1af355d9c
+            MAKE_HOST_TRIPLE_ZLIB=arm-apple-darwin # For zlib, pixman and cairo we must use arm-apple and not arm64-apple thank to  https://gist.github.com/jvcleave/9d78de9bb27434bde2b0c3a1af355d9c
+            MAKE_HOST_TRIPLE=aarch64-apple-darwin
             EXTRA_CMAKE_ARGS=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$PLATFORM.cmake);;
         "iOS_Simulator")
             ARCH=x86_64
@@ -80,15 +79,38 @@ function setupPlatform() {
 
 function buildCMake() {
     rm -rf _build && mkdir _build && cd _build
-    cmake -DCMAKE_INSTALL_PREFIX=$DEPS_SYSROOT -DCMAKE_PREFIX_PATH=$DEPS_SYSROOT "${EXTRA_CMAKE_ARGS[@]}" "$@" .. >/dev/null 2>&1
-    cmake --build . --target install >/dev/null 2>&1
+    cmake -DCMAKE_INSTALL_PREFIX=$DEPS_SYSROOT -DCMAKE_PREFIX_PATH=$DEPS_SYSROOT "${EXTRA_CMAKE_ARGS[@]}" "$@" .. # >/dev/null 2>&1
+    cmake --build . --target install # >/dev/null 2>&1
+}
+
+function configureThenMakeArm() {
+    export CFLAGS="-isysroot $SYSROOT -arch $ARCH"
+    export CPPFLAGS="-isysroot $SYSROOT -arch $ARCH"
+
+    if [ -z "$MAKE_HOST_TRIPLE_ZLIB" ]
+    then
+        ./configure --prefix=$DEPS_SYSROOT --host=$MAKE_HOST_TRIPLE_ZLIB "$@" >/dev/null 2>&1
+    else
+        ./configure --prefix=$DEPS_SYSROOT "$@" >/dev/null 2>&1
+    fi
+
+    make && make install >/dev/null 2>&1
+
+    export -n CFLAGS
+    export -n CPPFLAGS
 }
 
 function configureThenMake() {
     export CFLAGS="-isysroot $SYSROOT -arch $ARCH"
     export CPPFLAGS="-isysroot $SYSROOT -arch $ARCH"
 
-    ./configure --prefix=$DEPS_SYSROOT --host=$MAKE_HOST_TRIPLE "$@" >/dev/null 2>&1
+    if [ -z "$MAKE_HOST_TRIPLE" ]
+    then
+        ./configure --prefix=$DEPS_SYSROOT --host=$MAKE_HOST_TRIPLE "$@" >/dev/null 2>&1
+    else
+        ./configure --prefix=$DEPS_SYSROOT "$@" >/dev/null 2>&1
+    fi
+
     make && make install >/dev/null 2>&1
 
     export -n CFLAGS
@@ -142,7 +164,7 @@ function buildHostTools() {
 function main() {
     # Build zlib
     cd $SRC_PATH/zlib-1.2.12
-    configureThenMake
+    configureThenMakeArm
 
     # Build TinyXML2
     cd $SRC_PATH/tinyxml2-9.0.0
@@ -154,7 +176,7 @@ function main() {
 
     # Build pixman (needs: libpng)
     cd $SRC_PATH/pixman-0.40.0
-    configureThenMake
+    configureThenMakeArm
 
     # Build FreeType
     cd $SRC_PATH/freetype-2.12.1
@@ -164,27 +186,23 @@ function main() {
     cd $SRC_PATH/cairo-1.16.0
     export PKG_CONFIG=$DEPS_SYSROOT/bin/pkg-config
     export PKG_CONFIG_PATH=$DEPS_SYSROOT/lib/pkgconfig
-    configureThenMake --disable-xlib --enable-svg=no --with-sysroot=$DEPS_SYSROOT CFLAGS="-I$DEPS_SYSROOT/include/freetype2" CPPFLAGS="-I$DEPS_SYSROOT/include/freetype2"
+    configureThenMakeArm --disable-xlib --enable-svg=no --with-sysroot=$DEPS_SYSROOT CFLAGS="-I$DEPS_SYSROOT/include/freetype2" CPPFLAGS="-I$DEPS_SYSROOT/include/freetype2"
 
-    # Build Bullet3 (failed iOS)
+    # Build Bullet3
     cd $SRC_PATH/bullet3-3.24
     buildCMake -DBUILD_BULLET2_DEMOS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF
 
-    # Build Eigen3 (might depend on Qt)
+    # Build Eigen3
     cd $SRC_PATH/eigen-3.4.0
     buildCMake
-
-    # Build Qt5
-    cd $SRC_PATH/qtbase-everywhere-src-5.15.5
-    buildQt5
 
     # Build gflags
     cd $SRC_PATH/gflags-2.2.2
     buildCMake
 
-    # Build glog (needs: gflags) (failed iOS)
+    # Build glog (needs: gflags)
     cd $SRC_PATH/glog-0.6.0
-    buildCMake -DWITH_GTEST=OFF
+    buildCMake -DWITH_GTEST=OFF -DBUILD_TESTING=OFF
 
     # Build GoogleTest
     cd $SRC_PATH/googletest-release-1.12.1
@@ -206,7 +224,7 @@ function main() {
     cd $SRC_PATH/protobuf-3.21.5
     buildCMake -Dprotobuf_BUILD_TESTS=OFF
 
-    # Currently Lua & Boost are only on macOS
+    # Build Lua, Boost and Qt5 (macOS only)
     case $PLATFORM in
         "macOS")
             # Build Lua
@@ -217,7 +235,11 @@ function main() {
             # Build Boost
             cd $SRC_PATH/boost_1_80_0
             ./bootstrap.sh --prefix=$DEPS_SYSROOT --without-libraries=python
-            ./b2 install;;
+            ./b2 install
+
+            # Build Qt5
+            cd $SRC_PATH/qtbase-everywhere-src-5.15.5
+            buildQt5;;
     esac
 
     # Build SuiteSparse
@@ -239,10 +261,10 @@ function main() {
     buildCMake
 }
 
-getSource
-extractSource
+getAndExtractSource
 setupPlatform
 buildHostTools
 main
+
 cd $REPO_ROOT
 tar czf deps_$PLATFORM.tar.xz deps_$PLATFORM/
