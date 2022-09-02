@@ -6,7 +6,7 @@ src/
 unused_src/
 ros2
 ros2_ws/
-deps/
+deps*/
 host_deps/
 
 # Finder

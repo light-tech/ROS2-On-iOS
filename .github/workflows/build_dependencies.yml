@@ -1,0 +1,22 @@
+name: Build ROS2 dependencies for iPhone
+on:
+  push:
+    paths:
+      - 'build_deps.sh'
+jobs:
+  build-ros2:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        platformArch: [iOS]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.12
+        with:
+          cmake-version: '3.23.x'
+      - run: ./build_deps.sh ${{ matrix.platformArch }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: deps_${{ matrix.platformArch }}
+          path: deps_${{ matrix.platformArch }}.tar.xz

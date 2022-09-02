@@ -1,8 +1,11 @@
+# Platform to build [iOS, iOS_Simulator, macOS]
+PLATFORM=$1
+
 # This repo root (where this script is located)
 REPO_ROOT=`pwd`
 
 # The sysroot of the dependencies we built
-DEPS_SYSROOT=$REPO_ROOT/deps
+DEPS_SYSROOT=$REPO_ROOT/deps_$PLATFORM
 
 # Prefix where we built Qt for host machine
 QT_HOST_PREFIX=$REPO_ROOT/host_deps/
@@ -13,6 +16,8 @@ DOWNLOAD_PATH=$REPO_ROOT/deps_download/
 # Location to extract the source
 SRC_PATH=$REPO_ROOT/deps_src/
 
+export PATH=$PATH:$DEPS_SYSROOT/bin
+
 function getSource() {
     mkdir -p $DOWNLOAD_PATH
     cd $DOWNLOAD_PATH
@@ -20,7 +25,7 @@ function getSource() {
     curl -s -L -o abseil-cpp.tar.gz https://github.com/abseil/abseil-cpp/archive/refs/tags/20220623.0.tar.gz \
          -o boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz \
          -o gflags.tar.gz https://github.com/gflags/gflags/archive/refs/tags/v2.2.2.tar.gz \
-         -o cairo.tar.xz https://cairographics.org/releases/cairomm-1.16.0.tar.xz \
+         -o cairo.tar.xz https://www.cairographics.org/releases/cairo-1.16.0.tar.xz \
          -o pixman.tar.gz https://cairographics.org/releases/pixman-0.40.0.tar.gz \
          -o bullet3.tar.gz https://github.com/bulletphysics/bullet3/archive/refs/tags/3.24.tar.gz \
          -o glog.tar.gz https://github.com/google/glog/archive/refs/tags/v0.6.0.tar.gz \
@@ -40,6 +45,10 @@ function getSource() {
          -o SuiteSparse.tar.gz https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/refs/tags/v5.12.0.tar.gz \
          -o ceres-solver.tar.gz http://ceres-solver.org/ceres-solver-2.0.0.tar.gz \
          -o qtbase.tar.gz https://download.qt.io/archive/qt/5.15/5.15.5/submodules/qtbase-everywhere-opensource-src-5.15.5.tar.xz
+         #-o autoconf.tar.gz http://ftpmirror.gnu.org/autoconf/autoconf-2.69.tar.gz \
+         #-o automake.tar.gz http://ftpmirror.gnu.org/automake/automake-1.15.tar.gz \
+         #-o libtool.tar.gz http://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.gz \
+         #-o mm-common.tar.gz https://github.com/GNOME/mm-common/archive/refs/tags/1.0.4.tar.gz \
 }
 
 function extractSource() {
@@ -52,19 +61,38 @@ function extractSource() {
 }
 
 function setupPlatform() {
-    EXTRA_CMAKE_ARGS=()
-    EXTRA_CONFIGURE_ARGS=()
+    case $PLATFORM in
+        "iOS")
+            ARCH=arm64
+            SYSROOT=`xcodebuild -version -sdk iphoneos Path`
+            MAKE_HOST_TRIPLE=aarch64-apple-darwin # Note that we must use arm-apple and not arm64-apple thank to  https://gist.github.com/jvcleave/9d78de9bb27434bde2b0c3a1af355d9c
+            EXTRA_CMAKE_ARGS=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$PLATFORM.cmake);;
+        "iOS_Simulator")
+            ARCH=x86_64
+            SYSROOT=`xcodebuild -version -sdk iphonesimulator Path`
+            EXTRA_CMAKE_ARGS=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$PLATFORM.cmake);;
+        "macOS")
+            ARCH=x86_64
+            SYSROOT=`xcodebuild -version -sdk macosx Path`
+            EXTRA_CMAKE_ARGS=(-DCMAKE_OSX_ARCHITECTURES=$ARCH);;
+    esac
 }
 
 function buildCMake() {
-    mkdir _build && cd _build
-    cmake -DCMAKE_INSTALL_PREFIX=$DEPS_SYSROOT -DCMAKE_PREFIX_PATH=$DEPS_SYSROOT "$@" ..
-    cmake --build . --target install
+    rm -rf _build && mkdir _build && cd _build
+    cmake -DCMAKE_INSTALL_PREFIX=$DEPS_SYSROOT -DCMAKE_PREFIX_PATH=$DEPS_SYSROOT "${EXTRA_CMAKE_ARGS[@]}" "$@" .. >/dev/null 2>&1
+    cmake --build . --target install >/dev/null 2>&1
 }
 
 function configureThenMake() {
-    ./configure --prefix=$DEPS_SYSROOT "$@"
-    make && make install
+    export CFLAGS="-isysroot $SYSROOT -arch $ARCH"
+    export CPPFLAGS="-isysroot $SYSROOT -arch $ARCH"
+
+    ./configure --prefix=$DEPS_SYSROOT --host=$MAKE_HOST_TRIPLE "$@" >/dev/null 2>&1
+    make && make install >/dev/null 2>&1
+
+    export -n CFLAGS
+    export -n CPPFLAGS
 }
 
 function buildQt5Host() {
@@ -88,11 +116,30 @@ function buildQt6() {
     make && make install
 }
 
-function main() {
-    # Build pkg-config for HOST
+function buildHostTools() {
     cd $SRC_PATH/pkg-config-0.29.2
-    configureThenMake --with-internal-glib
+    ./configure --prefix=$DEPS_SYSROOT --with-internal-glib >/dev/null 2>&1
+    make && make install >/dev/null 2>&1
 
+    #cd $SRC_PATH/autoconf-2.69
+    #./configure --prefix=$DEPS_SYSROOT
+    #make && make install
+
+    #cd $SRC_PATH/automake-1.15
+    #./configure --prefix=$DEPS_SYSROOT
+    #make && make install
+
+    #cd $SRC_PATH/libtool-2.4.6
+    #./configure --prefix=$DEPS_SYSROOT
+    #make && make install
+
+    #cd $SRC_PATH/mm-common-1.0.4
+    #./autogen.sh
+    #./configure --prefix=$DEPS_SYSROOT
+    #make USE_NETWORK=yes && make install
+}
+
+function main() {
     # Build zlib
     cd $SRC_PATH/zlib-1.2.12
     configureThenMake
@@ -117,11 +164,11 @@ function main() {
     cd $SRC_PATH/cairo-1.16.0
     export PKG_CONFIG=$DEPS_SYSROOT/bin/pkg-config
     export PKG_CONFIG_PATH=$DEPS_SYSROOT/lib/pkgconfig
-    configureThenMake --disable-xlib --enable-svg=no --with-sysroot=$REPO_ROOT/deps CFLAGS="-I$DEPS_SYSROOT/include/freetype2" CPPFLAGS="-I$DEPS_SYSROOT/include/freetype2"
+    configureThenMake --disable-xlib --enable-svg=no --with-sysroot=$DEPS_SYSROOT CFLAGS="-I$DEPS_SYSROOT/include/freetype2" CPPFLAGS="-I$DEPS_SYSROOT/include/freetype2"
 
-    # Build Bullet3
+    # Build Bullet3 (failed iOS)
     cd $SRC_PATH/bullet3-3.24
-    buildCMake
+    buildCMake -DBUILD_BULLET2_DEMOS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF
 
     # Build Eigen3 (might depend on Qt)
     cd $SRC_PATH/eigen-3.4.0
@@ -135,7 +182,7 @@ function main() {
     cd $SRC_PATH/gflags-2.2.2
     buildCMake
 
-    # Build glog (needs: gflags)
+    # Build glog (needs: gflags) (failed iOS)
     cd $SRC_PATH/glog-0.6.0
     buildCMake -DWITH_GTEST=OFF
 
@@ -159,20 +206,24 @@ function main() {
     cd $SRC_PATH/protobuf-3.21.5
     buildCMake -Dprotobuf_BUILD_TESTS=OFF
 
-    # Build Lua
-    cd $SRC_PATH/lua-5.4.4
-    make macosx
-    make install INSTALL_TOP=$DEPS_SYSROOT
+    # Currently Lua & Boost are only on macOS
+    case $PLATFORM in
+        "macOS")
+            # Build Lua
+            cd $SRC_PATH/lua-5.4.4
+            make macosx
+            make install INSTALL_TOP=$DEPS_SYSROOT
 
-    # Build Boost
-    cd $SRC_PATH/boost_1_80_0
-    ./bootstrap.sh --prefix=$DEPS_SYSROOT --without-libraries=python
-    ./b2 install
+            # Build Boost
+            cd $SRC_PATH/boost_1_80_0
+            ./bootstrap.sh --prefix=$DEPS_SYSROOT --without-libraries=python
+            ./b2 install;;
+    esac
 
     # Build SuiteSparse
     cd $SRC_PATH/SuiteSparse-5.12.0
     sed -i.bak 's/#define IDXTYPEWIDTH 64/#define IDXTYPEWIDTH 32/' metis-5.1.0/include/metis.h
-    make
+    make library CF="-isysroot $SYSROOT -arch $ARCH -I $DEPS_SYSROOT/include" LDFLAGS="-L$DEPS_SYSROOT/lib"
     make install INSTALL=$DEPS_SYSROOT CF="-I $DEPS_SYSROOT/include" LDFLAGS="-L$DEPS_SYSROOT/lib"
 
     # Build CERES solver (needs: gflags, glog, SuiteSparse)
@@ -190,6 +241,8 @@ function main() {
 
 getSource
 extractSource
+setupPlatform
+buildHostTools
 main
 cd $REPO_ROOT
-tar czf deps.tar.xz deps/
+tar czf deps_$PLATFORM.tar.xz deps_$PLATFORM/

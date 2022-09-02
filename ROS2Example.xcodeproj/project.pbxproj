@@ -769,6 +769,7 @@
 		B7928F6E28A74865000B40D4 /* ros2_min.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = ros2_min.repos; sourceTree = SOURCE_ROOT; };
 		B7928F6F28A74865000B40D4 /* requirements.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = requirements.txt; sourceTree = SOURCE_ROOT; };
 		B7928F7528A7491A000B40D4 /* main.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = main.yml; path = .github/workflows/main.yml; sourceTree = SOURCE_ROOT; };
+		B79ABE5C28C1E96200B78E97 /* build_dependencies.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = build_dependencies.yml; path = .github/workflows/build_dependencies.yml; sourceTree = SOURCE_ROOT; };
 		B79E396D28BDACBA001526FF /* build_deps.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_deps.sh; sourceTree = SOURCE_ROOT; };
 		B7ACAC2F28A6A23F00A537EB /* ROS2Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ROS2Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7ACAC3228A6A23F00A537EB /* ROS2ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROS2ExampleApp.swift; sourceTree = "<group>"; };
@@ -1167,6 +1168,7 @@
 				B755430028B272FF00AAFC17 /* iOS_Simulator_M1.cmake */,
 				B7928F7528A7491A000B40D4 /* main.yml */,
 				B76AD78A28B4BFEC0097A296 /* main_macos.yml */,
+				B79ABE5C28C1E96200B78E97 /* build_dependencies.yml */,
 				B79E396D28BDACBA001526FF /* build_deps.sh */,
 				B7928F6D28A74865000B40D4 /* build_ros2.sh */,
 				B76AD78B28B4C0140097A296 /* build_ros2_macos.sh */,
