@@ -16,9 +16,9 @@ DOWNLOAD_PATH=$REPO_ROOT/deps_download/
 # Location to extract the source
 SRC_PATH=$REPO_ROOT/deps_src/
 
-export PATH=$PATH:$DEPS_SYSROOT/bin
+export PATH=$DEPS_SYSROOT/bin:$PATH
 
-function getAndExtractSource() {
+function getSource() {
     mkdir -p $DOWNLOAD_PATH
     cd $DOWNLOAD_PATH
     # Need -L to download github releases according to https://stackoverflow.com/questions/46060010/download-github-release-with-curl
@@ -49,7 +49,9 @@ function getAndExtractSource() {
          #-o automake.tar.gz http://ftpmirror.gnu.org/automake/automake-1.15.tar.gz \
          #-o libtool.tar.gz http://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.gz \
          #-o mm-common.tar.gz https://github.com/GNOME/mm-common/archive/refs/tags/1.0.4.tar.gz
+}
 
+function extractSource() {
     mkdir -p $SRC_PATH
     cd $SRC_PATH
     local src_files=`ls $DOWNLOAD_PATH`
@@ -85,8 +87,8 @@ function buildCMake() {
 }
 
 function configureThenMakeArm() {
-    export CFLAGS="-isysroot $SYSROOT -arch $ARCH $CFLAGS"
-    export CPPFLAGS="-isysroot $SYSROOT -arch $ARCH $CPPFLAGS"
+    export CFLAGS="-isysroot $SYSROOT -arch $ARCH"
+    export CPPFLAGS="-isysroot $SYSROOT -arch $ARCH"
 
     if [ -z "$MAKE_HOST_TRIPLE_ZLIB" ]
     then
@@ -102,8 +104,8 @@ function configureThenMakeArm() {
 }
 
 function configureThenMake() {
-    export CFLAGS="-isysroot $SYSROOT -arch $ARCH $CFLAGS"
-    export CPPFLAGS="-isysroot $SYSROOT -arch $ARCH $CPPFLAGS"
+    export CFLAGS="-isysroot $SYSROOT -arch $ARCH"
+    export CPPFLAGS="-isysroot $SYSROOT -arch $ARCH"
 
     if [ -z "$MAKE_HOST_TRIPLE" ]
     then
@@ -116,27 +118,6 @@ function configureThenMake() {
 
     export -n CFLAGS
     export -n CPPFLAGS
-}
-
-function buildQt5Host() {
-    ./configure -prefix $QT_HOST_PREFIX -opensource -confirm-license -nomake examples -nomake tests
-    make && make install
-}
-
-function buildQt5() {
-    ./configure -prefix $DEPS_SYSROOT -opensource -confirm-license -nomake examples -nomake tests
-    make && make install
-}
-
-function buildQt6Host() {
-    ./configure -prefix $QT_HOST_PREFIX -opensource -confirm-license -release
-    make && make install
-}
-
-# Build Qt https://doc.qt.io/qt-6/ios-building-from-source.html
-function buildQt6() {
-    ./configure -prefix $DEPS_SYSROOT -opensource -confirm-license -platform macx-ios-clang -release -qt-host-path $QT_HOST_PREFIX # -sysroot $DEPS_SYSROOT -system-zlib -system-libpng -system-freetype -pkg-config
-    make && make install
 }
 
 function buildHostTools() {
@@ -162,132 +143,201 @@ function buildHostTools() {
     #make USE_NETWORK=yes && make install
 }
 
-function main() {
-    # Build zlib
+function buildZlib() {
     echo "Build zlib"
     cd $SRC_PATH/zlib-1.2.12
     configureThenMakeArm
+}
 
-    # Build TinyXML2
+function buildTinyXML2() {
     echo "Build TinyXML2"
     cd $SRC_PATH/tinyxml2-9.0.0
     buildCMake
+}
 
-    # Build libpng (needs: zlib)
+# Needs: zlib
+function buildLibPng() {
     echo "Build libpng"
     cd $SRC_PATH/libpng-1.6.37
     configureThenMake
+}
 
-    # Build pixman (needs: libpng)
+# Needs: libpng
+function buildPixman() {
     echo "Build pixman"
     cd $SRC_PATH/pixman-0.40.0
     configureThenMakeArm
+}
 
-    # Build FreeType
+function buildFreeType2() {
     echo "Build freetype"
     cd $SRC_PATH/freetype-2.12.1
     buildCMake -DFT_DISABLE_HARFBUZZ=ON -DFT_DISABLE_BZIP2=ON
+}
 
-    # Build cairo (needs: FreeType, pixman)
+# Needs: FreeType, pixman
+function buildCairo() {
     echo "Build cairo"
     cd $SRC_PATH/cairo-1.16.0
     export PKG_CONFIG=$DEPS_SYSROOT/bin/pkg-config
     export PKG_CONFIG_PATH=$DEPS_SYSROOT/lib/pkgconfig
-    configureThenMakeArm --disable-xlib --enable-svg=no --with-sysroot=$DEPS_SYSROOT CFLAGS="-I$DEPS_SYSROOT/include/freetype2" CPPFLAGS="-I$DEPS_SYSROOT/include/freetype2"
+    configureThenMakeArm --disable-xlib --enable-svg=no # --with-sysroot=$DEPS_SYSROOT CFLAGS="-I$DEPS_SYSROOT/include/freetype2" CPPFLAGS="-I$DEPS_SYSROOT/include/freetype2"
+}
 
-    # Build Bullet3
+function buildBullet3() {
     echo "Build Bullet3"
     cd $SRC_PATH/bullet3-3.24
     buildCMake -DBUILD_BULLET2_DEMOS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF
+}
 
-    # Build gflags
-    echo "Build Bullet3"
+function buildGFlags() {
+    echo "Build gflags"
     cd $SRC_PATH/gflags-2.2.2
     buildCMake
+}
 
-    # Build glog (needs: gflags)
-    echo "Build Bullet3"
+# Needs: gflags
+function buildGlog() {
+    echo "Build glog"
     cd $SRC_PATH/glog-0.6.0
     buildCMake -DWITH_GTEST=OFF -DBUILD_TESTING=OFF
+}
 
-    # Build GoogleTest
+function buildGtest() {
     echo "Build GoogleTest"
     cd $SRC_PATH/googletest-release-1.12.1
     buildCMake
+}
 
-    # Build ABSL
+function buildAbsl() {
     echo "Build ABSL"
     cd $SRC_PATH/abseil-cpp-20220623.0
     buildCMake -DCMAKE_CXX_STANDARD=14
+}
 
-    # Build GMP
+function buildGmp() {
     echo "Build GMP"
     cd $SRC_PATH/gmp-6.2.1
     configureThenMake
+}
 
-    # Build MPFR (needs: GMP)
+# Needs: GMP
+function buildMpfr() {
     echo "Build MPFR"
     cd $SRC_PATH/mpfr-4.1.0
     configureThenMake --with-gmp=$DEPS_SYSROOT
+}
 
-    # Build ProtoBuf
+function buildProtoBuf() {
     echo "Build ProtoBuf"
     cd $SRC_PATH/protobuf-3.21.5
     buildCMake -Dprotobuf_BUILD_TESTS=OFF
+}
 
-    # Build Lua, Boost and Qt5 (macOS only)
-    case $PLATFORM in
-        "macOS")
-            # Build Lua
-            echo "Build Lua"
-            cd $SRC_PATH/lua-5.4.4
-            make macosx
-            make install INSTALL_TOP=$DEPS_SYSROOT
+function buildLua() {
+    echo "Build Lua"
+    cd $SRC_PATH/lua-5.4.4
+    make macosx
+    make install INSTALL_TOP=$DEPS_SYSROOT
+}
 
-            # Build Boost
-            echo "Build Boost"
-            cd $SRC_PATH/boost_1_80_0
-            ./bootstrap.sh --prefix=$DEPS_SYSROOT --without-libraries=python
-            ./b2 install
+function buildBoost() {
+    echo "Build Boost"
+    cd $SRC_PATH/boost_1_80_0
+    ./bootstrap.sh --prefix=$DEPS_SYSROOT --without-libraries=python
+    ./b2 install
+}
 
-            # Build Qt5
-            echo "Build Qt5"
-            cd $SRC_PATH/qtbase-everywhere-src-5.15.5
-            buildQt5;;
-    esac
+function buildQt5Host() {
+    echo "Build Qt5 for Build machine"
+    cd $SRC_PATH/qtbase-everywhere-src-5.15.5
+    ./configure -prefix $QT_HOST_PREFIX -opensource -confirm-license -nomake examples -nomake tests
+    make && make install
+}
 
-    # Build SuiteSparse
+function buildQt5() {
+    echo "Build Qt5 for Host target"
+    cd $SRC_PATH/qtbase-everywhere-src-5.15.5
+    ./configure -prefix $DEPS_SYSROOT -opensource -confirm-license -nomake examples -nomake tests
+    make && make install
+}
+
+function buildQt6Host() {
+    ./configure -prefix $QT_HOST_PREFIX -opensource -confirm-license -release
+    make && make install
+}
+
+# Build Qt https://doc.qt.io/qt-6/ios-building-from-source.html
+function buildQt6() {
+    ./configure -prefix $DEPS_SYSROOT -opensource -confirm-license -platform macx-ios-clang -release -qt-host-path $QT_HOST_PREFIX # -sysroot $DEPS_SYSROOT -system-zlib -system-libpng -system-freetype -pkg-config
+    make && make install
+}
+
+function buildSuiteSparse() {
     echo "Build SuiteSparse"
     cd $SRC_PATH/SuiteSparse-5.12.0
     sed -i.bak 's/#define IDXTYPEWIDTH 64/#define IDXTYPEWIDTH 32/' metis-5.1.0/include/metis.h
     make library CF="-isysroot $SYSROOT -arch $ARCH -I $DEPS_SYSROOT/include" LDFLAGS="-L$DEPS_SYSROOT/lib"
     make install INSTALL=$DEPS_SYSROOT CF="-I $DEPS_SYSROOT/include" LDFLAGS="-L$DEPS_SYSROOT/lib"
+}
 
-    # Build Eigen3 (needs: SuiteSparse even though it is optional)
+# Needs: SuiteSparse even though it is optional
+function buildEigen3() {
     echo "Build Eigen3"
     cd $SRC_PATH/eigen-3.4.0
     buildCMake
+}
 
-    # Build CERES solver (needs: gflags, glog, SuiteSparse)
+# Needs: gflags, glog, SuiteSparse
+function buildCERES() {
     echo "Build CERES"
     cd $SRC_PATH/ceres-solver-2.0.0
     buildCMake
+}
 
-    # Build FLANN
+function buildFLANN() {
     echo "Build FLANN"
     cd $SRC_PATH/flann-1.9.1
     buildCMake -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_MATLAB_BINDINGS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF
+}
 
-    # Build Point Cloud Library (PCL, needs: Boost, FLANN, Eigen3)
+# Needs: Boost, FLANN, Eigen3
+function buildPCL() {
     echo "Build PCL"
     cd $SRC_PATH/pcl
     buildCMake
 }
 
-getAndExtractSource
+getSource
+extractSource
 setupPlatform
 buildHostTools
-main
+
+buildZlib
+buildTinyXML2
+buildLibPng
+buildPixman
+buildFreeType2
+buildCairo
+buildBullet3
+buildGFlags
+buildGlog
+buildGtest
+buildAbsl
+buildGmp
+buildMpfr
+buildProtoBuf
+# Build Lua, Boost and Qt5 (macOS only)
+#case $PLATFORM in
+#    "macOS")
+#        buildLua
+#        buildBoost
+#        buildQt5;;
+#esac
+buildSuiteSparse
+buildEigen3
+buildCERES
+buildFLANN
+buildPCL
 
 cd $REPO_ROOT
-tar czf deps_$PLATFORM.tar.xz deps_$PLATFORM/

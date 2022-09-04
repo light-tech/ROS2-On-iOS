@@ -14,6 +14,3 @@ touch base_ws/src/ros2/orocos_kdl_vendor/python_orocos_kdl_vendor/AMENT_IGNORE
 
 cd base_ws
 colcon build --merge-install --cmake-force-configure --cmake-args -DBUILD_TESTING=NO -DTHIRDPARTY=FORCE -DCOMPILE_TOOLS=NO -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_MEMORY_TOOLS=OFF -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop  -DCMAKE_PREFIX_PATH=$REPO_ROOT/deps
-
-cd $REPO_ROOT
-tar czf ros2_base.tar.xz base_ws/install/

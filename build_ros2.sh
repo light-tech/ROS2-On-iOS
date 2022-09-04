@@ -25,6 +25,3 @@ mkdir -p ros2_ws
 cd ros2_ws
 ln -s ../src src
 colcon build --merge-install --cmake-force-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$PLATFORM_TO_BUILD.cmake -DBUILD_TESTING=NO -DTHIRDPARTY=FORCE -DCOMPILE_TOOLS=NO -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_MEMORY_TOOLS=OFF -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop
-
-cd $REPO_ROOT
-tar czf ros2_install_$PLATFORM_TO_BUILD.tar.xz ros2_ws/install/
