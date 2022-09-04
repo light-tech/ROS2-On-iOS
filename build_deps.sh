@@ -17,6 +17,8 @@ DOWNLOAD_PATH=$REPO_ROOT/deps_download/
 SRC_PATH=$REPO_ROOT/deps_src/
 
 export PATH=$DEPS_SYSROOT/bin:$PATH
+export PKG_CONFIG=$DEPS_SYSROOT/bin/pkg-config
+export PKG_CONFIG_PATH=$DEPS_SYSROOT/lib/pkgconfig
 
 function getSource() {
     mkdir -p $DOWNLOAD_PATH
@@ -66,7 +68,7 @@ function setupPlatform() {
         "iOS")
             ARCH=arm64
             SYSROOT=`xcodebuild -version -sdk iphoneos Path`
-            MAKE_HOST_TRIPLE_ZLIB=arm-apple-darwin # For zlib, pixman and cairo we must use arm-apple and not arm64-apple thank to  https://gist.github.com/jvcleave/9d78de9bb27434bde2b0c3a1af355d9c
+            MAKE_HOST_TRIPLE_PIXMAN_CAIRO=arm-apple-darwin # For pixman and cairo we must use arm-apple and not arm64-apple thank to  https://gist.github.com/jvcleave/9d78de9bb27434bde2b0c3a1af355d9c
             MAKE_HOST_TRIPLE=aarch64-apple-darwin
             EXTRA_CMAKE_ARGS=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$PLATFORM.cmake);;
         "iOS_Simulator")
@@ -80,6 +82,11 @@ function setupPlatform() {
     esac
 }
 
+function setCompilerFlags() {
+    export CFLAGS="-isysroot $SYSROOT -arch $ARCH"
+    export CPPFLAGS="-isysroot $SYSROOT -arch $ARCH"
+}
+
 function buildCMake() {
     rm -rf _build && mkdir _build && cd _build
     cmake -DCMAKE_INSTALL_PREFIX=$DEPS_SYSROOT -DCMAKE_PREFIX_PATH=$DEPS_SYSROOT "${EXTRA_CMAKE_ARGS[@]}" "$@" .. # >/dev/null 2>&1
@@ -87,14 +94,13 @@ function buildCMake() {
 }
 
 function configureThenMakeArm() {
-    export CFLAGS="-isysroot $SYSROOT -arch $ARCH"
-    export CPPFLAGS="-isysroot $SYSROOT -arch $ARCH"
+    setCompilerFlags
 
-    if [ -z "$MAKE_HOST_TRIPLE_ZLIB" ]
+    if [ -z "$MAKE_HOST_TRIPLE_PIXMAN_CAIRO" ]
     then
         ./configure --prefix=$DEPS_SYSROOT "$@" # >/dev/null 2>&1
     else
-        ./configure --prefix=$DEPS_SYSROOT --host=$MAKE_HOST_TRIPLE_ZLIB "$@" # >/dev/null 2>&1
+        ./configure --prefix=$DEPS_SYSROOT --host=$MAKE_HOST_TRIPLE_PIXMAN_CAIRO "$@" # >/dev/null 2>&1
     fi
 
     make && make install # >/dev/null 2>&1
@@ -104,8 +110,7 @@ function configureThenMakeArm() {
 }
 
 function configureThenMake() {
-    export CFLAGS="-isysroot $SYSROOT -arch $ARCH"
-    export CPPFLAGS="-isysroot $SYSROOT -arch $ARCH"
+    setCompilerFlags
 
     if [ -z "$MAKE_HOST_TRIPLE" ]
     then
@@ -114,7 +119,17 @@ function configureThenMake() {
         ./configure --prefix=$DEPS_SYSROOT --host=$MAKE_HOST_TRIPLE "$@" # >/dev/null 2>&1
     fi
 
-    make && make install >/dev/null 2>&1
+    make && make install #>/dev/null 2>&1
+
+    export -n CFLAGS
+    export -n CPPFLAGS
+}
+
+function configureThenMakeNoHost() {
+    setCompilerFlags
+
+    ./configure --prefix=$DEPS_SYSROOT "$@" # >/dev/null 2>&1
+    make && make install #>/dev/null 2>&1
 
     export -n CFLAGS
     export -n CPPFLAGS
@@ -146,7 +161,7 @@ function buildHostTools() {
 function buildZlib() {
     echo "Build zlib"
     cd $SRC_PATH/zlib-1.2.12
-    configureThenMakeArm
+    configureThenMakeNoHost # Note that zlib's configure does not set --host
 }
 
 function buildTinyXML2() {
@@ -179,9 +194,8 @@ function buildFreeType2() {
 function buildCairo() {
     echo "Build cairo"
     cd $SRC_PATH/cairo-1.16.0
-    export PKG_CONFIG=$DEPS_SYSROOT/bin/pkg-config
-    export PKG_CONFIG_PATH=$DEPS_SYSROOT/lib/pkgconfig
-    configureThenMakeArm --disable-xlib --enable-svg=no # --with-sysroot=$DEPS_SYSROOT CFLAGS="-I$DEPS_SYSROOT/include/freetype2" CPPFLAGS="-I$DEPS_SYSROOT/include/freetype2"
+    sed -i.bak 's/#define HAS_DAEMON 1/#define HAS_DAEMON 0/' boilerplate/cairo-boilerplate.c
+    configureThenMakeArm --disable-xlib --enable-svg=no --enable-pdf=no --enable-full-testing=no HAS_DAEMON=0
 }
 
 function buildBullet3() {
@@ -327,6 +341,7 @@ buildAbsl
 buildGmp
 buildMpfr
 buildProtoBuf
+
 # Build Lua, Boost and Qt5 (macOS only)
 #case $PLATFORM in
 #    "macOS")
@@ -334,6 +349,7 @@ buildProtoBuf
 #        buildBoost
 #        buildQt5;;
 #esac
+
 buildSuiteSparse
 buildEigen3
 buildCERES
