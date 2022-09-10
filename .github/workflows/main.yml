@@ -3,13 +3,14 @@ on:
   push:
     paths:
       - 'build_ros2.sh'
+      - '.github/workflows/main.yml'
 # on: workflow_dispatch
 jobs:
   build-ros2:
     runs-on: macos-latest
     strategy:
       matrix:
-        platformArch: [iOS, iOS_Simulator, iOS_Simulator_M1]
+        platformArch: [macCatalyst] #iOS, iOS_Simulator, iOS_Simulator_M1
     steps:
       - uses: actions/checkout@v3
       - name: Setup cmake
