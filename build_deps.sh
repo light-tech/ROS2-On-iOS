@@ -83,8 +83,8 @@ function setupPlatform() {
 }
 
 function setCompilerFlags() {
-    export CFLAGS="-isysroot $SYSROOT -arch $ARCH"
-    export CPPFLAGS="-isysroot $SYSROOT -arch $ARCH"
+    export CFLAGS="-isysroot $SYSROOT -arch $ARCH -I$DEPS_SYSROOT/include/"
+    export CPPFLAGS="-isysroot $SYSROOT -arch $ARCH -I$DEPS_SYSROOT/include/"
 }
 
 function buildCMake() {
@@ -290,9 +290,14 @@ function buildQt6() {
 function buildSuiteSparse() {
     echo "Build SuiteSparse"
     cd $SRC_PATH/SuiteSparse-5.12.0
-    sed -i.bak 's/#define IDXTYPEWIDTH 64/#define IDXTYPEWIDTH 32/' metis-5.1.0/include/metis.h
-    make library CF="-isysroot $SYSROOT -arch $ARCH -I $DEPS_SYSROOT/include" LDFLAGS="-L$DEPS_SYSROOT/lib"
-    make install INSTALL=$DEPS_SYSROOT CF="-I $DEPS_SYSROOT/include" LDFLAGS="-L$DEPS_SYSROOT/lib"
+    setCompilerFlags
+    export CMAKE_OPTIONS="-DCMAKE_INSTALL_PREFIX=$DEPS_SYSROOT -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$PLATFORM.cmake"
+    #echo $CMAKE_OPTIONS
+    #sed -i.bak 's/#define IDXTYPEWIDTH 64/#define IDXTYPEWIDTH 32/' metis-5.1.0/include/metis.h
+    #sed -i.bak 's;^CONFIG_FLAGS = ;CONFIG_FLAGS = -DCMAKE_TOOLCHAIN_FILE=\\$(prefix)/../../cmake/$PLATFORM.cmake;' metis-5.1.0/Makefile
+    #sed -i.bak 's/^return system.*$/return 1;/' metis-5.1.0/GKlib/fs.c
+    make static
+    make install INSTALL=$DEPS_SYSROOT
 }
 
 # Needs: SuiteSparse even though it is optional
