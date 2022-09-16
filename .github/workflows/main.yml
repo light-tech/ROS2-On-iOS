@@ -24,8 +24,8 @@ jobs:
           cache: 'pip'
       - run: pip3 install -r requirements.txt
       - run: ./build_ros2.sh ${{ matrix.platformArch }}
-      - run: tar czf ros2_install_${{ matrix.platformArch }}.tar.xz ros2_ws/install/
+      - run: tar czf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
       - uses: actions/upload-artifact@v3
         with:
-          name: ros2_install_${{ matrix.platformArch }}
-          path: ros2_install_${{ matrix.platformArch }}.tar.xz # ros2_ws/install/
+          name: ros2_${{ matrix.platformArch }}
+          path: ros2_${{ matrix.platformArch }}.tar.xz

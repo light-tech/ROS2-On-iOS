@@ -777,8 +777,8 @@
 		B7ACAC3428A6A23F00A537EB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B7ACAC3628A6A24000A537EB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B7ACAC3928A6A24000A537EB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		B7B6618B28CEE1D600407B44 /* macCatalyst_M1.cmake */ = {isa = PBXFileReference; lastKnownFileType = file; name = macCatalyst_M1.cmake; path = cmake/macCatalyst_M1.cmake; sourceTree = SOURCE_ROOT; };
-		B7B6618C28CEE1D600407B44 /* macCatalyst.cmake */ = {isa = PBXFileReference; lastKnownFileType = file; name = macCatalyst.cmake; path = cmake/macCatalyst.cmake; sourceTree = SOURCE_ROOT; };
+		B7B6618B28CEE1D600407B44 /* macCatalyst_M1.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = macCatalyst_M1.cmake; path = cmake/macCatalyst_M1.cmake; sourceTree = SOURCE_ROOT; };
+		B7B6618C28CEE1D600407B44 /* macCatalyst.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = macCatalyst.cmake; path = cmake/macCatalyst.cmake; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1206,13 +1206,13 @@
 		B7ACAC3128A6A23F00A537EB /* ROS2Example */ = {
 			isa = PBXGroup;
 			children = (
-				B79185AD28CD8B6100E0946A /* ROS2Example.entitlements */,
-				B7928F6A28A7484E000B40D4 /* Miscs */,
 				B7928F6728A743A2000B40D4 /* ROS2Libs */,
+				B7928F6A28A7484E000B40D4 /* Miscs */,
 				B7928F6428A741BD000B40D4 /* ROS2Bridge.h */,
 				B7928F6528A741BD000B40D4 /* ROS2Bridge.mm */,
 				B7ACAC3228A6A23F00A537EB /* ROS2ExampleApp.swift */,
 				B7ACAC3428A6A23F00A537EB /* ContentView.swift */,
+				B79185AD28CD8B6100E0946A /* ROS2Example.entitlements */,
 				B7ACAC3628A6A24000A537EB /* Assets.xcassets */,
 				B7ACAC3828A6A24000A537EB /* Preview Content */,
 			);

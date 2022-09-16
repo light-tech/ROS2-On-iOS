@@ -3,13 +3,12 @@
 Build ROS2 stack for iOS software development.
 
 **For the impatient**: Instead of building ROS2 from source (see below), you can download [our prebuilt libs](https://github.com/light-tech/ROS2-On-iOS/releases) and extract it to the root of the repo with `tar xzf`.
-Then make a symlink `ros2` pointing to `ros2_ws/install` where we can find the `lib` and `include` headers
+Then make a symlink `ros2` pointing to the extracted `ros2_iOS_Simulator` where we can find the ROS2 `lib` and `include` headers
 ```shell
-ln -s ros2_ws/install ros2
+ln -s ros2_iOS_Simulator ros2
 ```
-You should change the symlink target when switching between building for real iPhone and for simulator.
-You will need to delete the symlinks `libfastcdr.1.dylib` and `libfastrtps.2.6.dylib` in `install/lib` and rename the `libfastcdr.1.0.24.dylib` and `libfastrtps.2.6.2.dylib` to those.
-Now we can run the demo application: Run the app on **two** simulator instances, click on *Start publishing* on one and *Start listening* on the other.
+You should of course change the symlink target when switching between building for real iPhone, for simulator and for Mac Catalyst.
+Now we can run the demo application which ports [the official example](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Cpp-Publisher-And-Subscriber.html): Run the app on **two** simulator instances, click on *Start publishing* on one and *Start listening* on the other.
 
 ![Minimal Publisher/Subscriber Demo](https://user-images.githubusercontent.com/25411167/184833976-2287a315-0dd8-4d0c-82e6-c42bd7a53d66.mov)
 
