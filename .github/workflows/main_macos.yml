@@ -19,8 +19,8 @@ jobs:
           cache: 'pip'
       - run: pip3 install -r requirements.txt
       - run: ./build_ros2_macos.sh
-      - run: tar czf ros2_base.tar.xz base_ws/install/
+      - run: tar cJf ros2.tar.xz ros2/
       - uses: actions/upload-artifact@v3
         with:
-          name: ros2_base
-          path: ros2_base.tar.xz
+          name: ros2
+          path: ros2.tar.xz
