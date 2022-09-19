@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'build_ros2_macos.sh'
+      - '.github/workflows/main_macos.yml'
 jobs:
   build-ros2:
     runs-on: macos-latest
@@ -19,8 +20,8 @@ jobs:
           cache: 'pip'
       - run: pip3 install -r requirements.txt
       - run: ./build_ros2_macos.sh
-      - run: tar cJf ros2.tar.xz ros2/
+      - run: tar cJf ros2_macOS.tar.xz ros2_macOS/
       - uses: actions/upload-artifact@v3
         with:
-          name: ros2
-          path: ros2.tar.xz
+          name: ros2_macOS
+          path: ros2_macOS.tar.xz

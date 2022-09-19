@@ -2,15 +2,17 @@
 
 Build ROS2 stack for iOS software development.
 
-**For the impatient**: Instead of building ROS2 from source (see below), you can download [our prebuilt libs](https://github.com/light-tech/ROS2-On-iOS/releases) and extract it to the root of the repo with `tar xzf`.
-Then make a symlink `ros2` pointing to the extracted `ros2_iOS_Simulator` where we can find the ROS2 `lib` and `include` headers
+**For the impatient**: Instead of building ROS2 from source (see below), you can download [our prebuilt libs](https://github.com/light-tech/ROS2-On-iOS/releases) and extract it.
+Then make a symlink `ros2` pointing to the extracted `ros2_$PLATFORM` where we can find the ROS2 `lib` and `include` headers
 ```shell
-ln -s ros2_iOS_Simulator ros2
+ln -s PATH_TO_EXTRACTED_ros2_$PLATFORM ros2
 ```
-You should of course change the symlink target when switching between building for real iPhone, for simulator and for Mac Catalyst.
+You should of course change the symlink target when switching between building for real iPhone, simulator and Mac Catalyst.
 Now we can run the demo application which ports [the official example](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Cpp-Publisher-And-Subscriber.html): Run the app on **two** simulator instances, click on *Start publishing* on one and *Start listening* on the other.
 
 ![Minimal Publisher/Subscriber Demo](https://user-images.githubusercontent.com/25411167/184833976-2287a315-0dd8-4d0c-82e6-c42bd7a53d66.mov)
+
+_Note_: To run Mac Catalyst app on your macOS machine, you need to sign the app with your development signing certificate.
 
 **Main guides**:
 
@@ -22,24 +24,22 @@ Now we can run the demo application which ports [the official example](https://d
 
 We are going to need
 
- * CMake **3.23** until [this](https://github.com/ament/ament_cmake/pull/395) is sorted out
+ * CMake **3.23** until [this issue](https://github.com/ament/ament_cmake/pull/395) is sorted out
  * Python **3.10**
  * Xcode + Command Line tools
 
 installed. All subsequent shell commands are to be done at `$REPO_ROOT`.
 
-Also, create a Python virtual environment for ease of working
+Also, create a Python virtual environment for ease of package installation
 
  1. Create a new Python virtual environment
     ```shell
-    export MY_PYTHON_ENV=usr_local
-    python3 -m venv $MY_PYTHON_ENV
+    python3 -m venv my_ros2_python_env
     ```
-    Here I use `usr_local` as it is intended to act like `/usr/local/`.
 
  2. Activate the environment
     ```shell
-    source $MY_PYTHON_ENV/bin/activate
+    source my_ros2_python_env/bin/activate
     ```
 
  3. Install the packages
@@ -47,13 +47,7 @@ Also, create a Python virtual environment for ease of working
     python3 -m pip install -r requirements.txt
     ```
 
- 4. Compile `googletest`:
-    ```shell
-    cd usr_local/lib/python3.10/site-packages/mypyc/external/googletest/make
-    make
-    ```
-
-If you have other environment management such as Anaconda, remember to deactivate them.
+If you have other environment management such as Anaconda, remember to **DEACTIVATE** them.
 
 ## Source and workspace preparation
 
@@ -97,17 +91,19 @@ If you have other environment management such as Anaconda, remember to deactivat
     ln -s $REPO_ROOT/src src
     ```
 
- 5. It is good to have multiple workspaces such as
+ 5. During development, it is good to have multiple workspaces such as
+
      - `ament_ws`: move `ament` here, build and `source` it before moving on to
      - `base_ws`: add `rcl` and its dependencies and once successful
      - `rclcpp_ws`: add other desired packages such as `rclcpp`.
+
     This way, one can minimize the amount of packages to rebuild.
 
 ## Build ROS2 core packages for iOS
 
 Before building, we need to change the line `#include <net/if_arp.h>` in `src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp` into `#include <net/ethernet.h>` according to [this](https://stackoverflow.com/questions/10395041/getting-arp-table-on-iphone-ipad) as the original header is only available in the macOS SDK.
 
-We also disable `rcl_logging_spdlog` by
+We also disable the package `rcl_logging_spdlog` by
 ```shell
 touch src/ros2/rcl_logging/rcl_logging_spdlog/AMENT_IGNORE
 ```

@@ -8,6 +8,7 @@ ros2
 ros2_ws/
 deps*/
 host_deps/
+*.tar.xz
 
 # Finder
 .DS_Store

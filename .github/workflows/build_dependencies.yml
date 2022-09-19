@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'build_deps.sh'
+      - '.github/workflows/build_dependencies.yml'
 jobs:
   build-ros2:
     runs-on: macos-latest
@@ -16,7 +17,7 @@ jobs:
         with:
           cmake-version: '3.23.x'
       - run: ./build_deps.sh ${{ matrix.platformArch }}
-      - run: tar czf deps_${{ matrix.platformArch }}.tar.xz deps_${{ matrix.platformArch }}/
+      - run: tar cJf deps_${{ matrix.platformArch }}.tar.xz deps_${{ matrix.platformArch }}/
       - uses: actions/upload-artifact@v3
         with:
           name: deps_${{ matrix.platformArch }}

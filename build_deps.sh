@@ -84,7 +84,7 @@ function setupPlatform() {
 
 function setCompilerFlags() {
     export CFLAGS="-isysroot $SYSROOT -arch $ARCH -I$DEPS_SYSROOT/include/"
-    export CPPFLAGS="-isysroot $SYSROOT -arch $ARCH -I$DEPS_SYSROOT/include/"
+    export CXXFLAGS="-isysroot $SYSROOT -arch $ARCH -I$DEPS_SYSROOT/include/"
 }
 
 function buildCMake() {
@@ -106,7 +106,7 @@ function configureThenMakeArm() {
     make && make install # >/dev/null 2>&1
 
     export -n CFLAGS
-    export -n CPPFLAGS
+    export -n CXXFLAGS
 }
 
 function configureThenMake() {
@@ -122,7 +122,7 @@ function configureThenMake() {
     make && make install #>/dev/null 2>&1
 
     export -n CFLAGS
-    export -n CPPFLAGS
+    export -n CXXFLAGS
 }
 
 function configureThenMakeNoHost() {
@@ -132,7 +132,7 @@ function configureThenMakeNoHost() {
     make && make install #>/dev/null 2>&1
 
     export -n CFLAGS
-    export -n CPPFLAGS
+    export -n CXXFLAGS
 }
 
 function buildHostTools() {
