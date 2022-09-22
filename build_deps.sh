@@ -1,11 +1,11 @@
-# Platform to build [iOS, iOS_Simulator, macOS]
+# Platform to build [macOS] or [iOS, iOS_Simulator, ...]
 PLATFORM=$1
 
 # This repo root (where this script is located)
 REPO_ROOT=`pwd`
 
 # The sysroot of the dependencies we built
-DEPS_SYSROOT=$REPO_ROOT/deps_$PLATFORM
+DEPS_SYSROOT=$REPO_ROOT/ros2_deps_$PLATFORM
 
 # Prefix where we built Qt for host machine
 QT_HOST_PREFIX=$REPO_ROOT/host_deps/
@@ -24,33 +24,37 @@ function getSource() {
     mkdir -p $DOWNLOAD_PATH
     cd $DOWNLOAD_PATH
     # Need -L to download github releases according to https://stackoverflow.com/questions/46060010/download-github-release-with-curl
+    curl -s -L -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz \
+         -o eigen.tar.bz2 https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2 \
+         -o tinyxml2.tar.gz https://github.com/leethomason/tinyxml2/archive/refs/tags/9.0.0.tar.gz \
+         -o bullet3.tar.gz https://github.com/bulletphysics/bullet3/archive/refs/tags/3.24.tar.gz \
+         -o qtbase.tar.gz https://download.qt.io/archive/qt/5.15/5.15.5/submodules/qtbase-everywhere-opensource-src-5.15.5.tar.xz
+
+    # Dependencies for cartographer
+    if [ $PLATFORM != "macOS" ]; then
     curl -s -L -o abseil-cpp.tar.gz https://github.com/abseil/abseil-cpp/archive/refs/tags/20220623.0.tar.gz \
          -o boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz \
          -o gflags.tar.gz https://github.com/gflags/gflags/archive/refs/tags/v2.2.2.tar.gz \
          -o cairo.tar.xz https://www.cairographics.org/releases/cairo-1.16.0.tar.xz \
          -o pixman.tar.gz https://cairographics.org/releases/pixman-0.40.0.tar.gz \
-         -o bullet3.tar.gz https://github.com/bulletphysics/bullet3/archive/refs/tags/3.24.tar.gz \
          -o glog.tar.gz https://github.com/google/glog/archive/refs/tags/v0.6.0.tar.gz \
          -o pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz \
          -o gmp.tar.xz https://gmplib.org/download/gmp/gmp-6.2.1.tar.xz \
          -o protobuf.tar.gz https://github.com/protocolbuffers/protobuf/releases/download/v21.5/protobuf-cpp-3.21.5.tar.gz \
          -o libpng.tar.xz https://download.sourceforge.net/libpng/libpng-1.6.37.tar.xz \
-         -o eigen.tar.bz2 https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2 \
          -o lua.tar.gz https://www.lua.org/ftp/lua-5.4.4.tar.gz \
-         -o tinyxml2.tar.gz https://github.com/leethomason/tinyxml2/archive/refs/tags/9.0.0.tar.gz \
          -o flann.tar.gz https://github.com/flann-lib/flann/archive/refs/tags/1.9.1.tar.gz \
          -o mpfr.tar.xz https://www.mpfr.org/mpfr-current/mpfr-4.1.0.tar.xz \
          -o zlib.tar.xz https://zlib.net/zlib-1.2.12.tar.xz \
-         -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz \
          -o pcl.tar.gz https://github.com/PointCloudLibrary/pcl/releases/download/pcl-1.12.1/source.tar.gz \
          -o googletest.tar.gz https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz \
          -o SuiteSparse.tar.gz https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/refs/tags/v5.12.0.tar.gz \
-         -o ceres-solver.tar.gz http://ceres-solver.org/ceres-solver-2.0.0.tar.gz \
-         -o qtbase.tar.gz https://download.qt.io/archive/qt/5.15/5.15.5/submodules/qtbase-everywhere-opensource-src-5.15.5.tar.xz
+         -o ceres-solver.tar.gz http://ceres-solver.org/ceres-solver-2.0.0.tar.gz
          #-o autoconf.tar.gz http://ftpmirror.gnu.org/autoconf/autoconf-2.69.tar.gz \
          #-o automake.tar.gz http://ftpmirror.gnu.org/automake/automake-1.15.tar.gz \
          #-o libtool.tar.gz http://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.gz \
          #-o mm-common.tar.gz https://github.com/GNOME/mm-common/archive/refs/tags/1.0.4.tar.gz
+    fi
 }
 
 function extractSource() {
@@ -330,35 +334,46 @@ function buildPCL() {
 getSource
 extractSource
 setupPlatform
-buildHostTools
 
-buildZlib
-buildTinyXML2
-buildLibPng
-buildPixman
-buildFreeType2
-buildCairo
-buildBullet3
-buildGFlags
-buildGlog
-buildGtest
-buildAbsl
-buildGmp
-buildMpfr
-buildProtoBuf
+case $PLATFORM in
+    "macOS") # Build dependencies for RVIZ
+        buildFreeType2
+        buildEigen3
+        buildTinyXML2
+        buildBullet3
+        buildQt5;;
 
-# Build Lua, Boost and Qt5 (macOS only)
-#case $PLATFORM in
-#    "macOS")
-#        buildLua
-#        buildBoost
-#        buildQt5;;
-#esac
+    *) # Build dependencies for ROS2 cartographer package
+        buildHostTools
 
-buildSuiteSparse
-buildEigen3
-buildCERES
-buildFLANN
-buildPCL
+        buildZlib
+        buildTinyXML2
+        buildLibPng
+        buildPixman
+        buildFreeType2
+        buildCairo
+        buildBullet3
+        buildGFlags
+        buildGlog
+        buildGtest
+        buildAbsl
+        buildGmp
+        buildMpfr
+        buildProtoBuf
+
+        # Build Lua, Boost and Qt5 (macOS only)
+        #case $PLATFORM in
+        #    "macOS")
+        #        buildLua
+        #        buildBoost
+        #        buildQt5;;
+        #esac
+
+        buildSuiteSparse
+        buildEigen3
+        buildCERES
+        buildFLANN
+        buildPCL;;
+esac
 
 cd $REPO_ROOT

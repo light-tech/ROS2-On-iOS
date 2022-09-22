@@ -5,7 +5,7 @@ on:
       - 'build_ros2_macos.sh'
       - '.github/workflows/main_macos.yml'
 jobs:
-  build-ros2:
+  build-ros2-for-macOS:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
