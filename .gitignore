@@ -1,14 +1,6 @@
 usr_local/
-build/
-install/
-log/
-src/
-unused_src/
 ros2
-ros2_ws/
-deps*/
-host_deps/
-*.tar.xz
+tmp/
 
 # Finder
 .DS_Store

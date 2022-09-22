@@ -38,7 +38,6 @@ function getSource() {
          -o cairo.tar.xz https://www.cairographics.org/releases/cairo-1.16.0.tar.xz \
          -o pixman.tar.gz https://cairographics.org/releases/pixman-0.40.0.tar.gz \
          -o glog.tar.gz https://github.com/google/glog/archive/refs/tags/v0.6.0.tar.gz \
-         -o pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz \
          -o gmp.tar.xz https://gmplib.org/download/gmp/gmp-6.2.1.tar.xz \
          -o protobuf.tar.gz https://github.com/protocolbuffers/protobuf/releases/download/v21.5/protobuf-cpp-3.21.5.tar.gz \
          -o libpng.tar.xz https://download.sourceforge.net/libpng/libpng-1.6.37.tar.xz \
@@ -50,6 +49,8 @@ function getSource() {
          -o googletest.tar.gz https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz \
          -o SuiteSparse.tar.gz https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/refs/tags/v5.12.0.tar.gz \
          -o ceres-solver.tar.gz http://ceres-solver.org/ceres-solver-2.0.0.tar.gz
+
+    curl -s -L -o pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
          #-o autoconf.tar.gz http://ftpmirror.gnu.org/autoconf/autoconf-2.69.tar.gz \
          #-o automake.tar.gz http://ftpmirror.gnu.org/automake/automake-1.15.tar.gz \
          #-o libtool.tar.gz http://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.gz \
@@ -276,6 +277,10 @@ function buildQt5Host() {
 function buildQt5() {
     echo "Build Qt5 for Host target"
     cd $SRC_PATH/qtbase-everywhere-src-5.15.5
+
+    # Patch the source https://codereview.qt-project.org/c/qt/qtbase/+/378706
+    sed -i.bak "s,QT_BEGIN_NAMESPACE,#include <CoreGraphics/CGColorSpace.h>\n#include <IOSurface/IOSurface.h>\nQT_BEGIN_NAMESPACE," src/plugins/platforms/cocoa/qiosurfacegraphicsbuffer.h
+
     ./configure -prefix $DEPS_SYSROOT -opensource -confirm-license -nomake examples -nomake tests
     make && make install
 }
