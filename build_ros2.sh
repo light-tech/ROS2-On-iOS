@@ -2,26 +2,54 @@
 #
 #      build_ros2.sh [Platform]
 #
-# where [Platform] should be either [iOS], [iOS_Simulator], [iOS_Simulator_M1], [macCatalyst] or [macCatalyst_M1]
+# where [Platform] should be either [iOS], [iOS_Simulator], [iOS_Simulator_M1], [macCatalyst], [macCatalyst_M1]
+# or [macOS] for Mac desktop.
 
 REPO_ROOT=`pwd`
 PLATFORM_TO_BUILD=$1
 
-# Download local ASIO
-# git clone https://github.com/chriskohlhoff/asio
+buildRos2Base() {
+    echo "Build ros2 base"
 
-cd $REPO_ROOT
-mkdir src
-# wget https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos
-vcs import src < $REPO_ROOT/ros2_min.repos
+    # Download local ASIO
+    # git clone https://github.com/chriskohlhoff/asio
 
-# Replace if_arp.h header with ethernet.h
-sed -i.bak 's/if_arp.h/ethernet.h/g' $REPO_ROOT/src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp
+    cd $REPO_ROOT
+    mkdir -p ros2_ws/src
+    cd ros2_ws
 
-# Ignore rcl_logging_spdlog package
-touch src/ros2/rcl_logging/rcl_logging_spdlog/AMENT_IGNORE
+    # wget https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos
+    vcs import src < $REPO_ROOT/ros2_min.repos
 
-mkdir -p ros2_ws
-cd ros2_ws
-ln -s ../src src
-colcon build --install-base $REPO_ROOT/ros2_$PLATFORM_TO_BUILD --merge-install --cmake-force-configure --cmake-args -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$PLATFORM_TO_BUILD.cmake -DBUILD_TESTING=NO -DTHIRDPARTY=FORCE -DCOMPILE_TOOLS=NO -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_MEMORY_TOOLS=OFF -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop
+    # Ignore rcl_logging_spdlog package
+    touch src/ros2/rcl_logging/rcl_logging_spdlog/AMENT_IGNORE
+
+    if [ $PLATFORM_TO_BUILD == "macOS" ]; then
+        # For macOS desktop, we add CLI tools (ros2 launch) and rclpy as well
+        EXTRA_CMAKE_ARGS=()
+
+    else
+        # For iOS platform
+        EXTRA_CMAKE_ARGS=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$PLATFORM_TO_BUILD.cmake)
+
+        # Replace if_arp.h header with ethernet.h
+        sed -i.bak 's/if_arp.h/ethernet.h/g' src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp
+    fi
+
+    colcon build --install-base $REPO_ROOT/ros2_$PLATFORM_TO_BUILD \
+        --merge-install --cmake-force-configure \
+        --cmake-args -DBUILD_TESTING=NO \
+            -DTHIRDPARTY=FORCE \
+            -DCOMPILE_TOOLS=NO \
+            -DFORCE_BUILD_VENDOR_PKG=ON \
+            -DBUILD_MEMORY_TOOLS=OFF \
+            -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop "${EXTRA_CMAKE_ARGS[@]}"
+}
+
+buildRviz2() {
+    # vcs import ros2_ws/src < $REPO_ROOT/rviz2.repos
+    # touch ros2_ws/src/ros2/orocos_kdl_vendor/python_orocos_kdl_vendor/AMENT_IGNORE
+    echo "Build rviz2"
+}
+
+buildRos2Base
