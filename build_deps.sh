@@ -23,6 +23,8 @@ export PKG_CONFIG_PATH=$DEPS_SYSROOT/lib/pkgconfig
 function getSource() {
     mkdir -p $DOWNLOAD_PATH
     cd $DOWNLOAD_PATH
+
+    # Dependencies for rviz
     # Need -L to download github releases according to https://stackoverflow.com/questions/46060010/download-github-release-with-curl
     curl -s -L -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz \
          -o eigen.tar.bz2 https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2 \
@@ -30,10 +32,13 @@ function getSource() {
          -o bullet3.tar.gz https://github.com/bulletphysics/bullet3/archive/refs/tags/3.24.tar.gz \
          -o qtbase.tar.gz https://download.qt.io/archive/qt/5.15/5.15.5/submodules/qtbase-everywhere-opensource-src-5.15.5.tar.xz
 
+    # Common dependency OpenCV, Boost
+    curl -s -L -o opencv.tar.gz https://github.com/opencv/opencv/archive/refs/tags/4.6.0.tar.gz \
+         -o boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz
+
     # Dependencies for cartographer
     if [ $PLATFORM != "macOS" ]; then
     curl -s -L -o abseil-cpp.tar.gz https://github.com/abseil/abseil-cpp/archive/refs/tags/20220623.0.tar.gz \
-         -o boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz \
          -o gflags.tar.gz https://github.com/gflags/gflags/archive/refs/tags/v2.2.2.tar.gz \
          -o cairo.tar.xz https://www.cairographics.org/releases/cairo-1.16.0.tar.xz \
          -o pixman.tar.gz https://cairographics.org/releases/pixman-0.40.0.tar.gz \
@@ -336,17 +341,26 @@ function buildPCL() {
     buildCMake
 }
 
+function buildOpenCV() {
+    echo "Build OpenCV"
+    cd $SRC_PATH/opencv-4.6.0
+    buildCMake -DCMAKE_BUILD_TYPE=Release
+}
+
+
 getSource
 extractSource
 setupPlatform
 
 case $PLATFORM in
-    "macOS") # Build dependencies for RVIZ
+    "macOS") # Build dependencies for RVIZ and OpenCV
         buildFreeType2
         buildEigen3
         buildTinyXML2
         buildBullet3
-        buildQt5;;
+        buildQt5
+        buildBoost
+        buildOpenCV;;
 
     *) # Build dependencies for ROS2 cartographer package
         buildHostTools
