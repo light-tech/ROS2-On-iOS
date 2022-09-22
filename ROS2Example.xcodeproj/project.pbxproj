@@ -777,6 +777,7 @@
 		B7ACAC3928A6A24000A537EB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B7B6618B28CEE1D600407B44 /* macCatalyst_M1.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = macCatalyst_M1.cmake; path = cmake/macCatalyst_M1.cmake; sourceTree = SOURCE_ROOT; };
 		B7B6618C28CEE1D600407B44 /* macCatalyst.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = macCatalyst.cmake; path = cmake/macCatalyst.cmake; sourceTree = SOURCE_ROOT; };
+		B7D8E86028DC569D00D2A11E /* ros2_cli.repos */ = {isa = PBXFileReference; lastKnownFileType = file; path = ros2_cli.repos; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1178,6 +1179,7 @@
 				B7928F6F28A74865000B40D4 /* requirements.txt */,
 				B7928F6B28A74865000B40D4 /* ros2.repos */,
 				B7928F6E28A74865000B40D4 /* ros2_min.repos */,
+				B7D8E86028DC569D00D2A11E /* ros2_cli.repos */,
 				B76AD78828B4BD920097A296 /* rviz2.repos */,
 			);
 			name = Miscs;

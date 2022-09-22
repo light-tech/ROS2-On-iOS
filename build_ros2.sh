@@ -25,7 +25,8 @@ buildRos2Base() {
     touch src/ros2/rcl_logging/rcl_logging_spdlog/AMENT_IGNORE
 
     if [ $PLATFORM_TO_BUILD == "macOS" ]; then
-        # For macOS desktop, we add CLI tools (ros2 launch) and rclpy as well
+        # For macOS desktop, we add the CLI tools (ros2 launch) and rclpy as well
+        vcs import src < $REPO_ROOT/ros2_cli.repos
         EXTRA_CMAKE_ARGS=()
 
     else
@@ -47,8 +48,8 @@ buildRos2Base() {
 }
 
 buildRviz2() {
-    # vcs import ros2_ws/src < $REPO_ROOT/rviz2.repos
-    # touch ros2_ws/src/ros2/orocos_kdl_vendor/python_orocos_kdl_vendor/AMENT_IGNORE
+    vcs import ros2_ws/src < $REPO_ROOT/rviz2.repos
+    touch ros2_ws/src/ros2/orocos_kdl_vendor/python_orocos_kdl_vendor/AMENT_IGNORE
     echo "Build rviz2"
 }
 
