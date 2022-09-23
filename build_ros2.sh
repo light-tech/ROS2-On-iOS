@@ -8,6 +8,12 @@
 REPO_ROOT=`pwd`
 PLATFORM_TO_BUILD=$1
 
+prepareVirtualEnv() {
+    python3 -m venv my_ros2_python_env
+    source my_ros2_python_env/bin/activate
+    python3 -m pip install -r requirements.txt
+}
+
 printPython() {
     echo "python3        : " $(which python3)
     echo "python3-config : " $(which python3-config)
@@ -16,8 +22,8 @@ printPython() {
     echo "  --libs       : " $(python3-config --libs)
     echo "  --includes   : " $(python3-config --includes)
     echo "  --cflags     : " $(python3-config --cflags)
-    echo "Files in /Users/runner/hostedtoolcache/Python/3.10.7/x64/"
-    find /Users/runner/hostedtoolcache/Python/3.10.7/x64/
+    # echo "Files in /Users/runner/hostedtoolcache/Python/3.10.7/x64/"
+    # find /Users/runner/hostedtoolcache/Python/3.10.7/x64/
 }
 
 
@@ -69,5 +75,7 @@ buildRos2Base() {
             -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop "${EXTRA_CMAKE_ARGS[@]}"
 }
 
+prepareVirtualEnv
+source my_ros2_python_env/bin/activate
 printPython
-# buildRos2Base
+buildRos2Base
