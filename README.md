@@ -155,3 +155,5 @@ After my tons of failures, here is what went going on behind the above command:
     Here, I am using `noop` one to avoid one more dependency `spdlog_vendor`.
 
  8. ROS2 depends significantly on dynamic linking. Do NOT add `BUILD_SHARED_LIBS=NO`, contrary to my other project [LLVM](https://github.com/light-tech/LLVM-On-iOS/) where building static libs is needed!
+
+Check out [our other guide](MACOS.md) if you are interested in building and running ROS2 on your own Mac.

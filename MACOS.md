@@ -38,7 +38,7 @@ First we install the required libs to the local location `$REPO_ROOT/deps`.
 
 **Note**: To build overlaid workspace, you will want to
 ```shell
-colcon build --merge-install --cmake-args -DCMAKE_PREFIX_PATH=$REPO_ROOT/deps
+colcon build --symlink-install --cmake-args -DCMAKE_PREFIX_PATH=$REPO_ROOT/deps
 ```
 to expose our system dependencies.
 

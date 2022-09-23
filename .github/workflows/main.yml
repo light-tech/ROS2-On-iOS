@@ -10,7 +10,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        platformArch: [macOS, iOS] #, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1]
+        platformArch: [macOS] # , iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1]
     steps:
       - uses: actions/checkout@v3
       - name: Setup cmake
