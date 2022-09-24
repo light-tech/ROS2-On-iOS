@@ -1,5 +1,6 @@
 name: Build ROS2 dependencies
 on:
+  workflow_dispatch: # Must have colon after this according to https://github.com/orgs/community/discussions/26780
   push:
     paths:
       - 'build_deps.sh'
