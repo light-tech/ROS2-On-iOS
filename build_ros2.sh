@@ -87,7 +87,7 @@ setupROS2base() {
     source $REPO_ROOT/ros2_macOS/setup.sh
 
     # Temporarily rebuild freetype2 without any dependencies
-    # ./build_deps.sh macOS
+    ./build_deps.sh macOS
 }
 
 buildRviz2() {
@@ -101,11 +101,11 @@ buildRviz2() {
     sed -i.bak "s,CMAKE_ARGS,CMAKE_ARGS\n      -DCMAKE_PREFIX_PATH=$REPO_ROOT/ros2_deps_macOS,g" src/ros2/rviz/rviz_ogre_vendor/CMakeLists.txt
     sed -i.bak "s,CMAKE_ARGS,CMAKE_ARGS\n      -DCMAKE_PREFIX_PATH=$REPO_ROOT/ros2_deps_macOS,g" src/ros2/orocos_kdl_vendor/orocos_kdl_vendor/CMakeLists.txt
     touch src/ros2/orocos_kdl_vendor/python_orocos_kdl_vendor/AMENT_IGNORE
+    touch src/ros2/rviz/rviz_visual_testing_framework/AMENT_IGNORE
 
     VERBOSE=1 colcon build --install-base $REPO_ROOT/rviz2_$PLATFORM_TO_BUILD \
         --merge-install --cmake-force-configure \
         --executor sequential --event-handlers console_direct+ \
-        --packages-up-to orocos_kdl_vendor \
         --cmake-args -DBUILD_TESTING=NO \
             -DTHIRDPARTY=FORCE \
             -DCOMPILE_TOOLS=NO \
