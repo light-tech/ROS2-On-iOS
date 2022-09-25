@@ -94,7 +94,8 @@ function setupPlatform() {
 
 function setCompilerFlags() {
     export CFLAGS="-isysroot $SYSROOT -arch $ARCH -I$DEPS_SYSROOT/include/"
-    export CXXFLAGS="-isysroot $SYSROOT -arch $ARCH -I$DEPS_SYSROOT/include/"
+    export CXXFLAGS=$CFLAGS
+    export CPPFLAGS=$CFLAGS # Without this, encounter error ZLIB_VERNUM != PNG_ZLIB_VERNUM when building libpng
 }
 
 function buildCMake() {
