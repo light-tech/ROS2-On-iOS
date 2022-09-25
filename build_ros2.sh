@@ -85,6 +85,9 @@ setupROS2base() {
     # Source the prebuilt ROS2 base
     # IMPORTANT: GitHub Action uses bash shell!
     source $REPO_ROOT/ros2_macOS/setup.sh
+
+    # Temporarily rebuild freetype2 without any dependencies
+    ./build_deps.sh macOS
 }
 
 buildRviz2() {
@@ -101,7 +104,7 @@ buildRviz2() {
 
     VERBOSE=1 colcon build --install-base $REPO_ROOT/rviz2_$PLATFORM_TO_BUILD \
         --merge-install --cmake-force-configure \
-        --event-handlers console_direct+ \
+        --executor sequential --event-handlers console_direct+ \
         --packages-up-to rviz_ogre_vendor \
         --cmake-args -DBUILD_TESTING=NO \
             -DTHIRDPARTY=FORCE \

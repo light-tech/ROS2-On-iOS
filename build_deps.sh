@@ -26,7 +26,7 @@ function getSource() {
 
     # Dependencies for rviz
     # Need -L to download github releases according to https://stackoverflow.com/questions/46060010/download-github-release-with-curl
-    curl -s -L -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz \
+    curl -s -L -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz # \
          -o eigen.tar.bz2 https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2 \
          -o tinyxml2.tar.gz https://github.com/leethomason/tinyxml2/archive/refs/tags/9.0.0.tar.gz \
          -o bullet3.tar.gz https://github.com/bulletphysics/bullet3/archive/refs/tags/3.24.tar.gz \
@@ -198,7 +198,7 @@ function buildPixman() {
 function buildFreeType2() {
     echo "Build freetype"
     cd $SRC_PATH/freetype-2.12.1
-    buildCMake -DFT_DISABLE_HARFBUZZ=ON -DFT_DISABLE_BZIP2=ON
+    buildCMake -DFT_DISABLE_HARFBUZZ=ON -DFT_DISABLE_BZIP2=ON -DFT_DISABLE_ZLIB==ON -DFT_DISABLE_PNG=ON -DFT_DISABLE_BROTLI=ON
 }
 
 # Needs: FreeType, pixman
@@ -355,13 +355,13 @@ setupPlatform
 
 case $PLATFORM in
     "macOS") # Build dependencies for RVIZ and OpenCV
-        buildFreeType2
-        buildEigen3
-        buildTinyXML2
-        buildBullet3
-        buildQt5
-        buildBoost
-        buildOpenCV;;
+        buildFreeType2;;
+        #buildEigen3
+        #buildTinyXML2
+        #buildBullet3
+        #buildQt5
+        #buildBoost
+        #buildOpenCV;;
 
     *) # Build dependencies for ROS2 cartographer package
         buildHostTools
