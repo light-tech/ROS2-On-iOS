@@ -24,9 +24,9 @@ First we install the required libs to the local location `$REPO_ROOT/deps`.
     make install
     ```
 
- 4. Once again, `rviz_ogre_vendor` won't pass all CMake variables to `OGRE`. So change its `CMakeLists.txt` to pass along `-DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}` as well where it can find the dependencies such as `freetype`.
+ 4. Once again, `rviz_ogre_vendor` won't pass all CMake variables to `OGRE`. So change its `CMakeLists.txt` to pass along `-DCMAKE_PREFIX_PATH=$REPO_ROOT/deps/` as well where it can find the dependencies such as `freetype`.
 
-    Likewise, `orocos_kdl_vendor` needs the right location for Eigen 3 headers by passing explicit `-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} -I ${CMAKE_PREFIX_PATH}/include/eigen3/`.
+    Likewise for `orocos_kdl_vendor` which relies on `Eigen3Config.cmake` located in `$REPO_ROOT/deps/`.
 
     Also, disable `python_orocos_kdl_vendor`.
 
