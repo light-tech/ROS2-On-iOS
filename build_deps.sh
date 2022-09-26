@@ -24,6 +24,12 @@ function getSource() {
     mkdir -p $ros2DependenciesSourceDownloadPath
     cd $ros2DependenciesSourceDownloadPath
 
+    curl -s -L -o pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
+         #-o autoconf.tar.gz http://ftpmirror.gnu.org/autoconf/autoconf-2.69.tar.gz \
+         #-o automake.tar.gz http://ftpmirror.gnu.org/automake/automake-1.15.tar.gz \
+         #-o libtool.tar.gz http://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.gz \
+         #-o mm-common.tar.gz https://github.com/GNOME/mm-common/archive/refs/tags/1.0.4.tar.gz
+
     # Dependencies for rviz
     # Need -L to download github releases according to https://stackoverflow.com/questions/46060010/download-github-release-with-curl
     curl -s -L -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz \
@@ -54,12 +60,6 @@ function getSource() {
          -o googletest.tar.gz https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz \
          -o SuiteSparse.tar.gz https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/refs/tags/v5.12.0.tar.gz \
          -o ceres-solver.tar.gz http://ceres-solver.org/ceres-solver-2.0.0.tar.gz
-
-    curl -s -L -o pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
-         #-o autoconf.tar.gz http://ftpmirror.gnu.org/autoconf/autoconf-2.69.tar.gz \
-         #-o automake.tar.gz http://ftpmirror.gnu.org/automake/automake-1.15.tar.gz \
-         #-o libtool.tar.gz http://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.gz \
-         #-o mm-common.tar.gz https://github.com/GNOME/mm-common/archive/refs/tags/1.0.4.tar.gz
     fi
 }
 
@@ -101,7 +101,7 @@ function setCompilerFlags() {
 function buildCMake() {
     rm -rf _build && mkdir _build && cd _build
     cmake -DCMAKE_INSTALL_PREFIX=$ros2SystemDependenciesPath -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath "${platformExtraCMakeArgs[@]}" "$@" .. # >/dev/null 2>&1
-    cmake --build . --target install # >/dev/null 2>&1
+    cmake --build . --target install # >/dev/null 2>&1 --parallel 1
 }
 
 function configureThenMakeArm() {
@@ -276,7 +276,7 @@ function buildBoost() {
 function buildQt5Host() {
     echo "Build Qt5 for Build machine"
     cd $ros2DependenciesSourceExtractionPath/qtbase-everywhere-src-5.15.5
-    ./configure -prefix $ros2HostQtPath -opensource -confirm-license -nomake examples -nomake tests
+    ./configure -prefix $ros2HostQtPath -opensource -confirm-license -nomake examples -nomake tests -no-framework
     make && make install
 }
 
@@ -287,7 +287,7 @@ function buildQt5() {
     # Patch the source https://codereview.qt-project.org/c/qt/qtbase/+/378706
     sed -i.bak "s,QT_BEGIN_NAMESPACE,#include <CoreGraphics/CGColorSpace.h>\n#include <IOSurface/IOSurface.h>\nQT_BEGIN_NAMESPACE," src/plugins/platforms/cocoa/qiosurfacegraphicsbuffer.h
 
-    ./configure -prefix $ros2SystemDependenciesPath -opensource -confirm-license -nomake examples -nomake tests
+    ./configure -prefix $ros2SystemDependenciesPath -opensource -confirm-license -nomake examples -nomake tests -no-framework
     make && make install
 }
 
@@ -345,13 +345,14 @@ function buildPCL() {
 function buildOpenCV() {
     echo "Build OpenCV"
     cd $ros2DependenciesSourceExtractionPath/opencv-4.6.0
-    buildCMake -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_JAVA=OFF -DBUILD_OBJC=OFF
+    buildCMake -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_JAVA=OFF -DBUILD_OBJC=OFF -DBUILD_ZLIB=NO
 }
 
 
 getSource
 extractSource
 setupPlatform
+buildHostTools
 
 case $targetPlatform in
     "macOS") # Build dependencies for RVIZ and OpenCV
@@ -366,8 +367,6 @@ case $targetPlatform in
         buildOpenCV;;
 
     *) # Build dependencies for ROS2 cartographer package
-        buildHostTools
-
         buildZlib
         buildTinyXML2
         buildLibPng
