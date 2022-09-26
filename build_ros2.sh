@@ -6,11 +6,14 @@
 # or [macOS] for Mac desktop.
 
 REPO_ROOT=`pwd`
-PLATFORM_TO_BUILD=$1
+targetPlatform=$1
+ros2PythonEnvPath=$REPO_ROOT/ros2PythonEnv
+ros2InstallPath=$REPO_ROOT/ros2_$targetPlatform
+ros2SystemDependenciesPath=$REPO_ROOT/ros2_deps_$targetPlatform
 
 prepareVirtualEnv() {
-    python3 -m venv my_ros2_python_env
-    source my_ros2_python_env/bin/activate
+    python3 -m venv $ros2PythonEnvPath
+    source $ros2PythonEnvPath/bin/activate
     python3 -m pip install -r requirements.txt
 }
 
@@ -33,7 +36,7 @@ buildRos2Base() {
     # git clone https://github.com/chriskohlhoff/asio
 
     # Get prebuilt dependencies
-    if [ $PLATFORM_TO_BUILD == "macOS" ]; then
+    if [ $targetPlatform == "macOS" ]; then
         curl -L -o ros2_deps_macOS.tar.xz https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.0.1/ros2_deps_macOS.tar.xz
         tar xzf ros2_deps_macOS.tar.xz
     fi
@@ -48,29 +51,39 @@ buildRos2Base() {
     # Ignore rcl_logging_spdlog package
     touch src/ros2/rcl_logging/rcl_logging_spdlog/AMENT_IGNORE
 
-    if [ $PLATFORM_TO_BUILD == "macOS" ]; then
+    if [ $targetPlatform == "macOS" ]; then
         # For macOS desktop, we add the CLI tools (ros2 launch) and rclpy as well
         vcs import src < $REPO_ROOT/ros2_cli.repos
 
-        EXTRA_CMAKE_ARGS=(-DCMAKE_PREFIX_PATH=$REPO_ROOT/ros2_deps_macOS)
+        # And also build RVIZ2
+        vcs import src < $REPO_ROOT/rviz2.repos
+
+        sed -i.bak "s,CMAKE_ARGS,CMAKE_ARGS\n      -DCMAKE_PREFIX_PATH=$REPO_ROOT/ros2_deps_macOS,g" \
+            src/ros2/rviz/rviz_ogre_vendor/CMakeLists.txt \
+            src/ros2/orocos_kdl_vendor/orocos_kdl_vendor/CMakeLists.txt
+
+        touch src/ros2/orocos_kdl_vendor/python_orocos_kdl_vendor/AMENT_IGNORE \
+              src/ros2/rviz/rviz_visual_testing_framework/AMENT_IGNORE
+
+        platformExtraCMakeArgs=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
 
     else
         # For iOS platform
-        EXTRA_CMAKE_ARGS=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$PLATFORM_TO_BUILD.cmake)
+        platformExtraCMakeArgs=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake)
 
         # Replace if_arp.h header with ethernet.h
         sed -i.bak 's/if_arp.h/ethernet.h/g' src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp
     fi
 
     # VERBOSE=1 --executor sequential --event-handlers console_direct+
-    colcon build --install-base $REPO_ROOT/ros2_$PLATFORM_TO_BUILD \
+    colcon build --install-base $ros2InstallPath \
         --merge-install --cmake-force-configure \
         --cmake-args -DBUILD_TESTING=NO \
             -DTHIRDPARTY=FORCE \
             -DCOMPILE_TOOLS=NO \
             -DFORCE_BUILD_VENDOR_PKG=ON \
             -DBUILD_MEMORY_TOOLS=OFF \
-            -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop "${EXTRA_CMAKE_ARGS[@]}"
+            -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop "${platformExtraCMakeArgs[@]}"
 }
 
 setupROS2base() {
@@ -103,7 +116,7 @@ buildRviz2() {
     touch src/ros2/orocos_kdl_vendor/python_orocos_kdl_vendor/AMENT_IGNORE
     touch src/ros2/rviz/rviz_visual_testing_framework/AMENT_IGNORE
 
-    VERBOSE=1 colcon build --install-base $REPO_ROOT/rviz2_$PLATFORM_TO_BUILD \
+    VERBOSE=1 colcon build --install-base $ros2InstallPath \
         --merge-install --cmake-force-configure \
         --executor sequential --event-handlers console_direct+ \
         --cmake-args -DBUILD_TESTING=NO \
@@ -112,12 +125,12 @@ buildRviz2() {
             -DFORCE_BUILD_VENDOR_PKG=ON \
             -DBUILD_MEMORY_TOOLS=OFF \
             -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop \
-            -DCMAKE_PREFIX_PATH=$REPO_ROOT/ros2_deps_macOS
+            -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath
 }
 
-test -d my_ros2_python_env || prepareVirtualEnv
-source my_ros2_python_env/bin/activate
+test -d $ros2PythonEnvPath || prepareVirtualEnv
+source $ros2PythonEnvPath/bin/activate
 printPython
-# buildRos2Base
-setupROS2base
-buildRviz2
+buildRos2Base
+# setupROS2base
+# buildRviz2

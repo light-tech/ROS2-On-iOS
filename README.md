@@ -2,6 +2,8 @@
 
 Build ROS2 stack for iOS software development.
 
+This valuable experience allows us to [build and run ROS2 on Mac](MACOS.md) **including graphical tools such as RVIZ** as well.
+
 **For the impatient**: Instead of building ROS2 from source (see below), you can download [our prebuilt libs](https://github.com/light-tech/ROS2-On-iOS/releases) and extract it.
 Then make a symlink `ros2` pointing to the extracted `ros2_$PLATFORM` where we can find the ROS2 `lib` and `include` headers
 ```shell
@@ -32,20 +34,11 @@ installed. All subsequent shell commands are to be done at `$REPO_ROOT`.
 
 Also, create a Python virtual environment for ease of package installation
 
- 1. Create a new Python virtual environment
-    ```shell
-    python3 -m venv my_ros2_python_env
-    ```
-
- 2. Activate the environment
-    ```shell
-    source my_ros2_python_env/bin/activate
-    ```
-
- 3. Install the packages
-    ```shell
-    python3 -m pip install -r requirements.txt
-    ```
+```shell
+python3 -m venv ros2PythonEnv
+source ros2PythonEnv/bin/activate
+python3 -m pip install -r requirements.txt
+```
 
 If you have other environment management such as Anaconda, remember to **DEACTIVATE** them.
 
@@ -59,6 +52,8 @@ If you have other environment management such as Anaconda, remember to **DEACTIV
     vcs import unused_src < ros2.repos
     touch unused_src/AMENT_IGNORE       # So that colcon will not find packages in unused_src
     ```
+
+    **Note**: The better method is to use `colcon`'s `--packages-up-to`.
 
  2. Move the minimal packages `ros2/rcl`, `ros2/rmw`, `ros2/rosidl` to `src` to start
 
@@ -155,5 +150,3 @@ After my tons of failures, here is what went going on behind the above command:
     Here, I am using `noop` one to avoid one more dependency `spdlog_vendor`.
 
  8. ROS2 depends significantly on dynamic linking. Do NOT add `BUILD_SHARED_LIBS=NO`, contrary to my other project [LLVM](https://github.com/light-tech/LLVM-On-iOS/) where building static libs is needed!
-
-Check out [our other guide](MACOS.md) if you are interested in building and running ROS2 on your own Mac.
