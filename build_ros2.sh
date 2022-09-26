@@ -11,6 +11,15 @@ ros2PythonEnvPath=$REPO_ROOT/ros2PythonEnv
 ros2InstallPath=$REPO_ROOT/ros2_$targetPlatform
 ros2SystemDependenciesPath=$REPO_ROOT/ros2_deps_$targetPlatform
 
+colconArgs=(--install-base $ros2InstallPath \
+            --merge-install --cmake-force-configure \
+            --cmake-args -DBUILD_TESTING=NO \
+                         -DTHIRDPARTY=FORCE \
+                         -DCOMPILE_TOOLS=NO \
+                         -DFORCE_BUILD_VENDOR_PKG=ON \
+                         -DBUILD_MEMORY_TOOLS=OFF \
+                         -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop)
+
 prepareVirtualEnv() {
     python3 -m venv $ros2PythonEnvPath
     source $ros2PythonEnvPath/bin/activate
@@ -65,25 +74,18 @@ buildRos2Base() {
         touch src/ros2/orocos_kdl_vendor/python_orocos_kdl_vendor/AMENT_IGNORE \
               src/ros2/rviz/rviz_visual_testing_framework/AMENT_IGNORE
 
-        platformExtraCMakeArgs=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
+        colconArgs+=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
 
     else
-        # For iOS platform
-        platformExtraCMakeArgs=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake)
+        # For iOS platform, set appropriate toolchain file
+        colconArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake)
 
         # Replace if_arp.h header with ethernet.h
         sed -i.bak 's/if_arp.h/ethernet.h/g' src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp
     fi
 
     # VERBOSE=1 --executor sequential --event-handlers console_direct+
-    colcon build --install-base $ros2InstallPath \
-        --merge-install --cmake-force-configure \
-        --cmake-args -DBUILD_TESTING=NO \
-            -DTHIRDPARTY=FORCE \
-            -DCOMPILE_TOOLS=NO \
-            -DFORCE_BUILD_VENDOR_PKG=ON \
-            -DBUILD_MEMORY_TOOLS=OFF \
-            -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop "${platformExtraCMakeArgs[@]}"
+    colcon build "${colconArgs[@]}"
 }
 
 setupROS2base() {
@@ -116,16 +118,9 @@ buildRviz2() {
     touch src/ros2/orocos_kdl_vendor/python_orocos_kdl_vendor/AMENT_IGNORE
     touch src/ros2/rviz/rviz_visual_testing_framework/AMENT_IGNORE
 
-    VERBOSE=1 colcon build --install-base $ros2InstallPath \
-        --merge-install --cmake-force-configure \
-        --executor sequential --event-handlers console_direct+ \
-        --cmake-args -DBUILD_TESTING=NO \
-            -DTHIRDPARTY=FORCE \
-            -DCOMPILE_TOOLS=NO \
-            -DFORCE_BUILD_VENDOR_PKG=ON \
-            -DBUILD_MEMORY_TOOLS=OFF \
-            -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop \
-            -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath
+    colconArgs+=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
+
+    VERBOSE=1 colcon build --executor sequential --event-handlers console_direct+ "${colconArgs[@]}"
 }
 
 test -d $ros2PythonEnvPath || prepareVirtualEnv
