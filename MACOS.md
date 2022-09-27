@@ -4,6 +4,8 @@ While there is an option, namely [RoboStack](https://robostack.github.io/Getting
 
 So let us build ROS2 from source to use on macOS (Intel only) as well.
 
+**Note**: At the moment, you cannot simply download and run the software built on GitHub Action because it was not `codesign`ed unless you are willing to [disable Gatekeeper](https://www.makeuseof.com/how-to-disable-gatekeeper-mac/).
+
 First we build the required libs to the local location, say `$ros2SystemDependenciesPath`, such as `$REPO_ROOT/deps`, `~/ros2deps` or the commonly used `~/usr`.
 
  1. Get the source code of [FreeType 2](https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz), [Eigen 3](https://eigen.tuxfamily.org/index.php?title=Main_Page), [TinyXML2](https://github.com/leethomason/tinyxml2) and [Bullet](https://github.com/bulletphysics/bullet3). Build and install with
