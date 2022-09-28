@@ -4,7 +4,12 @@ While there is an option, namely [RoboStack](https://robostack.github.io/Getting
 
 So let us build ROS2 from source to use on macOS (Intel only) as well.
 
-**Note**: At the moment, you cannot simply download and run the software built on GitHub Action because it was not `codesign`ed unless you are willing to [disable Gatekeeper](https://www.makeuseof.com/how-to-disable-gatekeeper-mac/).
+**Note**: ~~At the moment, you cannot simply download and run the software built on GitHub Action because it was not `codesign`ed unless you are willing to [disable Gatekeeper](https://www.makeuseof.com/how-to-disable-gatekeeper-mac/).~~ You can use our release built on GitHub Action server but you must not download it from the browser as doing so put them in quarantine. Open the terminal and do
+```shell
+curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2_deps_macOS.tar.xz \
+         https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2_macOS.tar.xz
+```
+thank to [this discussion thread](https://developer.apple.com/forums/thread/703523).
 
 First we build the required libs to the local location, say `$ros2SystemDependenciesPath`, such as `$REPO_ROOT/deps`, `~/ros2deps` or the commonly used `~/usr`.
 

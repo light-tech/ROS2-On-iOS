@@ -10,9 +10,12 @@ targetPlatform=$1
 ros2PythonEnvPath=$REPO_ROOT/ros2PythonEnv
 ros2InstallPath=$REPO_ROOT/ros2_$targetPlatform
 ros2SystemDependenciesPath=$REPO_ROOT/ros2_deps_$targetPlatform
+verboseColcon=1
 
 colconArgs=(--install-base $ros2InstallPath \
             --merge-install --cmake-force-configure \
+            --packages-up-to libcurl_vendor \
+            --executor sequential --event-handlers console_direct+ \
             --cmake-args -DBUILD_TESTING=NO \
                          -DTHIRDPARTY=FORCE \
                          -DCOMPILE_TOOLS=NO \
@@ -71,7 +74,9 @@ buildRos2Base() {
             src/ros2/rviz/rviz_ogre_vendor/CMakeLists.txt \
             src/ros2/orocos_kdl_vendor/orocos_kdl_vendor/CMakeLists.txt
 
-        sed -i.bak "s,--without-ssl,--without-ssl --without-librtmp --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-quiche,g" src/ros/resource_retriever/libcurl_vendor/CMakeLists.txt
+        libcurlCMakeListPath=src/ros/resource_retriever/libcurl_vendor/CMakeLists.txt
+        sed -i.bak "s,--with-ssl,--without-ssl --without-librtmp --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-quiche --without-zlib --without-zstd --without-brotli --disable-ldap,g" $libcurlCMakeListPath
+        cat $libcurlCMakeListPath
 
         touch src/ros2/orocos_kdl_vendor/python_orocos_kdl_vendor/AMENT_IGNORE \
               src/ros2/rviz/rviz_visual_testing_framework/AMENT_IGNORE
@@ -86,8 +91,7 @@ buildRos2Base() {
         sed -i.bak 's/if_arp.h/ethernet.h/g' src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp
     fi
 
-    # VERBOSE=1 --executor sequential --event-handlers console_direct+
-    colcon build "${colconArgs[@]}"
+    VERBOSE=$verboseColcon colcon build "${colconArgs[@]}"
 }
 
 setupROS2base() {
@@ -131,37 +135,3 @@ printPython
 buildRos2Base
 # setupROS2base
 # buildRviz2
-
-# TODO Need to sign the executable and the dylibs to run on Mac
-# Or disable Gatekeeper with [this](https://www.makeuseof.com/how-to-disable-gatekeeper-mac/) or
-# [or](https://eshop.macsales.com/blog/57866-how-to-work-with-and-around-gatekeeper/).
-#
-# The signing process should involve
-#
-#  1. [Create Developer ID certificate](https://help.apple.com/xcode/mac/current/#/dev154b28f09)
-#
-#  2. [Find codesigning identity](https://stackoverflow.com/questions/16576537/how-can-i-find-exactly-what-my-codesign-identity-is)
-#
-#         security find-identity -v -p codesigning
-#
-#     Look for the one with "Developer ID Application: DEVELOPER_NAME (DEVELOPER_TEAM_ID)".
-#
-#  3. [Signing dylib](https://stackoverflow.com/questions/61168329/how-can-i-sign-a-dylib-using-just-a-normal-apple-id-account-no-developer-accou)
-#         codesign --force --options runtime --timestamp --sign CERTIFICATE *.dylib
-#
-# but this does not work on latest macOS which appears to requires apps to be notarized.
-#
-# Other refs:
-# https://stackoverflow.com/questions/57667467/dylib-library-not-loaded-due-to-restricted-binary-after-apple-code-signing
-# https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html
-# https://nixhacker.com/security-protection-in-macos-1/
-# https://stackoverflow.com/questions/14585353/developer-id-ensures-gatekeeper-accept
-# https://gregoryszorc.com/docs/apple-codesign/0.14.0/apple_codesign_gatekeeper.html
-#
-# More research on Homebrew's codesign => ad hoc codesign but it does not seem to help
-# https://github.com/Homebrew/brew/issues/9082
-# https://eclecticlight.co/2019/01/17/code-signing-for-the-concerned-3-signing-an-app/
-# https://apple.stackexchange.com/questions/288291/what-are-the-restrictions-of-ad-hoc-code-signing
-#
-# Try out ls -l@ from https://developer.apple.com/forums/thread/703523 reveals that
-# com.apple.quarantine 58

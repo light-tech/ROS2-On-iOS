@@ -25,7 +25,9 @@ jobs:
       # - run: pip3 install -r requirements.txt
       - run: ./build_ros2.sh ${{ matrix.platformArch }}
       - run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
+        if: ${{ true }} # change this to false to disable temporarily during development
       - uses: actions/upload-artifact@v3
         with:
           name: ros2_${{ matrix.platformArch }}
           path: ros2_${{ matrix.platformArch }}.tar.xz
+        if: ${{ true }}
