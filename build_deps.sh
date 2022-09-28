@@ -5,7 +5,7 @@ targetPlatform=$1
 REPO_ROOT=`pwd`
 
 # The sysroot of the dependencies we built
-ros2SystemDependenciesPath=$REPO_ROOT/ros2_deps_$targetPlatform
+ros2SystemDependenciesPath=$REPO_ROOT/ros2deps_$targetPlatform
 
 # Prefix where we built Qt for host machine
 ros2HostQtPath=$REPO_ROOT/host_deps/

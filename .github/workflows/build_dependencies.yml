@@ -18,8 +18,8 @@ jobs:
         with:
           cmake-version: '3.23.x'
       - run: ./build_deps.sh ${{ matrix.platformArch }}
-      - run: tar cJf ros2_deps_${{ matrix.platformArch }}.tar.xz ros2_deps_${{ matrix.platformArch }}/
+      - run: tar cJf ros2deps_${{ matrix.platformArch }}.tar.xz ros2deps_${{ matrix.platformArch }}/
       - uses: actions/upload-artifact@v3
         with:
-          name: ros2_deps_${{ matrix.platformArch }}
-          path: ros2_deps_${{ matrix.platformArch }}.tar.xz
+          name: ros2deps_${{ matrix.platformArch }}
+          path: ros2deps_${{ matrix.platformArch }}.tar.xz
