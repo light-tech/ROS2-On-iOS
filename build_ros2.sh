@@ -9,13 +9,14 @@ REPO_ROOT=`pwd`
 targetPlatform=$1
 ros2PythonEnvPath=$REPO_ROOT/ros2PythonEnv
 ros2InstallPath=$REPO_ROOT/ros2_$targetPlatform
-ros2SystemDependenciesPath=$REPO_ROOT/ros2_deps_$targetPlatform
-verboseColcon=1
+ros2SystemDependenciesPath=$ros2InstallPath/deps
+verboseColcon=0
+
+#            --packages-up-to libcurl_vendor \
+#            --executor sequential --event-handlers console_direct+ \
 
 colconArgs=(--install-base $ros2InstallPath \
             --merge-install --cmake-force-configure \
-            --packages-up-to libcurl_vendor \
-            --executor sequential --event-handlers console_direct+ \
             --cmake-args -DBUILD_TESTING=NO \
                          -DTHIRDPARTY=FORCE \
                          -DCOMPILE_TOOLS=NO \
@@ -42,16 +43,7 @@ printPython() {
 }
 
 buildRos2Base() {
-    echo "Build ros2 base"
-
-    # Download local ASIO
-    # git clone https://github.com/chriskohlhoff/asio
-
-    # Get prebuilt dependencies
-    if [ $targetPlatform == "macOS" ]; then
-        curl -L -o ros2_deps_macOS.tar.xz https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.0.1/ros2_deps_macOS.tar.xz
-        tar xzf ros2_deps_macOS.tar.xz
-    fi
+    echo "Build ros2 base ( assuming dependencies are available at $ros2SystemDependenciesPath )"
 
     cd $REPO_ROOT
     mkdir -p ros2_ws/src
@@ -70,13 +62,13 @@ buildRos2Base() {
         # And also build RVIZ2
         vcs import src < $REPO_ROOT/rviz2.repos
 
-        sed -i.bak "s,CMAKE_ARGS,CMAKE_ARGS\n      -DCMAKE_PREFIX_PATH=$REPO_ROOT/ros2_deps_macOS,g" \
+        # Pass the path to dependencies to rviz_ogre_vendor and orocos_kdl_vendor
+        sed -i.bak "s,CMAKE_ARGS,CMAKE_ARGS\n      -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath,g" \
             src/ros2/rviz/rviz_ogre_vendor/CMakeLists.txt \
             src/ros2/orocos_kdl_vendor/orocos_kdl_vendor/CMakeLists.txt
 
-        libcurlCMakeListPath=src/ros/resource_retriever/libcurl_vendor/CMakeLists.txt
-        sed -i.bak "s,--with-ssl,--without-ssl --without-librtmp --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-quiche --without-zlib --without-zstd --without-brotli --disable-ldap,g" $libcurlCMakeListPath
-        cat $libcurlCMakeListPath
+        # Disable most 3rd party dependencies when building libcurl_vendor
+        sed -i.bak "s,--with-ssl,--without-ssl --without-librtmp --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-quiche --without-zlib --without-zstd --without-brotli --disable-ldap,g" src/ros/resource_retriever/libcurl_vendor/CMakeLists.txt
 
         touch src/ros2/orocos_kdl_vendor/python_orocos_kdl_vendor/AMENT_IGNORE \
               src/ros2/rviz/rviz_visual_testing_framework/AMENT_IGNORE
@@ -98,31 +90,26 @@ setupROS2base() {
     echo "Prepare ROS2 base and dependencies"
 
     # Extract previously built dependencies and ROS2 base to save time while we try to build rviz2
-    curl -L -o ros2_deps_macOS.tar.xz https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.0.1/ros2_deps_macOS.tar.xz \
-         -o ros2_macOS.tar.xz https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.0.1/ros2_macOS.tar.xz
-    tar xzf ros2_deps_macOS.tar.xz
+    curl -L -o ros2deps_macOS.tar.xz https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2deps_macOS.tar.xz \
+         -o ros2_macOS.tar.xz https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2_macOS.tar.xz
+    tar xzf ros2deps_macOS.tar.xz
     tar xzf ros2_macOS.tar.xz
 
     # Source the prebuilt ROS2 base
     # IMPORTANT: GitHub Action uses bash shell!
     source $REPO_ROOT/ros2_macOS/setup.sh
 
-    # Temporarily rebuild freetype2 without any dependencies
-    ./build_deps.sh macOS
+    # Rebuild dependencies
+    # ./build_deps.sh macOS
 }
 
-buildRviz2() {
+buildWorkspace() {
     echo "Build rviz2"
 
     cd $REPO_ROOT
     mkdir -p ros2_ws/src
     cd ros2_ws
     vcs import src < $REPO_ROOT/rviz2.repos
-
-    sed -i.bak "s,CMAKE_ARGS,CMAKE_ARGS\n      -DCMAKE_PREFIX_PATH=$REPO_ROOT/ros2_deps_macOS,g" src/ros2/rviz/rviz_ogre_vendor/CMakeLists.txt
-    sed -i.bak "s,CMAKE_ARGS,CMAKE_ARGS\n      -DCMAKE_PREFIX_PATH=$REPO_ROOT/ros2_deps_macOS,g" src/ros2/orocos_kdl_vendor/orocos_kdl_vendor/CMakeLists.txt
-    touch src/ros2/orocos_kdl_vendor/python_orocos_kdl_vendor/AMENT_IGNORE
-    touch src/ros2/rviz/rviz_visual_testing_framework/AMENT_IGNORE
 
     colconArgs+=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
 
@@ -134,4 +121,4 @@ source $ros2PythonEnvPath/bin/activate
 printPython
 buildRos2Base
 # setupROS2base
-# buildRviz2
+# buildWorkspace

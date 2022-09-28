@@ -5,7 +5,7 @@ targetPlatform=$1
 REPO_ROOT=`pwd`
 
 # The sysroot of the dependencies we built
-ros2SystemDependenciesPath=$REPO_ROOT/ros2deps_$targetPlatform
+ros2SystemDependenciesPath=$REPO_ROOT/ros2_$targetPlatform/deps
 
 # Prefix where we built Qt for host machine
 ros2HostQtPath=$REPO_ROOT/host_deps/
@@ -348,6 +348,36 @@ function buildOpenCV() {
     buildCMake -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_JAVA=OFF -DBUILD_OBJC=OFF -DBUILD_ZLIB=NO
 }
 
+function buildAll() {
+    buildZlib
+    buildTinyXML2
+    buildLibPng
+    buildPixman
+    buildFreeType2
+    buildCairo
+    buildBullet3
+    buildGFlags
+    buildGlog
+    buildGtest
+    buildAbsl
+    buildGmp
+    buildMpfr
+    buildProtoBuf
+
+    # Build Lua, Boost and Qt5 (macOS only)
+    #case $targetPlatform in
+    #    "macOS")
+    #        buildLua
+    #        buildBoost
+    #        buildQt5;;
+    #esac
+
+    buildSuiteSparse
+    buildEigen3
+    buildCERES
+    buildFLANN
+    buildPCL
+}
 
 getSource
 extractSource
@@ -367,34 +397,7 @@ case $targetPlatform in
         buildOpenCV;;
 
     *) # Build dependencies for ROS2 cartographer package
-        buildZlib
-        buildTinyXML2
-        buildLibPng
-        buildPixman
-        buildFreeType2
-        buildCairo
-        buildBullet3
-        buildGFlags
-        buildGlog
-        buildGtest
-        buildAbsl
-        buildGmp
-        buildMpfr
-        buildProtoBuf
-
-        # Build Lua, Boost and Qt5 (macOS only)
-        #case $targetPlatform in
-        #    "macOS")
-        #        buildLua
-        #        buildBoost
-        #        buildQt5;;
-        #esac
-
-        buildSuiteSparse
-        buildEigen3
-        buildCERES
-        buildFLANN
-        buildPCL;;
+        echo "We currently do not build any dependencies for iOS";;
 esac
 
 cd $REPO_ROOT

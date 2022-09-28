@@ -1,6 +1,6 @@
 name: Build ROS2
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Must have colon after this according to https://github.com/orgs/community/discussions/26780
   push:
     paths:
       - 'build_ros2.sh'
@@ -8,9 +8,10 @@ on:
 jobs:
   build-ros2:
     runs-on: macos-latest
+    timeout-minutes: 1200
     strategy:
       matrix:
-        platformArch: [macOS] # , iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1]
+        platformArch: [macOS, iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1]
     steps:
       - uses: actions/checkout@v3
       - name: Setup cmake
@@ -23,7 +24,10 @@ jobs:
       #    python-version: '3.10'
       #    cache: 'pip'
       # - run: pip3 install -r requirements.txt
-      - run: ./build_ros2.sh ${{ matrix.platformArch }}
+      - name: Build dependencies
+        run: ./build_deps.sh ${{ matrix.platformArch }}
+      - name: Build ROS2
+        run: ./build_ros2.sh ${{ matrix.platformArch }}
       - run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
         if: ${{ true }} # change this to false to disable temporarily during development
       - uses: actions/upload-artifact@v3
