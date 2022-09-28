@@ -24,8 +24,18 @@ jobs:
       #    python-version: '3.10'
       #    cache: 'pip'
       # - run: pip3 install -r requirements.txt
+
       - name: Build dependencies
         run: ./build_deps.sh ${{ matrix.platformArch }}
+        if: ${{ startsWith(matrix.platformArch, 'macOS') }}
+      - run: tar cJf ros2deps_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
+        if: ${{ startsWith(matrix.platformArch, 'macOS') }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ros2deps_${{ matrix.platformArch }}
+          path: ros2deps_${{ matrix.platformArch }}.tar.xz
+        if: ${{ startsWith(matrix.platformArch, 'macOS') }}
+
       - name: Build ROS2
         run: ./build_ros2.sh ${{ matrix.platformArch }}
       - run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
