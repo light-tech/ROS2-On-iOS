@@ -20,6 +20,10 @@ export PATH=$ros2SystemDependenciesPath/bin:$PATH
 export PKG_CONFIG=$ros2SystemDependenciesPath/bin/pkg-config
 export PKG_CONFIG_PATH=$ros2SystemDependenciesPath/lib/pkgconfig
 
+platformExtraCMakeArgs=(-DCMAKE_INSTALL_PREFIX=$ros2SystemDependenciesPath -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
+platformBasicConfigureArgs=(--prefix=$ros2SystemDependenciesPath) # Configure args for regular situation
+platformBasicConfigureArgsPixmanCairo=(--prefix=$ros2SystemDependenciesPath) # Special configure args for pixman and cairo
+
 function getSource() {
     mkdir -p $ros2DependenciesSourceDownloadPath
     cd $ros2DependenciesSourceDownloadPath
@@ -78,17 +82,17 @@ function setupPlatform() {
         "iOS")
             targetArch=arm64
             targetSysroot=`xcodebuild -version -sdk iphoneos Path`
-            targetHostTripleForPixmanAndCairo=arm-apple-darwin # For pixman and cairo we must use arm-apple and not arm64-apple thank to  https://gist.github.com/jvcleave/9d78de9bb27434bde2b0c3a1af355d9c
-            targetHostTriple=aarch64-apple-darwin
-            platformExtraCMakeArgs=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
+            platformBasicConfigureArgs+=(--host=aarch64-apple-darwin)
+            platformBasicConfigureArgsPixmanCairo+=(--host=arm-apple-darwin) # For pixman and cairo we must use arm-apple thank to  https://gist.github.com/jvcleave/9d78de9bb27434bde2b0c3a1af355d9c
+            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
         "iOS_Simulator")
             target=x86_64
             targetSysroot=`xcodebuild -version -sdk iphonesimulator Path`
-            platformExtraCMakeArgs=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
+            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
         "macOS")
             targetArch=x86_64
             targetSysroot=`xcodebuild -version -sdk macosx Path`
-            platformExtraCMakeArgs=(-DCMAKE_OSX_ARCHITECTURES=$targetArch);;
+            platformExtraCMakeArgs+=(-DCMAKE_OSX_ARCHITECTURES=$targetArch);;
     esac
 }
 
@@ -100,50 +104,20 @@ function setCompilerFlags() {
 
 function buildCMake() {
     rm -rf _build && mkdir _build && cd _build
-    cmake -DCMAKE_INSTALL_PREFIX=$ros2SystemDependenciesPath -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath "${platformExtraCMakeArgs[@]}" "$@" .. # >/dev/null 2>&1
+    cmake "${platformExtraCMakeArgs[@]}" "$@" .. # >/dev/null 2>&1
     cmake --build . --target install # >/dev/null 2>&1 --parallel 1
-}
-
-function configureThenMakeArm() {
-    setCompilerFlags
-
-    if [ -z "$targetHostTripleForPixmanAndCairo" ]
-    then
-        ./configure --prefix=$ros2SystemDependenciesPath "$@" # >/dev/null 2>&1
-    else
-        ./configure --prefix=$ros2SystemDependenciesPath --host=$targetHostTripleForPixmanAndCairo "$@" # >/dev/null 2>&1
-    fi
-
-    make && make install # >/dev/null 2>&1
-
-    export -n CFLAGS
-    export -n CXXFLAGS
 }
 
 function configureThenMake() {
     setCompilerFlags
-
-    if [ -z "$targetHostTriple" ]
-    then
-        ./configure --prefix=$ros2SystemDependenciesPath "$@" # >/dev/null 2>&1
-    else
-        ./configure --prefix=$ros2SystemDependenciesPath --host=$targetHostTriple "$@" # >/dev/null 2>&1
-    fi
-
+    ./configure "${platformBasicConfigureArgs[@]}" "$@" # >/dev/null 2>&1
     make && make install #>/dev/null 2>&1
-
-    export -n CFLAGS
-    export -n CXXFLAGS
 }
 
-function configureThenMakeNoHost() {
+function configureThenMakeArm() {
     setCompilerFlags
-
-    ./configure --prefix=$ros2SystemDependenciesPath "$@" # >/dev/null 2>&1
-    make && make install #>/dev/null 2>&1
-
-    export -n CFLAGS
-    export -n CXXFLAGS
+    ./configure "${platformBasicConfigureArgsPixmanCairo[@]}" "$@" # >/dev/null 2>&1
+    make && make install # >/dev/null 2>&1
 }
 
 function buildHostTools() {
@@ -172,7 +146,11 @@ function buildHostTools() {
 function buildZlib() {
     echo "Build zlib"
     cd $ros2DependenciesSourceExtractionPath/zlib-1.2.12
-    configureThenMakeNoHost # Note that zlib's configure does not set --host
+
+    # Note that zlib's configure does not set --host but relies on compiler flags environment variables
+    setCompilerFlags
+    ./configure --prefix=$ros2SystemDependenciesPath "$@" # >/dev/null 2>&1
+    make && make install #>/dev/null 2>&1
 }
 
 function buildTinyXML2() {
