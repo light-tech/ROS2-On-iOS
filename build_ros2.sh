@@ -157,3 +157,11 @@ buildRos2Base
 # https://nixhacker.com/security-protection-in-macos-1/
 # https://stackoverflow.com/questions/14585353/developer-id-ensures-gatekeeper-accept
 # https://gregoryszorc.com/docs/apple-codesign/0.14.0/apple_codesign_gatekeeper.html
+#
+# More research on Homebrew's codesign => ad hoc codesign but it does not seem to help
+# https://github.com/Homebrew/brew/issues/9082
+# https://eclecticlight.co/2019/01/17/code-signing-for-the-concerned-3-signing-an-app/
+# https://apple.stackexchange.com/questions/288291/what-are-the-restrictions-of-ad-hoc-code-signing
+#
+# Try out ls -l@ from https://developer.apple.com/forums/thread/703523 reveals that
+# com.apple.quarantine 58
