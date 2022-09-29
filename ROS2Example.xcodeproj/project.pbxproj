@@ -759,6 +759,7 @@
 		B75543B928B2767800AAFC17 /* librmw_dds_common__rosidl_typesupport_fastrtps_cpp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librmw_dds_common__rosidl_typesupport_fastrtps_cpp.dylib; path = ros2/lib/librmw_dds_common__rosidl_typesupport_fastrtps_cpp.dylib; sourceTree = SOURCE_ROOT; };
 		B75543BA28B2767800AAFC17 /* librosidl_typesupport_fastrtps_c.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librosidl_typesupport_fastrtps_c.dylib; path = ros2/lib/librosidl_typesupport_fastrtps_c.dylib; sourceTree = SOURCE_ROOT; };
 		B76AD78828B4BD920097A296 /* rviz2.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = rviz2.repos; sourceTree = SOURCE_ROOT; };
+		B77B4E7528E6DE7E009DBCA0 /* macOS_M1.cmake */ = {isa = PBXFileReference; lastKnownFileType = file; name = macOS_M1.cmake; path = cmake/macOS_M1.cmake; sourceTree = SOURCE_ROOT; };
 		B79185AD28CD8B6100E0946A /* ROS2Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ROS2Example.entitlements; sourceTree = "<group>"; };
 		B7928F6428A741BD000B40D4 /* ROS2Bridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ROS2Bridge.h; sourceTree = "<group>"; };
 		B7928F6528A741BD000B40D4 /* ROS2Bridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ROS2Bridge.mm; sourceTree = "<group>"; };
@@ -1169,6 +1170,7 @@
 				B755430028B272FF00AAFC17 /* iOS_Simulator_M1.cmake */,
 				B7B6618C28CEE1D600407B44 /* macCatalyst.cmake */,
 				B7B6618B28CEE1D600407B44 /* macCatalyst_M1.cmake */,
+				B77B4E7528E6DE7E009DBCA0 /* macOS_M1.cmake */,
 				B7928F7528A7491A000B40D4 /* main.yml */,
 				B79E396D28BDACBA001526FF /* build_deps.sh */,
 				B7928F6D28A74865000B40D4 /* build_ros2.sh */,

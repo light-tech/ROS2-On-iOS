@@ -54,7 +54,10 @@ buildRos2Base() {
     # Ignore rcl_logging_spdlog package
     touch src/ros2/rcl_logging/rcl_logging_spdlog/AMENT_IGNORE
 
-    if [ $targetPlatform == "macOS" ]; then
+    if [ $targetPlatform == "macOS" ] || [ $targetPlatform == "macOS_M1" ]; then
+
+        # For now disable extra packages for M1 Mac
+        if [ $targetPlatform == "macOS" ]; then
         # For macOS desktop, we add the CLI tools (ros2 launch) and rclpy as well
         vcs import src < $REPO_ROOT/ros2_cli.repos
 
@@ -71,8 +74,13 @@ buildRos2Base() {
 
         touch src/ros2/orocos_kdl_vendor/python_orocos_kdl_vendor/AMENT_IGNORE \
               src/ros2/rviz/rviz_visual_testing_framework/AMENT_IGNORE
+        fi
 
         colconArgs+=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
+
+        if [ $targetPlatform == "macOS_M1" ]; then
+            colconArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake) #(-DCMAKE_OSX_ARCHITECTURES=arm64)
+        fi
 
     else
         # For iOS platform, set appropriate toolchain file
