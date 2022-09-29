@@ -4,12 +4,30 @@ While there is an option, namely [RoboStack](https://robostack.github.io/Getting
 
 So let us build ROS2 from source to use on macOS (Intel only) as well.
 
-**Note**: ~~At the moment, you cannot simply download and run the software built on GitHub Action because it was not `codesign`ed unless you are willing to [disable Gatekeeper](https://www.makeuseof.com/how-to-disable-gatekeeper-mac/).~~ You can use our release built on GitHub Action server but you must not download it from the browser as doing so put them in quarantine. Open the terminal and do
+
+## For the impatient
+
+If you want to save yourself one full working day, you can use [our release](https://github.com/light-tech/ROS2-On-iOS/releases) built on GitHub Action server.
+
+ *  If you download the file from a browser, it will be put in quarantine so you need to `xattr -d com.apple.quarantine FILE` before extraction.
+ *  To avoid that thank to [this discussion thread](https://developer.apple.com/forums/thread/703523), you could open the terminal and do
+    ```shell
+    curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2_macOS.tar.xz
+    ```
+
+After extracting the archive with `tar xzf` and move it to where you want (I usually rename the folder to `ros2` and move it inside `~/usr` in my home folder along with the other Linux-based software), you first need to
 ```shell
-curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2_deps_macOS.tar.xz \
-         https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2_macOS.tar.xz
+# Tip: Add these commands to your `.zshrc` to have them ready.
+
+export DYLD_LIBRARY_PATH=PATH_TO_EXTRACTED_ROS2/deps/lib:$DYLD_LIBRARY_PATH
+
+source PATH_TO_PYTHON_ENV/bin/activate
+source PATH_TO_EXTRACTED_ROS2/setup.zsh
 ```
-thank to [this discussion thread](https://developer.apple.com/forums/thread/703523).
+and then you can use ROS2 as usual.
+
+
+## Build rviz2
 
 First we build the required libs to the local location, say `$ros2SystemDependenciesPath`, such as `$REPO_ROOT/deps`, `~/ros2deps` or the commonly used `~/usr`.
 
@@ -34,6 +52,8 @@ First we build the required libs to the local location, say `$ros2SystemDependen
  4. Once again, `rviz_ogre_vendor` won't pass all CMake variables to `OGRE`. So change its `CMakeLists.txt` to pass along `-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath` as well where it can find the dependencies such as `freetype`.
 
     Likewise for `orocos_kdl_vendor` which relies on `Eigen3Config.cmake` located in `$ros2SystemDependenciesPath`.
+
+    The package `libcurl_vendor` by default have a lot of dependencies so either disable most of them or build those you want.
 
     Also, disable `python_orocos_kdl_vendor` and `rviz_visual_testing_framework`.
 

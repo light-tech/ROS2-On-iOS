@@ -10,11 +10,9 @@ targetPlatform=$1
 ros2PythonEnvPath=$REPO_ROOT/ros2PythonEnv
 ros2InstallPath=$REPO_ROOT/ros2_$targetPlatform
 ros2SystemDependenciesPath=$ros2InstallPath/deps
-verboseColcon=0
 
-#            --packages-up-to libcurl_vendor \
-#            --executor sequential --event-handlers console_direct+ \
-
+#            --packages-up-to libcurl_vendor
+#            --executor sequential --event-handlers console_direct+
 colconArgs=(--install-base $ros2InstallPath \
             --merge-install --cmake-force-configure \
             --cmake-args -DBUILD_TESTING=NO \
@@ -23,6 +21,7 @@ colconArgs=(--install-base $ros2InstallPath \
                          -DFORCE_BUILD_VENDOR_PKG=ON \
                          -DBUILD_MEMORY_TOOLS=OFF \
                          -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop)
+colconVerbose=0
 
 prepareVirtualEnv() {
     python3 -m venv $ros2PythonEnvPath
@@ -83,7 +82,7 @@ buildRos2Base() {
         sed -i.bak 's/if_arp.h/ethernet.h/g' src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp
     fi
 
-    VERBOSE=$verboseColcon colcon build "${colconArgs[@]}"
+    VERBOSE=$colconVerbose colcon build "${colconArgs[@]}"
 }
 
 setupROS2base() {

@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'build_ros2.sh'
+      - 'build_deps.sh'
       - '.github/workflows/main.yml'
 jobs:
   build-ros2:
@@ -11,7 +12,7 @@ jobs:
     timeout-minutes: 1200
     strategy:
       matrix:
-        platformArch: [macOS, iOS] # , iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1]
+        platformArch: [macOS] # iOS , iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1]
     steps:
       - uses: actions/checkout@v3
       - name: Setup cmake
@@ -26,21 +27,30 @@ jobs:
       # - run: pip3 install -r requirements.txt
 
       - name: Build dependencies
+        id: build_dependencies
         run: ./build_deps.sh ${{ matrix.platformArch }}
-        if: ${{ startsWith(matrix.platformArch, 'macOS') }}
-      - run: tar cJf ros2deps_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
-        if: ${{ startsWith(matrix.platformArch, 'macOS') }}
-      - uses: actions/upload-artifact@v3
+        if: ${{ false && startsWith(matrix.platformArch, 'macOS') }}
+      - name: Archive dependencies
+        run: tar cJf ros2deps_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
+        if: ${{ steps.build_dependencies.outcome == 'success' }}
+      - name: Publish dependencies for reuse
+        uses: actions/upload-artifact@v3
         with:
           name: ros2deps_${{ matrix.platformArch }}
           path: ros2deps_${{ matrix.platformArch }}.tar.xz
-        if: ${{ startsWith(matrix.platformArch, 'macOS') }}
+        if: ${{ steps.build_dependencies.outcome == 'success' }}
+
+      - name: Download and extract prebuilt dependencies
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2deps_${{ matrix.platformArch }}.tar.xz && tar xzf ros2deps_${{ matrix.platformArch }}.tar.xz
+        if: ${{ true && startsWith(matrix.platformArch, 'macOS') }}
 
       - name: Build ROS2
         run: ./build_ros2.sh ${{ matrix.platformArch }}
-      - run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
+      - name: Archive ROS2 and dependencies
+        run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
         if: ${{ true }} # change this to false to disable temporarily during development
-      - uses: actions/upload-artifact@v3
+      - name: Publish ROS2 for release
+        uses: actions/upload-artifact@v3
         with:
           name: ros2_${{ matrix.platformArch }}
           path: ros2_${{ matrix.platformArch }}.tar.xz
