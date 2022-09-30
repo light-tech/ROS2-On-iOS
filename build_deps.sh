@@ -49,7 +49,7 @@ function getSource() {
          -o boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz
 
     # Dependencies for cartographer
-    if [ $targetPlatform != "macOS" ]; then
+    if [ $targetPlatform != "macOS" ] && [ $targetPlatform != "macOS_M1" ]; then
     curl -s -L -o abseil-cpp.tar.gz https://github.com/abseil/abseil-cpp/archive/refs/tags/20220623.0.tar.gz \
          -o gflags.tar.gz https://github.com/gflags/gflags/archive/refs/tags/v2.2.2.tar.gz \
          -o cairo.tar.xz https://www.cairographics.org/releases/cairo-1.16.0.tar.xz \
@@ -81,17 +81,27 @@ function setupPlatform() {
     case $targetPlatform in
         "iOS")
             targetArch=arm64
+            boostArch=arm
             targetSysroot=`xcodebuild -version -sdk iphoneos Path`
             platformBasicConfigureArgs+=(--host=aarch64-apple-darwin)
             platformBasicConfigureArgsPixmanCairo+=(--host=arm-apple-darwin) # For pixman and cairo we must use arm-apple thank to  https://gist.github.com/jvcleave/9d78de9bb27434bde2b0c3a1af355d9c
             platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
         "iOS_Simulator")
             target=x86_64
+            boostArch=ia64
             targetSysroot=`xcodebuild -version -sdk iphonesimulator Path`
             platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
         "macOS")
             targetArch=x86_64
+            boostArch=ia64
             targetSysroot=`xcodebuild -version -sdk macosx Path`
+            platformExtraCMakeArgs+=(-DCMAKE_OSX_ARCHITECTURES=$targetArch);;
+        "macOS_M1")
+            targetArch=arm64
+            boostArch=arm
+            targetSysroot=`xcodebuild -version -sdk macosx Path`
+            platformBasicConfigureArgs+=(--host=aarch64-apple-darwin)
+            platformBasicConfigureArgsPixmanCairo+=(--host=arm-apple-darwin)
             platformExtraCMakeArgs+=(-DCMAKE_OSX_ARCHITECTURES=$targetArch);;
     esac
 }
@@ -248,7 +258,7 @@ function buildBoost() {
     echo "Build Boost"
     cd $ros2DependenciesSourceExtractionPath/boost_1_80_0
     ./bootstrap.sh --prefix=$ros2SystemDependenciesPath --without-libraries=python
-    ./b2 install
+    ./b2 install architecture=$boostArch
 }
 
 function buildQt5Host() {
@@ -265,7 +275,7 @@ function buildQt5() {
     # Patch the source https://codereview.qt-project.org/c/qt/qtbase/+/378706
     sed -i.bak "s,QT_BEGIN_NAMESPACE,#include <CoreGraphics/CGColorSpace.h>\n#include <IOSurface/IOSurface.h>\nQT_BEGIN_NAMESPACE," src/plugins/platforms/cocoa/qiosurfacegraphicsbuffer.h
 
-    ./configure -prefix $ros2SystemDependenciesPath -opensource -confirm-license -nomake examples -nomake tests -no-framework
+    ./configure -prefix $ros2SystemDependenciesPath -opensource -confirm-license -nomake examples -nomake tests -no-framework -device-option QMAKE_APPLE_DEVICE_ARCHS=$targetArch
     make && make install
 }
 
@@ -363,7 +373,7 @@ setupPlatform
 buildHostTools
 
 case $targetPlatform in
-    "macOS") # Build dependencies for RVIZ and OpenCV
+    "macOS"|"macOS_M1") # Build dependencies for RVIZ and OpenCV
         buildZlib
         buildLibPng
         buildFreeType2
@@ -371,8 +381,8 @@ case $targetPlatform in
         buildTinyXML2
         buildBullet3
         buildQt5
-        buildBoost
-        buildOpenCV;;
+        buildBoost;;
+        #buildOpenCV;;
 
     *) # Build dependencies for ROS2 cartographer package
         echo "We currently do not build any dependencies for iOS";;

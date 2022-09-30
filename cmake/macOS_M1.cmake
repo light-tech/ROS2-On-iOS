@@ -9,5 +9,7 @@ execute_process(COMMAND xcodebuild -version -sdk macosx Path
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 SET(CMAKE_OSX_ARCHITECTURES "arm64")
+SET(CMAKE_C_FLAGS "-arch arm64")
+SET(CMAKE_CXX_FLAGS "-arch arm64")
 SET(CMAKE_CROSSCOMPILING True)
 SET(CMAKE_SYSTEM_PROCESSOR "arm64")
