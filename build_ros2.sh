@@ -11,17 +11,21 @@ ros2PythonEnvPath=$REPO_ROOT/ros2PythonEnv
 ros2InstallPath=$REPO_ROOT/ros2_$targetPlatform
 ros2SystemDependenciesPath=$ros2InstallPath/deps
 
-# --packages-up-to libcurl_vendor rviz_ogre_vendor
+colconVerbose=0
+
 colconArgs=(--install-base $ros2InstallPath \
-            --merge-install --cmake-force-configure \
-            --executor sequential --event-handlers console_direct+ \
-            --cmake-args -DBUILD_TESTING=NO \
-                         -DTHIRDPARTY=FORCE \
-                         -DCOMPILE_TOOLS=NO \
-                         -DFORCE_BUILD_VENDOR_PKG=ON \
-                         -DBUILD_MEMORY_TOOLS=OFF \
-                         -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop)
-colconVerbose=1
+            --merge-install --cmake-force-configure)
+
+if [ "$colconVerbose" == "1" ]; then
+    colconArgs+=(--executor sequential --event-handlers console_direct+)
+fi
+
+colconArgs+=(--cmake-args -DBUILD_TESTING=NO \
+                          -DTHIRDPARTY=FORCE \
+                          -DCOMPILE_TOOLS=NO \
+                          -DFORCE_BUILD_VENDOR_PKG=ON \
+                          -DBUILD_MEMORY_TOOLS=OFF \
+                          -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop)
 
 prepareVirtualEnv() {
     python3 -m venv $ros2PythonEnvPath
@@ -79,18 +83,20 @@ buildRos2Base() {
 
         if [ $targetPlatform == "macOS" ]; then
             # For macOS desktop (Intel), we add the CLI tools (ros2 launch) and rclpy as well
-            # We probably won't be able to build these on GitHub Action as there is no way to link with the ARM version of libpython*.dylib there
+            # We probably won't be able to build these for M1 macOS on GitHub Action
+            # as there is no way to link with the ARM version of libpython*.dylib there
+            # and rclpy and IDL code generation for Python needs that.
             vcs import src < $REPO_ROOT/ros2_cli.repos
-        fi
 
-        # And also build RVIZ2
-        # vcs import src < $REPO_ROOT/rviz2.repos
-        # patchRviz
+            # And also build RVIZ2
+            vcs import src < $REPO_ROOT/rviz2.repos
+            patchRviz
+        fi
 
         colconArgs+=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
 
         if [ $targetPlatform == "macOS_M1" ]; then
-            patchRvizM1
+            # patchRvizM1
             colconArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake)
         fi
 
@@ -105,12 +111,12 @@ buildRos2Base() {
     VERBOSE=$colconVerbose colcon build "${colconArgs[@]}"
 }
 
-setupROS2base() {
-    echo "Prepare ROS2 base and dependencies"
+buildExperimentalWorkspace() {
+    echo "Prepare ROS2 base packages"
 
     # Extract previously built dependencies and ROS2 base to save time while we try to build rviz2
-    curl -L -o ros2_$targetPlatform.tar.xz https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2_$targetPlatform.tar.xz
-    tar xzf ros2_$targetPlatform.tar.xz
+    curl -L -o ros2_base.tar.xz https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2_$targetPlatform.tar.xz
+    tar xzf ros2_base.tar.xz
 
     # Source the prebuilt ROS2 base
     # IMPORTANT: GitHub Action uses bash shell!
@@ -118,10 +124,8 @@ setupROS2base() {
 
     # Rebuild dependencies
     # ./build_deps.sh $targetPlatform
-}
 
-buildWorkspace() {
-    echo "Build rviz2"
+    echo "Experiment building rviz2 (M1 Mac)"
 
     cd $REPO_ROOT
     mkdir -p ros2_ws/src
@@ -129,14 +133,9 @@ buildWorkspace() {
     vcs import src < $REPO_ROOT/rviz2.repos
 
     patchRviz
+    patchRvizM1
 
-    colconArgs+=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
-
-    if [ $targetPlatform == "macOS_M1" ]; then
-        echo "Additional fixes for M1"
-        patchRvizM1
-        colconArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake)
-    fi
+    colconArgs+=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake)
 
     VERBOSE=1 colcon build --packages-up-to rviz_ogre_vendor "${colconArgs[@]}"
 }
@@ -144,6 +143,5 @@ buildWorkspace() {
 test -d $ros2PythonEnvPath || prepareVirtualEnv
 source $ros2PythonEnvPath/bin/activate
 printPython
-# buildRos2Base
-setupROS2base
-buildWorkspace
+buildRos2Base
+# buildExperimentalWorkspace

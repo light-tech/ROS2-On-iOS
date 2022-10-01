@@ -3,6 +3,7 @@
 Build ROS2 stack for iOS software development.
 
 This valuable experience allows us to [build and run ROS2 on Mac](MACOS.md) **including graphical tools such as RVIZ** as well.
+Even better, you can simply download our release, add some environment variables and run.
 
 **For the impatient**: Instead of building ROS2 from source (see below), you can download [our prebuilt libs](https://github.com/light-tech/ROS2-On-iOS/releases) and extract it.
 Then make a symlink `ros2` pointing to the extracted `ros2_$PLATFORM` where we can find the ROS2 `lib` and `include` headers

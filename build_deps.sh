@@ -381,8 +381,8 @@ case $targetPlatform in
         buildTinyXML2
         buildBullet3
         buildQt5
-        buildBoost;;
-        #buildOpenCV;;
+        buildBoost
+        buildOpenCV;;
 
     *) # Build dependencies for ROS2 cartographer package
         echo "We currently do not build any dependencies for iOS";;
