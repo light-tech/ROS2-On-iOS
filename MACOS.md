@@ -26,6 +26,20 @@ source PATH_TO_EXTRACTED_ROS2/setup.zsh
 ```
 and then you can use ROS2 [as usual](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries.html).
 
+### Fixing up paths
+
+Unfortunately, `colcon` hardcoded a lot of paths (mostly concerning Python-based stuffs) in generated CMake files so you need to fix it to match YOUR system.
+To do that, `cd` to `share` folder inside the extracted `ros2/` and run our script
+```shell
+fix_hardcoded_paths.sh PATH_TO_YOUR_PYTHON_ENV PATH_TO_LIBPYTHON_DYLIB
+```
+where
+
+  * `PATH_TO_YOUR_PYTHON_ENV` should be where you create the Python environment on your local machine such as `$HOME/usr/ros2PythonEnv`; and
+  * `PATH_TO_LIBPYTHON_DYLIB` should be the path to `libpython3.10.dylib` on your local machine, it should be `/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/config-3.10-darwin/libpython3.10.dylib` if you installed Python from [its official site](https://www.python.org). There is probably no need to fix this if you installed Python using Homebrew.
+
+The other place to fix the path is the executable script `bin/ros2` (fix it so you can run `ros2` command line such as `ros2 launch` and `ros2 topic list`).
+
 ### Note about building and using overlaid workspace
 
  1. You might want to add `-DCMAKE_PREFIX_PATH` such as
