@@ -9,7 +9,7 @@ So let us build ROS2 from source to use on macOS (Intel only) as well.
 
 If you want to save yourself one full working day, you can use [our release](https://github.com/light-tech/ROS2-On-iOS/releases) built on GitHub Action server.
 
- *  If you download the file from a browser, it will be put in quarantine so you need to `xattr -d com.apple.quarantine FILE` before extraction.
+ *  If you download the file from a browser, it will be put in quarantine so you need to `xattr -d com.apple.quarantine DOWNLOADED_FILE` before extraction.
  *  To avoid that thank to [this discussion thread](https://developer.apple.com/forums/thread/703523), you could open the terminal and do
     ```shell
     curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2_macOS.tar.xz
@@ -24,7 +24,28 @@ export DYLD_LIBRARY_PATH=PATH_TO_EXTRACTED_ROS2/deps/lib:$DYLD_LIBRARY_PATH
 source PATH_TO_PYTHON_ENV/bin/activate
 source PATH_TO_EXTRACTED_ROS2/setup.zsh
 ```
-and then you can use ROS2 as usual.
+and then you can use ROS2 [as usual](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries.html).
+
+### Note about building and using overlaid workspace
+
+ 1. You might want to add `-DCMAKE_PREFIX_PATH` such as
+    ```shell
+    colcon build --symlink-install --cmake-args -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath
+    ```
+    to expose our system dependencies.
+    Here, `$ros2SystemDependenciesPath` should be `PATH_TO_EXTRACTED_ROS2/deps`.
+
+ 2. Because of [this issue](https://github.com/colcon/colcon-zsh/issues/12) where the generated `setup.zsh` might NOT set the library search path for system libraries (Qt, FreeType2, Bullet ...), tools that depend on our locally built `dylib` in `$ros2SystemDependenciesPath` will fail to load.
+    (The official instruction works because `homebrew` will put the libraries in globally available location `/usr/local`.)
+    So to actually use your workspace you might need to `source` it
+    ```shell
+    source YOUR_WORKSPACE/install/setup.zsh
+    ```
+    and then
+    ```shell
+    export DYLD_LIBRARY_PATH=$ros2SystemDependenciesPath/lib:$DYLD_LIBRARY_PATH
+    ```
+    You must do this in this order because `setup.zsh` might not extend but *overwrite* `DYLD_LIBRARY_PATH`.
 
 
 ## Build rviz2
@@ -63,22 +84,6 @@ First we build the required libs to the local location, say `$ros2SystemDependen
     colcon build --merge-install --cmake-force-configure --cmake-args -DBUILD_TESTING=NO -DTHIRDPARTY=FORCE -DCOMPILE_TOOLS=NO -DFORCE_BUILD_VENDOR_PKG=ON -DBUILD_MEMORY_TOOLS=OFF -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath
     ```
 
-**Note**: To build overlaid workspace, you will want to
-```shell
-colcon build --symlink-install --cmake-args -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath
-```
-to expose our system dependencies.
-
-Now because of [this issue](https://github.com/colcon/colcon-zsh/issues/12) where the generated `setup.zsh` might NOT set the library search path for system libraries (Qt, FreeType2, Bullet ...), tools that depend on our locally built `dylib` in `$REPO_ROOT/deps` will fail to load. (The original instruction works because `homebrew` will put the libraries in globally available location `/usr/local`.)
-To actually use your workspace you will need to first
-```shell
-source YOUR_WORKSPACE/install/setup.zsh
-```
-and then
-```shell
-export DYLD_LIBRARY_PATH=$ros2SystemDependenciesPath/lib:$DYLD_LIBRARY_PATH
-```
-You must do this in this order because `setup.zsh` does not extend but *overwrite* `DYLD_LIBRARY_PATH`.
 
 ## Build cartographer and cartographer-ros packages
 
