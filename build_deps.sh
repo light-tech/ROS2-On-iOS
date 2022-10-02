@@ -86,16 +86,37 @@ function setupPlatform() {
             platformBasicConfigureArgs+=(--host=aarch64-apple-darwin)
             platformBasicConfigureArgsPixmanCairo+=(--host=arm-apple-darwin) # For pixman and cairo we must use arm-apple thank to  https://gist.github.com/jvcleave/9d78de9bb27434bde2b0c3a1af355d9c
             platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
+
         "iOS_Simulator")
-            target=x86_64
+            targetArch=x86_64
             boostArch=ia64
             targetSysroot=`xcodebuild -version -sdk iphonesimulator Path`
             platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
+
+        "iOS_Simulator_M1")
+            targetArch=arm64
+            boostArch=arm
+            targetSysroot=`xcodebuild -version -sdk iphonesimulator Path`
+            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
+
+        "macCatalyst")
+            targetArch=x86_64
+            boostArch=ia64
+            targetSysroot=`xcodebuild -version -sdk macosx Path`
+            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
+
+        "macCatalyst_M1")
+            targetArch=arm64
+            boostArch=arm
+            targetSysroot=`xcodebuild -version -sdk macosx Path`
+            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
+
         "macOS")
             targetArch=x86_64
             boostArch=ia64
             targetSysroot=`xcodebuild -version -sdk macosx Path`
             platformExtraCMakeArgs+=(-DCMAKE_OSX_ARCHITECTURES=$targetArch);;
+
         "macOS_M1")
             targetArch=arm64
             boostArch=arm
@@ -107,7 +128,16 @@ function setupPlatform() {
 }
 
 function setCompilerFlags() {
-    export CFLAGS="-isysroot $targetSysroot -arch $targetArch -I$ros2SystemDependenciesPath/include/"
+    case $targetPlatform in
+        "macCatalyst")
+            export CFLAGS="-isysroot $targetSysroot -target x86_64-apple-ios14.1-macabi -I$ros2SystemDependenciesPath/include/";;
+
+        "macCatalyst_M1")
+            export CFLAGS="-isysroot $targetSysroot -target arm64-apple-ios14.1-macabi -I$ros2SystemDependenciesPath/include/";;
+
+        *)
+            export CFLAGS="-isysroot $targetSysroot -arch $targetArch -I$ros2SystemDependenciesPath/include/";;
+    esac
     export CXXFLAGS=$CFLAGS
     export CPPFLAGS=$CFLAGS # Without this, encounter error ZLIB_VERNUM != PNG_ZLIB_VERNUM when building libpng
 }
@@ -333,7 +363,8 @@ function buildPCL() {
 function buildOpenCV() {
     echo "Build OpenCV"
     cd $ros2DependenciesSourceExtractionPath/opencv-4.6.0
-    buildCMake -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_JAVA=OFF -DBUILD_OBJC=OFF -DBUILD_ZLIB=NO
+    # https://docs.opencv.org/4.x/db/d05/tutorial_config_reference.html
+    buildCMake -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_JAVA=OFF -DBUILD_OBJC=OFF -DBUILD_ZLIB=NO -DBUILD_OPENEXR=YES
 }
 
 function buildAll() {
@@ -384,8 +415,8 @@ case $targetPlatform in
         buildBoost
         buildOpenCV;;
 
-    *) # Build dependencies for ROS2 cartographer package
-        echo "We currently do not build any dependencies for iOS";;
+    *) # Build useful dependencies for iOS
+        buildTinyXML2;;
 esac
 
 cd $REPO_ROOT

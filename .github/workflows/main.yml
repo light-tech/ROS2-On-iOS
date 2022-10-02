@@ -15,10 +15,12 @@ jobs:
         platformArch: [macOS, iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1] # macOS_M1
     steps:
       - uses: actions/checkout@v3
+
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.12
         with:
           cmake-version: '3.23.x'
+
       # - name: Setup Python
       #  uses: actions/setup-python@v4
       #  with:
@@ -30,7 +32,7 @@ jobs:
       - name: Build dependencies
         id: build_dependencies
         run: ./build_deps.sh ${{ matrix.platformArch }}
-        if: ${{ false && startsWith(matrix.platformArch, 'macOS') }}
+        if: ${{ true }}
 
       - name: Archive dependencies
         run: tar cJf ros2deps_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
@@ -47,7 +49,7 @@ jobs:
       - name: Download and extract prebuilt dependencies
         id: download_dependencies
         run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2deps_${{ matrix.platformArch }}.tar.xz && tar xzf ros2deps_${{ matrix.platformArch }}.tar.xz
-        if: ${{ true && steps.build_dependencies.outcome != 'success' && startsWith(matrix.platformArch, 'macOS') }}
+        if: ${{ false && steps.build_dependencies.outcome != 'success' && startsWith(matrix.platformArch, 'macOS') }}
 
       # On macOS, only build ROS2 if either building or downloading dependencies succeeds
       - name: Build ROS2
