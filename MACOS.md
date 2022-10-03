@@ -20,6 +20,7 @@ After extracting the archive with `tar xzf` and move it to where you want (I usu
 # Tip: Add these commands to your `.zshrc` to have them ready.
 
 export DYLD_LIBRARY_PATH=PATH_TO_EXTRACTED_ROS2/deps/lib:$DYLD_LIBRARY_PATH
+export DYLD_FRAMEWORK_PATH=/Library/Frameworks:$DYLD_FRAMEWORK_PATH # So that ros2 can find the Python framework that you installed yourself
 
 source PATH_TO_PYTHON_ENV/bin/activate
 source PATH_TO_EXTRACTED_ROS2/setup.zsh
@@ -60,6 +61,16 @@ The other place to fix the path is the executable script `bin/ros2` (fix it so y
     export DYLD_LIBRARY_PATH=$ros2SystemDependenciesPath/lib:$DYLD_LIBRARY_PATH
     ```
     You must do this in this order because `setup.zsh` might not extend but *overwrite* `DYLD_LIBRARY_PATH`.
+
+Try following [this tutorial](https://github.com/ros-perception/image_transport_tutorials). You need to grab the `humble` branch of [our small addition to vision_opencv](https://github.com/light-tech/vision_opencv) in your workspace as it adds `CV_BRIDGE_ENABLE_PYTHON` to disable Python stuffs in `cv_bridge` package (requires Boost Python that we did not build) and then
+```shell
+colcon build --symlink-install --cmake-args -DCMAKE_PREFIX_PATH=$PATH_TO_EXTRACTED_ROS2/deps -DBUILD_TESTING=NO -DCV_BRIDGE_ENABLE_PYTHON=OFF
+
+# To run the examples
+
+ros2 run image_transport_tutorials my_publisher path/to/some/image.jpg
+ros2 run image_transport_tutorials my_subscriber
+```
 
 
 ## Build rviz2
