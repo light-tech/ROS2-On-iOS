@@ -15,6 +15,8 @@ If you want to save yourself one full working day, you can use [our release](htt
     curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2_macOS.tar.xz
     ```
 
+**Note**: We did not manage to build native ROS2 for ARM64 Mac but you can still use the Intel version thank to [Rosetta 2](https://support.apple.com/en-us/HT211861). You will need the `x86_64` version of Python.
+
 After extracting the archive with `tar xzf` and move it to where you want (I usually rename the folder to `ros2` and move it inside `~/usr` in my home folder along with the other Linux-based software), you first need to
 ```shell
 # Tip: Add these commands to your `.zshrc` to have them ready.
