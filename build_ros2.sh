@@ -16,6 +16,8 @@ colconVerbose=0
 colconArgs=(--install-base $ros2InstallPath \
             --merge-install --cmake-force-configure)
 
+#colconArgs+=(--packages-up-to rviz_ogre_vendor)
+
 if [ "$colconVerbose" == "1" ]; then
     colconArgs+=(--executor sequential --event-handlers console_direct+)
 fi
@@ -47,9 +49,9 @@ printPython() {
 
 patchRviz() {
     # Pass the path to dependencies to rviz_ogre_vendor and orocos_kdl_vendor
-    sed -i.bak "s,CMAKE_ARGS,CMAKE_ARGS\n      -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath,g" \
-        src/ros2/rviz/rviz_ogre_vendor/CMakeLists.txt \
-        src/ros2/orocos_kdl_vendor/orocos_kdl_vendor/CMakeLists.txt
+    #sed -i.bak "s,CMAKE_ARGS,CMAKE_ARGS\n      -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath,g" \
+    #    src/ros2/rviz/rviz_ogre_vendor/CMakeLists.txt \
+    #    src/ros2/orocos_kdl_vendor/orocos_kdl_vendor/CMakeLists.txt
 
     # Disable most 3rd party dependencies when building libcurl_vendor
     sed -i.bak "s,--with-ssl,--without-ssl --without-librtmp --without-nghttp2 --without-ngtcp2 --without-nghttp3 --without-quiche --without-zlib --without-zstd --without-brotli --disable-ldap,g" src/ros/resource_retriever/libcurl_vendor/CMakeLists.txt
@@ -142,6 +144,6 @@ buildExperimentalWorkspace() {
 
 test -d $ros2PythonEnvPath || prepareVirtualEnv
 source $ros2PythonEnvPath/bin/activate
-printPython
+# printPython
 buildRos2Base
 # buildExperimentalWorkspace

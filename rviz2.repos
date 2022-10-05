@@ -53,12 +53,12 @@ repositories:
     version: humble
   ros2/orocos_kdl_vendor:
     type: git
-    url: https://github.com/ros2/orocos_kdl_vendor.git
-    version: humble
+    url: https://github.com/light-tech/orocos_kdl_vendor.git
+    version: rolling
   ros2/rviz:
     type: git
-    url: https://github.com/ros2/rviz.git
-    version: humble
+    url: https://github.com/light-tech/rviz.git
+    version: rolling
   ros2/tinyxml2_vendor:
     type: git
     url: https://github.com/ros2/tinyxml2_vendor.git
