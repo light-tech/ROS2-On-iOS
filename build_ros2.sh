@@ -107,7 +107,7 @@ buildRos2Base() {
         colconArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake)
 
         # Replace if_arp.h header with ethernet.h
-        sed -i.bak 's/if_arp.h/ethernet.h/g' src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp
+        # sed -i.bak 's/if_arp.h/ethernet.h/g' src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp
     fi
 
     VERBOSE=$colconVerbose colcon build "${colconArgs[@]}"
