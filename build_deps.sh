@@ -16,6 +16,11 @@ ros2DependenciesSourceDownloadPath=$REPO_ROOT/deps_download/
 # Location to extract the source
 ros2DependenciesSourceExtractionPath=$REPO_ROOT/deps_src/
 
+# Root for Python 3.10 to build Boost, change the match the platform such as
+# pythonRoot=/Library/Frameworks/Python.framework/Versions/3.10/
+# if use official Python instead of Homebrew's version on GitHub Action
+pythonRoot=/usr/local/opt/python@3.10/Frameworks/Python.framework/Versions/3.10/
+
 export PATH=$ros2SystemDependenciesPath/bin:$PATH
 export PKG_CONFIG=$ros2SystemDependenciesPath/bin/pkg-config
 export PKG_CONFIG_PATH=$ros2SystemDependenciesPath/lib/pkgconfig
@@ -28,7 +33,7 @@ function getSource() {
     mkdir -p $ros2DependenciesSourceDownloadPath
     cd $ros2DependenciesSourceDownloadPath
 
-    curl -s -L -o pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
+    # curl -s -L -o pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
          #-o autoconf.tar.gz http://ftpmirror.gnu.org/autoconf/autoconf-2.69.tar.gz \
          #-o automake.tar.gz http://ftpmirror.gnu.org/automake/automake-1.15.tar.gz \
          #-o libtool.tar.gz http://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.gz \
@@ -36,7 +41,7 @@ function getSource() {
 
     # Dependencies for rviz
     # Need -L to download github releases according to https://stackoverflow.com/questions/46060010/download-github-release-with-curl
-    curl -s -L -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz \
+    # curl -s -L -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz \
          -o libpng.tar.xz https://download.sourceforge.net/libpng/libpng-1.6.37.tar.xz \
          -o zlib.tar.xz https://zlib.net/zlib-1.2.12.tar.xz \
          -o eigen.tar.bz2 https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2 \
@@ -45,8 +50,9 @@ function getSource() {
          -o qtbase.tar.gz https://download.qt.io/archive/qt/5.15/5.15.5/submodules/qtbase-everywhere-opensource-src-5.15.5.tar.xz
 
     # Common heavy dependencies OpenCV, Boost
-    curl -s -L -o opencv.tar.gz https://github.com/opencv/opencv/archive/refs/tags/4.6.0.tar.gz \
-         -o boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz
+    curl -s -L #-o opencv.tar.gz https://github.com/opencv/opencv/archive/refs/tags/4.6.0.tar.gz \
+
+    curl -s -L -o boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz
 
     # Dependencies for cartographer
     if [ $targetPlatform != "macOS" ] && [ $targetPlatform != "macOS_M1" ]; then
@@ -287,8 +293,21 @@ function buildLua() {
 function buildBoost() {
     echo "Build Boost"
     cd $ros2DependenciesSourceExtractionPath/boost_1_80_0
-    ./bootstrap.sh --prefix=$ros2SystemDependenciesPath --without-libraries=python
-    ./b2 install architecture=$boostArch
+
+    # Note: We must pass the full path to the python3 executable in --with-python-root=$pythonRoot/bin/python3
+    # otherwise, will run into the issue https://github.com/boostorg/boost/issues/693.
+    # Searching the entire Boost source code for the string `python-cfg` reveals a single file
+    #     tools/build/src/tools/python.jam
+    # and in that file, the function-like `local rule configure`'s parameter `$cmd-or-prefix` appears to be initialized
+    # with whatever passed to `--with-python-root` as it tried to find Python. Since it only tries `bin/python`,
+    # it will never succeed on Mac because bin/python does not exist.
+    ./bootstrap.sh --prefix=$ros2SystemDependenciesPath \
+                   --with-python=$pythonRoot/bin/python3 \
+                   --with-python-version=3.10 \
+                   --with-python-root=$pythonRoot/bin/python3 \
+                   --with-libraries=python # temporarily build Boost Python only to save recompile time
+
+    ./b2 install architecture=$boostArch # --debug-configuration --debug-building --debug-generator -d+2
 }
 
 function buildQt5Host() {
@@ -401,19 +420,19 @@ function buildAll() {
 getSource
 extractSource
 setupPlatform
-buildHostTools
+# buildHostTools
 
 case $targetPlatform in
     "macOS"|"macOS_M1") # Build dependencies for RVIZ and OpenCV
-        buildZlib
-        buildLibPng
-        buildFreeType2
-        buildEigen3
-        buildTinyXML2
-        buildBullet3
-        buildQt5
-        buildBoost
-        buildOpenCV;;
+        #buildZlib
+        #buildLibPng
+        #buildFreeType2
+        #buildEigen3
+        #buildTinyXML2
+        #buildBullet3
+        #buildQt5
+        buildBoost;;
+        # buildOpenCV;;
 
     *) # Build useful dependencies for iOS
         buildTinyXML2;;
