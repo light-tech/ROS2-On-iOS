@@ -33,7 +33,7 @@ function getSource() {
     mkdir -p $ros2DependenciesSourceDownloadPath
     cd $ros2DependenciesSourceDownloadPath
 
-    # curl -s -L -o pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
+    curl -s -L -o pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
          #-o autoconf.tar.gz http://ftpmirror.gnu.org/autoconf/autoconf-2.69.tar.gz \
          #-o automake.tar.gz http://ftpmirror.gnu.org/automake/automake-1.15.tar.gz \
          #-o libtool.tar.gz http://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.gz \
@@ -41,7 +41,7 @@ function getSource() {
 
     # Dependencies for rviz
     # Need -L to download github releases according to https://stackoverflow.com/questions/46060010/download-github-release-with-curl
-    # curl -s -L -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz \
+    curl -s -L -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz \
          -o libpng.tar.xz https://download.sourceforge.net/libpng/libpng-1.6.37.tar.xz \
          -o zlib.tar.xz https://zlib.net/zlib-1.2.12.tar.xz \
          -o eigen.tar.bz2 https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2 \
@@ -50,9 +50,8 @@ function getSource() {
          -o qtbase.tar.gz https://download.qt.io/archive/qt/5.15/5.15.5/submodules/qtbase-everywhere-opensource-src-5.15.5.tar.xz
 
     # Common heavy dependencies OpenCV, Boost
-    curl -s -L #-o opencv.tar.gz https://github.com/opencv/opencv/archive/refs/tags/4.6.0.tar.gz \
-
-    curl -s -L -o boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz
+    curl -s -L -o opencv.tar.gz https://github.com/opencv/opencv/archive/refs/tags/4.6.0.tar.gz \
+               -o boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz
 
     # Dependencies for cartographer
     if [ $targetPlatform != "macOS" ] && [ $targetPlatform != "macOS_M1" ]; then
@@ -304,8 +303,7 @@ function buildBoost() {
     ./bootstrap.sh --prefix=$ros2SystemDependenciesPath \
                    --with-python=$pythonRoot/bin/python3 \
                    --with-python-version=3.10 \
-                   --with-python-root=$pythonRoot/bin/python3 \
-                   --with-libraries=python # temporarily build Boost Python only to save recompile time
+                   --with-python-root=$pythonRoot/bin/python3
 
     ./b2 install architecture=$boostArch # --debug-configuration --debug-building --debug-generator -d+2
 }
@@ -420,19 +418,19 @@ function buildAll() {
 getSource
 extractSource
 setupPlatform
-# buildHostTools
+buildHostTools
 
 case $targetPlatform in
     "macOS"|"macOS_M1") # Build dependencies for RVIZ and OpenCV
-        #buildZlib
-        #buildLibPng
-        #buildFreeType2
-        #buildEigen3
-        #buildTinyXML2
-        #buildBullet3
-        #buildQt5
-        buildBoost;;
-        # buildOpenCV;;
+        buildZlib
+        buildLibPng
+        buildFreeType2
+        buildEigen3
+        buildTinyXML2
+        buildBullet3
+        buildQt5
+        buildBoost
+        buildOpenCV;;
 
     *) # Build useful dependencies for iOS
         buildTinyXML2;;

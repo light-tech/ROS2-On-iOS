@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 1200
     strategy:
       matrix:
-        platformArch: [macOS] #, iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1] # macOS_M1
+        platformArch: [macOS, iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1] # macOS_M1
     steps:
       - uses: actions/checkout@v3
 
@@ -49,21 +49,21 @@ jobs:
       - name: Download and extract prebuilt dependencies
         id: download_dependencies
         run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.1/ros2deps_${{ matrix.platformArch }}.tar.xz && tar xzf ros2deps_${{ matrix.platformArch }}.tar.xz
-        if: ${{ true && steps.build_dependencies.outcome != 'success' && startsWith(matrix.platformArch, 'macOS') }}
+        if: ${{ steps.build_dependencies.outcome != 'success' && startsWith(matrix.platformArch, 'macOS') }}
 
       # On macOS, only build ROS2 if either building or downloading dependencies succeeds
       - name: Build ROS2
         id: build_ros2
         run: ./build_ros2.sh ${{ matrix.platformArch }}
-        if: ${{ false }} # !startsWith(matrix.platformArch, 'macOS') || steps.build_dependencies.outcome == 'success' || steps.download_dependencies.outcome == 'success' }}
+        if: ${{ !startsWith(matrix.platformArch, 'macOS') || steps.build_dependencies.outcome == 'success' || steps.download_dependencies.outcome == 'success' }}
 
       - name: Archive ROS2 and dependencies
         run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
-        if: ${{ false && steps.build_ros2.outcome == 'success' }}
+        if: ${{ steps.build_ros2.outcome == 'success' }}
 
       - name: Publish ROS2 for release
         uses: actions/upload-artifact@v3
         with:
           name: ros2_${{ matrix.platformArch }}
           path: ros2_${{ matrix.platformArch }}.tar.xz
-        if: ${{ false && steps.build_ros2.outcome == 'success' }}
+        if: ${{ steps.build_ros2.outcome == 'success' }}
