@@ -1,0 +1,69 @@
+repositories:
+  angles:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: ros2
+  control_msgs:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: galactic-devel
+  control_toolbox:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: ros2
+  eigen_stl_containers:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: ros2
+  geometric_shapes:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: ros2
+  kdl_parser:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: ros2
+  moveit2:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: humble
+  moveit_msgs:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: ros2
+  moveit_resources:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: ros2
+  object_recognition_msgs:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: ros2
+  octomap_msgs:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: ros2
+  random_numbers:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: ros2
+  realtime_tools:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: foxy-devel
+  ros2_control:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: 2.12.0
+  srdfdom:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: ros2
+  vision_opencv:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: ros2
+  warehouse_ros:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: ros2
