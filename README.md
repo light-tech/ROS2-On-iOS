@@ -151,3 +151,17 @@ After my tons of failures, here is what went going on behind the above command:
     Here, I am using `noop` one to avoid one more dependency `spdlog_vendor`.
 
  8. ROS2 depends significantly on dynamic linking. Do NOT add `BUILD_SHARED_LIBS=NO`, contrary to my other project [LLVM](https://github.com/light-tech/LLVM-On-iOS/) where building static libs is needed!
+
+## ROS Development Building Tip
+
+Define functions `buildCMake` and `buildColcon` in your `.zshrc` for instance
+```shell
+buildCMake() {
+    mkdir _build && cd _build
+    cmake -DCMAKE_INSTALL_PREFIX=$HOME/usr/ros2/deps -DCMAKE_PREFIX_PATH="$HOME/usr/ros2/deps" "$@" ..
+    cmake --build . --config Release --target install
+}
+```
+to avoid typing (copying and pasting) long chains of shell commands in the terminal.
+
+Also, add `activatePythonEnv` and `activateROS2` to avoid typing the setup path.
