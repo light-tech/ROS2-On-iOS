@@ -20,17 +20,23 @@ jobs:
         with:
           cmake-version: '3.23.x'
 
-      - run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2deps_${{ matrix.platformArch }}.tar.xz && tar xzf ros2deps_${{ matrix.platformArch }}.tar.xz
+      # Fetch prebuilt ROS2 base system
+      - run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_${{ matrix.platformArch }}.tar.xz && tar xzf ros2_${{ matrix.platformArch }}.tar.xz
 
-      - name: Install X11 (XQuartz) on MacOS
+      # Fetch prebuilt MoveIt2 dependencies
+      - run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/moveit2deps.tar.xz && tar xzf moveit2deps.tar.xz
+
+      - name: Install X11 (XQuartz)
         run: brew install xquartz
 
-      - name: Build MoveIt dependencies
+      - name: Build MoveIt
         run: ./build_moveit.sh
 
       - run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
+        if: ${{ false }}
 
       - uses: actions/upload-artifact@v3
         with:
           name: ros2_${{ matrix.platformArch }}
           path: ros2_${{ matrix.platformArch }}.tar.xz
+        if: ${{ false }}
