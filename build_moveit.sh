@@ -6,6 +6,8 @@ depsSrcDownloadPath=$REPO_ROOT/deps_download
 depsSrcExtractPath=$REPO_ROOT/deps_extract
 depsInstallPath=$REPO_ROOT/ros2_macOS/deps
 
+moveit2InstallPath=$REPO_ROOT/moveit2_macOS/
+
 getMoveItDeps() {
     mkdir -p $depsSrcDownloadPath
     cd $depsSrcDownloadPath
@@ -110,7 +112,7 @@ buildMoveIt() {
 
     # And build
     cd $REPO_ROOT/moveit2_ws
-    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=NO -DCMAKE_PREFIX_PATH="$depsInstallPath"
+    colcon build --install-base $moveit2InstallPath --merge-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=NO -DCMAKE_PREFIX_PATH="$depsInstallPath"
 }
 
 #getMoveItDeps
