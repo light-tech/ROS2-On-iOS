@@ -1,0 +1,54 @@
+diff --git a/moveit_kinematics/cached_ik_kinematics_plugin/include/moveit/cached_ik_kinematics_plugin/detail/NearestNeighborsGNAT.h b/moveit_kinematics/cached_ik_kinematics_plugin/include/moveit/cached_ik_kinematics_plugin/detail/NearestNeighborsGNAT.h
+index 431d8b47e..7f4b4aa60 100644
+--- a/moveit_kinematics/cached_ik_kinematics_plugin/include/moveit/cached_ik_kinematics_plugin/detail/NearestNeighborsGNAT.h
++++ b/moveit_kinematics/cached_ik_kinematics_plugin/include/moveit/cached_ik_kinematics_plugin/detail/NearestNeighborsGNAT.h
+@@ -96,6 +96,18 @@ protected:
+   using NodeQueue = std::priority_queue<NodeDist, std::vector<NodeDist>, NodeDistCompare>;
+   // \endcond
+ 
++  template<typename T>
++  static void shuffleVector(std::vector<T> &v) {
++#if __cplusplus >= 201703L
++    // https://stackoverflow.com/questions/45013977/random-shuffle-is-not-a-member-of-std-error
++    static std::random_device rd;
++    static std::mt19937 g(rd());
++    std::shuffle(v.begin(), v.end(), g);
++#else
++    std::random_shuffle(v.begin(), v.end();
++#endif
++  }
++
+ public:
+   NearestNeighborsGNAT(unsigned int degree = 8, unsigned int minDegree = 4, unsigned int maxDegree = 12,
+                        unsigned int maxNumPtsPerLeaf = 50, unsigned int removedCacheSize = 500,
+@@ -552,7 +564,7 @@ protected:
+         std::vector<int> permutation(children_.size());
+         for (unsigned int i = 0; i < permutation.size(); ++i)
+           permutation[i] = i;
+-        std::random_shuffle(permutation.begin(), permutation.end());
++        shuffleVector(permutation);
+ 
+         for (unsigned int i = 0; i < children_.size(); ++i)
+           if (permutation[i] >= 0)
+@@ -606,7 +618,7 @@ protected:
+         std::vector<int> permutation(children_.size());
+         for (unsigned int i = 0; i < permutation.size(); ++i)
+           permutation[i] = i;
+-        std::random_shuffle(permutation.begin(), permutation.end());
++        shuffleVector(permutation);
+ 
+         for (unsigned int i = 0; i < children_.size(); ++i)
+           if (permutation[i] >= 0)
+diff --git a/moveit_planners/chomp/chomp_motion_planner/src/chomp_trajectory.cpp b/moveit_planners/chomp/chomp_motion_planner/src/chomp_trajectory.cpp
+index d15329002..c0dc2abe5 100644
+--- a/moveit_planners/chomp/chomp_motion_planner/src/chomp_trajectory.cpp
++++ b/moveit_planners/chomp/chomp_motion_planner/src/chomp_trajectory.cpp
+@@ -152,7 +152,7 @@ void ChompTrajectory::fillInMinJerk()
+ 
+   // calculate the spline coefficients for each joint:
+   // (these are for the special case of zero start and end vel and acc)
+-  std::vector<double[6]> coeff(num_joints_);
++  std::vector<std::array<double, 6>> coeff(num_joints_);
+   for (size_t i = 0; i < num_joints_; ++i)
+   {
+     double x0 = (*this)(start_index, i);

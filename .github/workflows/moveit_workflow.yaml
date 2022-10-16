@@ -1,0 +1,41 @@
+name: Build MoveIt2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'build_moveit.sh'
+      - '.github/workflows/moveit_workflow.yml'
+jobs:
+  build-moveit2:
+    runs-on: macos-latest
+    timeout-minutes: 1200
+    strategy:
+      matrix:
+        platformArch: [macOS]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.12
+        with:
+          cmake-version: '3.23.x'
+
+      - name: Fetch prebuilt ROS2 base system
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_${{ matrix.platformArch }}.tar.xz && tar xzf ros2_${{ matrix.platformArch }}.tar.xz
+
+      - name: Fetch prebuilt MoveIt2 dependencies
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/moveit2deps.tar.xz && tar xzf moveit2deps.tar.xz
+
+      - name: Install X11 (XQuartz)
+        run: brew install xquartz
+
+      - name: Build MoveIt2
+        run: ./build_moveit.sh
+
+      - name: Packaging MoveIt2 installation
+        run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/ moveit2_${{ matrix.platformArch }}/
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ros2_${{ matrix.platformArch }}
+          path: ros2_${{ matrix.platformArch }}.tar.xz
