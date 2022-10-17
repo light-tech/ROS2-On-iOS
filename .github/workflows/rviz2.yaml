@@ -1,0 +1,35 @@
+name: Build Rviz2
+on:
+  workflow_dispatch:
+jobs:
+  build-rviz2:
+    runs-on: macos-latest
+    timeout-minutes: 1200
+    strategy:
+      matrix:
+        platformArch: [macOS]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.12
+        with:
+          cmake-version: '3.23.x'
+
+      - name: Fetch prebuilt ROS2 base system
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_${{ matrix.platformArch }}.tar.xz && tar xzf ros2_${{ matrix.platformArch }}.tar.xz
+
+      - name: Download and extract prebuilt dependencies
+        id: download_dependencies
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/deps_${{ matrix.platformArch }}.tar.xz && tar xzf deps_${{ matrix.platformArch }}.tar.xz
+
+      - name: Build Rviz2
+        run: source build_ros2.sh ${{ matrix.platformArch }} && buildRviz2
+
+      - name: Packaging Rviz2 installation
+        run: tar cJf rviz2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/rviz2/
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: rviz2_${{ matrix.platformArch }}
+          path: rviz2_${{ matrix.platformArch }}.tar.xz

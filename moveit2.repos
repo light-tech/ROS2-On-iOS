@@ -10,7 +10,7 @@ repositories:
   control_toolbox:
     type: git
     url: https://github.com/ros-controls/control_toolbox.git
-    version: ros2
+    version: ros2-master
   eigen_stl_containers:
     type: git
     url: https://github.com/ros/eigen_stl_containers.git

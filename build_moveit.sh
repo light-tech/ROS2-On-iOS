@@ -6,8 +6,6 @@ depsSrcDownloadPath=$REPO_ROOT/deps_download
 depsSrcExtractPath=$REPO_ROOT/deps_extract
 depsInstallPath=$REPO_ROOT/ros2_macOS/deps
 
-moveit2InstallPath=$REPO_ROOT/moveit2_macOS/
-
 getMoveItDeps() {
     mkdir -p $depsSrcDownloadPath
     cd $depsSrcDownloadPath
@@ -73,51 +71,6 @@ buildMoveItDeps() {
     cd $depsSrcExtractPath/openmp-14.0.6.src && buildCMake
 }
 
-prepareVirtualEnv() {
-    python3 -m venv $ros2PythonEnvPath
-    source $ros2PythonEnvPath/bin/activate
-    python3 -m pip install -r requirements.txt
-}
-
-buildMoveIt() {
-    echo "Build MoveIt2 packages"
-
-    # Ready the workspace
-    # I used this
-    #     find . -mindepth 1 -maxdepth 1 -exec sh -c "cd {}; git remote --verbose; git branch" \;
-    # to find construct the repo file moveit2.repos.
-    cd $REPO_ROOT
-    mkdir -p moveit2_ws/src
-    cd moveit2_ws
-    vcs import src < $REPO_ROOT/moveit2.repos
-
-    # macOS does not have sched_setscheduler and we need to fix the const-ness
-    # also need to account for https://stackoverflow.com/questions/65397041/apple-clang-why-can-i-not-create-a-time-point-from-stdchrononanoseconds
-    cd $REPO_ROOT/moveit2_ws/src/ros2_control
-    git apply $REPO_ROOT/ros2_control.patch
-
-    # Fix std::vector<double[6]> and std::random_shuffle removed in C++17
-    cd $REPO_ROOT/moveit2_ws/src/moveit2
-    git apply $REPO_ROOT/moveit2.patch
-
-    # Disable pilz_industrial_motion_planner for now as it leads to
-    #
-    # Undefined symbols for architecture x86_64:
-    #    "pilz_industrial_motion_planner::LimitsContainer::LimitsContainer()", referenced from:
-    #        pilz_industrial_motion_planner::PlanningContextLoader::PlanningContextLoader() in planning_context_loader.cpp.o
-    touch moveit_planners/pilz_industrial_motion_planner/AMENT_IGNORE
-
-    # Prepare base
-    source $REPO_ROOT/ros2_macOS/setup.sh
-
-    # And build
-    cd $REPO_ROOT/moveit2_ws
-    colcon build --install-base $moveit2InstallPath --merge-install --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=NO -DCMAKE_PREFIX_PATH="$depsInstallPath"
-}
-
 #getMoveItDeps
 #extractMoveItDeps
 #buildMoveItDeps
-
-test -d $ros2PythonEnvPath && source $ros2PythonEnvPath/bin/activate || prepareVirtualEnv
-buildMoveIt

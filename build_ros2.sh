@@ -8,26 +8,13 @@
 REPO_ROOT=`pwd`
 targetPlatform=$1
 ros2PythonEnvPath=$REPO_ROOT/ros2PythonEnv
-ros2InstallPath=$REPO_ROOT/ros2_$targetPlatform
-ros2SystemDependenciesPath=$ros2InstallPath/deps
 
 colconVerbose=0
-
-colconArgs=(--install-base $ros2InstallPath \
-            --merge-install --cmake-force-configure)
-
-#colconArgs+=(--packages-up-to rviz_ogre_vendor)
+colconArgs=(--merge-install --cmake-force-configure)
 
 if [ "$colconVerbose" == "1" ]; then
     colconArgs+=(--executor sequential --event-handlers console_direct+)
 fi
-
-colconArgs+=(--cmake-args -DBUILD_TESTING=NO \
-                          -DTHIRDPARTY=FORCE \
-                          -DCOMPILE_TOOLS=NO \
-                          -DFORCE_BUILD_VENDOR_PKG=ON \
-                          -DBUILD_MEMORY_TOOLS=OFF \
-                          -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop)
 
 prepareVirtualEnv() {
     python3 -m venv $ros2PythonEnvPath
@@ -45,6 +32,64 @@ printPython() {
     echo "    --cflags   : " $(python3-config --cflags)
     # echo "Files in /Users/runner/hostedtoolcache/Python/3.10.7/x64/"
     # find /Users/runner/hostedtoolcache/Python/3.10.7/x64/
+}
+
+buildRos2Base() {
+    echo "Build ros2 base ( assuming dependencies are available at $ros2SystemDependenciesPath )"
+
+    test -d $ros2PythonEnvPath && source $ros2PythonEnvPath/bin/activate || prepareVirtualEnv
+    # printPython
+
+    cd $REPO_ROOT
+    mkdir -p ros2_ws/src
+    cd ros2_ws
+
+    # wget https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos
+    vcs import src < $REPO_ROOT/ros2_min.repos
+
+    # Ignore rcl_logging_spdlog package
+    touch src/ros2/rcl_logging/rcl_logging_spdlog/AMENT_IGNORE
+
+    if [ $targetPlatform == "macOS" ]; then
+        # For macOS, we install in `base` subdir of `ros2`, to accompany `rviz2` and `moveit2`
+        ros2InstallPath=$REPO_ROOT/ros2_$targetPlatform/base
+    else
+        # For iOS, only `base` is available so we simply use `ros2` as installation dir
+        ros2InstallPath=$REPO_ROOT/ros2_$targetPlatform
+    fi
+
+    colconArgs+=(--cmake-args -DBUILD_TESTING=NO \
+                              -DTHIRDPARTY=FORCE \
+                              -DCOMPILE_TOOLS=NO \
+                              -DFORCE_BUILD_VENDOR_PKG=ON \
+                              -DBUILD_MEMORY_TOOLS=OFF \
+                              -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop)
+
+    if [ $targetPlatform == "macOS" ] || [ $targetPlatform == "macOS_M1" ]; then
+
+        if [ $targetPlatform == "macOS" ]; then
+            # For macOS desktop (Intel), we add the CLI tools (ros2 launch) and rclpy as well
+            # We probably won't be able to build these for M1 macOS on GitHub Action
+            # as there is no way to link with the ARM version of libpython*.dylib there
+            # and rclpy and IDL code generation for Python needs that.
+            vcs import src < $REPO_ROOT/ros2_cli.repos
+        fi
+
+        colconArgs+=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
+
+        if [ $targetPlatform == "macOS_M1" ]; then
+            colconArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake)
+        fi
+
+    else
+        # For iOS platform, set appropriate toolchain file
+        colconArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake)
+
+        # Replace if_arp.h header with ethernet.h
+        # sed -i.bak 's/if_arp.h/ethernet.h/g' src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp
+    fi
+
+    VERBOSE=$colconVerbose colcon build --install-base $ros2InstallPath "${colconArgs[@]}"
 }
 
 patchRviz() {
@@ -68,82 +113,63 @@ patchRvizM1() {
         src/ros2/tinyxml_vendor/CMakeLists.txt
 }
 
-buildRos2Base() {
-    echo "Build ros2 base ( assuming dependencies are available at $ros2SystemDependenciesPath )"
+buildRviz2() {
+    test -d $ros2PythonEnvPath && source $ros2PythonEnvPath/bin/activate || prepareVirtualEnv
 
-    cd $REPO_ROOT
-    mkdir -p ros2_ws/src
-    cd ros2_ws
-
-    # wget https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos
-    vcs import src < $REPO_ROOT/ros2_min.repos
-
-    # Ignore rcl_logging_spdlog package
-    touch src/ros2/rcl_logging/rcl_logging_spdlog/AMENT_IGNORE
-
-    if [ $targetPlatform == "macOS" ] || [ $targetPlatform == "macOS_M1" ]; then
-
-        if [ $targetPlatform == "macOS" ]; then
-            # For macOS desktop (Intel), we add the CLI tools (ros2 launch) and rclpy as well
-            # We probably won't be able to build these for M1 macOS on GitHub Action
-            # as there is no way to link with the ARM version of libpython*.dylib there
-            # and rclpy and IDL code generation for Python needs that.
-            vcs import src < $REPO_ROOT/ros2_cli.repos
-
-            # And also build RVIZ2
-            vcs import src < $REPO_ROOT/rviz2.repos
-            patchRviz
-        fi
-
-        colconArgs+=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
-
-        if [ $targetPlatform == "macOS_M1" ]; then
-            # patchRvizM1
-            colconArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake)
-        fi
-
-    else
-        # For iOS platform, set appropriate toolchain file
-        colconArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake)
-
-        # Replace if_arp.h header with ethernet.h
-        # sed -i.bak 's/if_arp.h/ethernet.h/g' src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp
-    fi
-
-    VERBOSE=$colconVerbose colcon build "${colconArgs[@]}"
-}
-
-buildExperimentalWorkspace() {
-    echo "Prepare ROS2 base packages"
-
-    # Extract previously built dependencies and ROS2 base to save time while we try to build rviz2
-    curl -L -o ros2_base.tar.xz https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-macos/ros2_$targetPlatform.tar.xz
-    tar xzf ros2_base.tar.xz
+    rviz2InstallPath=$REPO_ROOT/ros2_$targetPlatform/rviz2
+    rviz2SystemDependenciesPath=$REPO_ROOT/ros2_$targetPlatform/deps
 
     # Source the prebuilt ROS2 base
     # IMPORTANT: GitHub Action uses bash shell!
-    source $REPO_ROOT/ros2_$targetPlatform/setup.sh
-
-    # Rebuild dependencies
-    # ./build_deps.sh $targetPlatform
-
-    echo "Experiment building rviz2 (M1 Mac)"
+    source $REPO_ROOT/ros2_$targetPlatform/base/setup.sh
 
     cd $REPO_ROOT
-    mkdir -p ros2_ws/src
-    cd ros2_ws
+    mkdir -p rviz2_ws/src
+    cd rviz2_ws
     vcs import src < $REPO_ROOT/rviz2.repos
 
     patchRviz
-    patchRvizM1
 
-    colconArgs+=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake)
-
-    VERBOSE=1 colcon build --packages-up-to rviz_ogre_vendor "${colconArgs[@]}"
+    VERBOSE=$colconVerbose colcon build --install-base $rviz2InstallPath "${colconArgs[@]}" \
+        --cmake-args -DCMAKE_PREFIX_PATH=$rviz2SystemDependenciesPath -DBUILD_TESTING=NO
 }
 
-test -d $ros2PythonEnvPath || prepareVirtualEnv
-source $ros2PythonEnvPath/bin/activate
-# printPython
-buildRos2Base
-# buildExperimentalWorkspace
+buildMoveIt2() {
+    moveit2InstallPath=$REPO_ROOT/ros2_$targetPlatform/moveit2
+    depsInstallPath=$REPO_ROOT/ros2_$targetPlatform/deps
+
+    test -d $ros2PythonEnvPath && source $ros2PythonEnvPath/bin/activate || prepareVirtualEnv
+
+    # Ready the workspace
+    # I used this
+    #     find . -mindepth 1 -maxdepth 1 -exec sh -c "cd {}; git remote --verbose; git branch" \;
+    # to find construct the repo file moveit2.repos.
+    cd $REPO_ROOT
+    mkdir -p moveit2_ws/src
+    cd moveit2_ws
+    vcs import src < $REPO_ROOT/moveit2.repos
+
+    # macOS does not have sched_setscheduler and we need to fix the const-ness
+    # also need to account for https://stackoverflow.com/questions/65397041/apple-clang-why-can-i-not-create-a-time-point-from-stdchrononanoseconds
+    cd $REPO_ROOT/moveit2_ws/src/ros2_control
+    git apply $REPO_ROOT/ros2_control.patch
+
+    # Fix std::vector<double[6]> and std::random_shuffle removed in C++17
+    cd $REPO_ROOT/moveit2_ws/src/moveit2
+    git apply $REPO_ROOT/moveit2.patch
+
+    # Disable pilz_industrial_motion_planner for now as it leads to
+    #
+    # Undefined symbols for architecture x86_64:
+    #    "pilz_industrial_motion_planner::LimitsContainer::LimitsContainer()", referenced from:
+    #        pilz_industrial_motion_planner::PlanningContextLoader::PlanningContextLoader() in planning_context_loader.cpp.o
+    touch moveit_planners/pilz_industrial_motion_planner/AMENT_IGNORE
+
+    # Prepare rviz2 (and base)
+    source $REPO_ROOT/ros2_$targetPlatform/rviz2/setup.sh
+
+    # And build
+    cd $REPO_ROOT/moveit2_ws
+    colcon build --install-base $moveit2InstallPath --merge-install \
+        --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=NO -DCMAKE_PREFIX_PATH="$depsInstallPath"
+}

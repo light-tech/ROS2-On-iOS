@@ -1,10 +1,6 @@
 name: Build MoveIt2
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'build_moveit.sh'
-      - '.github/workflows/moveit_workflow.yml'
 jobs:
   build-moveit2:
     runs-on: macos-latest
@@ -23,19 +19,22 @@ jobs:
       - name: Fetch prebuilt ROS2 base system
         run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_${{ matrix.platformArch }}.tar.xz && tar xzf ros2_${{ matrix.platformArch }}.tar.xz
 
+      - name: Fetch prebuilt Rviz2
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/rviz2_${{ matrix.platformArch }}.tar.xz && tar xzf rviz2_${{ matrix.platformArch }}.tar.xz
+
       - name: Fetch prebuilt MoveIt2 dependencies
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/moveit2deps.tar.xz && tar xzf moveit2deps.tar.xz
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/deps_${{ matrix.platformArch }}.tar.xz && tar xzf deps_${{ matrix.platformArch }}.tar.xz
 
       - name: Install X11 (XQuartz)
         run: brew install xquartz
 
       - name: Build MoveIt2
-        run: ./build_moveit.sh
+        run: source build_ros2.sh ${{ matrix.platformArch }} && buildMoveIt2
 
       - name: Packaging MoveIt2 installation
-        run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/ moveit2_${{ matrix.platformArch }}/
+        run: tar cJf moveit2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/moveit2/
 
       - uses: actions/upload-artifact@v3
         with:
-          name: ros2_${{ matrix.platformArch }}
-          path: ros2_${{ matrix.platformArch }}.tar.xz
+          name: moveit2_${{ matrix.platformArch }}
+          path: moveit2_${{ matrix.platformArch }}.tar.xz
