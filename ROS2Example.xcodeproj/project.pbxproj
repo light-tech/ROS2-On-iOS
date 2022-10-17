@@ -781,6 +781,8 @@
 		B7BD402C28F85F86001143EE /* build_moveit.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build_moveit.sh; sourceTree = SOURCE_ROOT; };
 		B7BD402D28F85F86001143EE /* fix_hardcoded_paths.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = fix_hardcoded_paths.sh; sourceTree = SOURCE_ROOT; };
 		B7BD402E28F85F86001143EE /* moveit2.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = moveit2.repos; sourceTree = SOURCE_ROOT; };
+		B7BDDA1628FCED1F00C428CB /* ros2_control.patch */ = {isa = PBXFileReference; lastKnownFileType = file; path = ros2_control.patch; sourceTree = SOURCE_ROOT; };
+		B7BDDA1728FCED1F00C428CB /* moveit2.patch */ = {isa = PBXFileReference; lastKnownFileType = file; path = moveit2.patch; sourceTree = SOURCE_ROOT; };
 		B7D8E86028DC569D00D2A11E /* ros2_cli.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = ros2_cli.repos; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -1169,26 +1171,9 @@
 		B7928F6A28A7484E000B40D4 /* Miscs */ = {
 			isa = PBXGroup;
 			children = (
-				B75542FF28B272FF00AAFC17 /* iOS.cmake */,
-				B755430128B272FF00AAFC17 /* iOS_Simulator.cmake */,
-				B755430028B272FF00AAFC17 /* iOS_Simulator_M1.cmake */,
-				B7B6618C28CEE1D600407B44 /* macCatalyst.cmake */,
-				B7B6618B28CEE1D600407B44 /* macCatalyst_M1.cmake */,
-				B77B4E7528E6DE7E009DBCA0 /* macOS_M1.cmake */,
-				B7928F7528A7491A000B40D4 /* main.yml */,
-				B778C1EC28F9A32F00A14994 /* moveit_workflow.yaml */,
-				B79E396D28BDACBA001526FF /* build_deps.sh */,
-				B7928F6D28A74865000B40D4 /* build_ros2.sh */,
-				B7BD402C28F85F86001143EE /* build_moveit.sh */,
-				B7BD402D28F85F86001143EE /* fix_hardcoded_paths.sh */,
 				B7928F6C28A74865000B40D4 /* README.md */,
 				B7549AD428BC7013002D32A1 /* MACOS.md */,
 				B7928F6F28A74865000B40D4 /* requirements.txt */,
-				B7928F6B28A74865000B40D4 /* ros2.repos */,
-				B7928F6E28A74865000B40D4 /* ros2_min.repos */,
-				B7D8E86028DC569D00D2A11E /* ros2_cli.repos */,
-				B76AD78828B4BD920097A296 /* rviz2.repos */,
-				B7BD402E28F85F86001143EE /* moveit2.repos */,
 			);
 			name = Miscs;
 			sourceTree = "<group>";
@@ -1212,8 +1197,13 @@
 		B7ACAC3128A6A23F00A537EB /* ROS2Example */ = {
 			isa = PBXGroup;
 			children = (
-				B7928F6728A743A2000B40D4 /* ROS2Libs */,
+				B7EC3F7C28FC58FE00FB237D /* CMake */,
+				B7EC3F7B28FC58F300FB237D /* Scripts */,
+				B7BDDA1528FCECE800C428CB /* Patch */,
+				B7EC3F7D28FC590800FB237D /* Workflows */,
 				B7928F6A28A7484E000B40D4 /* Miscs */,
+				B7BDDA1A28FCEDBF00C428CB /* Repos */,
+				B7928F6728A743A2000B40D4 /* ROS2Libs */,
 				B7928F6428A741BD000B40D4 /* ROS2Bridge.h */,
 				B7928F6528A741BD000B40D4 /* ROS2Bridge.mm */,
 				B7ACAC3228A6A23F00A537EB /* ROS2ExampleApp.swift */,
@@ -1231,6 +1221,60 @@
 				B7ACAC3928A6A24000A537EB /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		B7BDDA1528FCECE800C428CB /* Patch */ = {
+			isa = PBXGroup;
+			children = (
+				B7BDDA1728FCED1F00C428CB /* moveit2.patch */,
+				B7BDDA1628FCED1F00C428CB /* ros2_control.patch */,
+			);
+			name = Patch;
+			sourceTree = "<group>";
+		};
+		B7BDDA1A28FCEDBF00C428CB /* Repos */ = {
+			isa = PBXGroup;
+			children = (
+				B7928F6B28A74865000B40D4 /* ros2.repos */,
+				B7928F6E28A74865000B40D4 /* ros2_min.repos */,
+				B7D8E86028DC569D00D2A11E /* ros2_cli.repos */,
+				B76AD78828B4BD920097A296 /* rviz2.repos */,
+				B7BD402E28F85F86001143EE /* moveit2.repos */,
+			);
+			name = Repos;
+			sourceTree = "<group>";
+		};
+		B7EC3F7B28FC58F300FB237D /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				B79E396D28BDACBA001526FF /* build_deps.sh */,
+				B7928F6D28A74865000B40D4 /* build_ros2.sh */,
+				B7BD402C28F85F86001143EE /* build_moveit.sh */,
+				B7BD402D28F85F86001143EE /* fix_hardcoded_paths.sh */,
+			);
+			name = Scripts;
+			sourceTree = "<group>";
+		};
+		B7EC3F7C28FC58FE00FB237D /* CMake */ = {
+			isa = PBXGroup;
+			children = (
+				B75542FF28B272FF00AAFC17 /* iOS.cmake */,
+				B755430128B272FF00AAFC17 /* iOS_Simulator.cmake */,
+				B755430028B272FF00AAFC17 /* iOS_Simulator_M1.cmake */,
+				B7B6618C28CEE1D600407B44 /* macCatalyst.cmake */,
+				B7B6618B28CEE1D600407B44 /* macCatalyst_M1.cmake */,
+				B77B4E7528E6DE7E009DBCA0 /* macOS_M1.cmake */,
+			);
+			name = CMake;
+			sourceTree = "<group>";
+		};
+		B7EC3F7D28FC590800FB237D /* Workflows */ = {
+			isa = PBXGroup;
+			children = (
+				B7928F7528A7491A000B40D4 /* main.yml */,
+				B778C1EC28F9A32F00A14994 /* moveit_workflow.yaml */,
+			);
+			name = Workflows;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

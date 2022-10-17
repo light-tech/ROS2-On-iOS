@@ -1,10 +1,10 @@
-read -p 'Where did you extract ROS2 to (e.g. ~/usr/ros2)? ' installDir
+read -p "Where did you extract ROS2 to (e.g. $HOME/usr/ros2)? " installDir
 echo
 
-read -p 'Where is your virtual Python environment (e.g. ~/usr/ros2PythonEnv)? ' localPythonEnvPath
+read -p "Where is your virtual Python environment (e.g. $HOME/usr/ros2PythonEnv)? " localPythonEnvPath
 echo
 
-read -p 'Can you locate the path to libpython3.10.dylib (e.g. /Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/config-3.10-darwin/libpython3.10.dylib if you install Python using the official installer at python.org)? ' localLibPythonPath
+read -p "Can you locate the path to libpython3.10.dylib (e.g. /Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/config-3.10-darwin/libpython3.10.dylib if you install Python using the official installer at python.org)? " localLibPythonPath
 echo
 
 # Helper function to confirm before doing a command
