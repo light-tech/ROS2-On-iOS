@@ -758,6 +758,7 @@
 		B75543B828B2767700AAFC17 /* libbuiltin_interfaces__rosidl_typesupport_fastrtps_c.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbuiltin_interfaces__rosidl_typesupport_fastrtps_c.dylib; path = ros2/lib/libbuiltin_interfaces__rosidl_typesupport_fastrtps_c.dylib; sourceTree = SOURCE_ROOT; };
 		B75543B928B2767800AAFC17 /* librmw_dds_common__rosidl_typesupport_fastrtps_cpp.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librmw_dds_common__rosidl_typesupport_fastrtps_cpp.dylib; path = ros2/lib/librmw_dds_common__rosidl_typesupport_fastrtps_cpp.dylib; sourceTree = SOURCE_ROOT; };
 		B75543BA28B2767800AAFC17 /* librosidl_typesupport_fastrtps_c.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librosidl_typesupport_fastrtps_c.dylib; path = ros2/lib/librosidl_typesupport_fastrtps_c.dylib; sourceTree = SOURCE_ROOT; };
+		B76430B528FDAECB00580D19 /* deps.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = deps.yaml; path = .github/workflows/deps.yaml; sourceTree = SOURCE_ROOT; };
 		B76AD78828B4BD920097A296 /* rviz2.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = rviz2.repos; sourceTree = SOURCE_ROOT; };
 		B778C1EC28F9A32F00A14994 /* moveit2.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = moveit2.yaml; path = .github/workflows/moveit2.yaml; sourceTree = SOURCE_ROOT; };
 		B77B4E7528E6DE7E009DBCA0 /* macOS_M1.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = macOS_M1.cmake; path = cmake/macOS_M1.cmake; sourceTree = SOURCE_ROOT; };
@@ -778,11 +779,10 @@
 		B7ACAC3928A6A24000A537EB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B7B6618B28CEE1D600407B44 /* macCatalyst_M1.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = macCatalyst_M1.cmake; path = cmake/macCatalyst_M1.cmake; sourceTree = SOURCE_ROOT; };
 		B7B6618C28CEE1D600407B44 /* macCatalyst.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = macCatalyst.cmake; path = cmake/macCatalyst.cmake; sourceTree = SOURCE_ROOT; };
-		B7BD402C28F85F86001143EE /* build_moveit.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build_moveit.sh; sourceTree = SOURCE_ROOT; };
 		B7BD402D28F85F86001143EE /* fix_hardcoded_paths.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = fix_hardcoded_paths.sh; sourceTree = SOURCE_ROOT; };
 		B7BD402E28F85F86001143EE /* moveit2.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = moveit2.repos; sourceTree = SOURCE_ROOT; };
-		B7BDDA1628FCED1F00C428CB /* ros2_control.patch */ = {isa = PBXFileReference; lastKnownFileType = file; path = ros2_control.patch; sourceTree = SOURCE_ROOT; };
-		B7BDDA1728FCED1F00C428CB /* moveit2.patch */ = {isa = PBXFileReference; lastKnownFileType = file; path = moveit2.patch; sourceTree = SOURCE_ROOT; };
+		B7BDDA1628FCED1F00C428CB /* ros2_control.patch */ = {isa = PBXFileReference; lastKnownFileType = text; path = ros2_control.patch; sourceTree = SOURCE_ROOT; };
+		B7BDDA1728FCED1F00C428CB /* moveit2.patch */ = {isa = PBXFileReference; lastKnownFileType = text; path = moveit2.patch; sourceTree = SOURCE_ROOT; };
 		B7BDDA1B28FCF24B00C428CB /* rviz2.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = rviz2.yaml; path = .github/workflows/rviz2.yaml; sourceTree = SOURCE_ROOT; };
 		B7D8E86028DC569D00D2A11E /* ros2_cli.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = ros2_cli.repos; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -1250,7 +1250,6 @@
 			children = (
 				B79E396D28BDACBA001526FF /* build_deps.sh */,
 				B7928F6D28A74865000B40D4 /* build_ros2.sh */,
-				B7BD402C28F85F86001143EE /* build_moveit.sh */,
 				B7BD402D28F85F86001143EE /* fix_hardcoded_paths.sh */,
 			);
 			name = Scripts;
@@ -1272,6 +1271,7 @@
 		B7EC3F7D28FC590800FB237D /* Workflows */ = {
 			isa = PBXGroup;
 			children = (
+				B76430B528FDAECB00580D19 /* deps.yaml */,
 				B7928F7528A7491A000B40D4 /* base.yaml */,
 				B7BDDA1B28FCF24B00C428CB /* rviz2.yaml */,
 				B778C1EC28F9A32F00A14994 /* moveit2.yaml */,

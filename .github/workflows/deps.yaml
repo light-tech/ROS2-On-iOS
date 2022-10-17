@@ -1,0 +1,31 @@
+name: Build dependencies
+on:
+  workflow_dispatch:
+jobs:
+  build-dependencies:
+    runs-on: macos-latest
+    timeout-minutes: 1200
+    strategy:
+      matrix:
+        platformArch: [macOS] # iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.12
+        with:
+          cmake-version: '3.23.x'
+
+      - name: Install X11 (XQuartz)
+        run: brew install xquartz
+
+      - name: Build dependencies
+        run: ./build_deps.sh ${{ matrix.platformArch }}
+
+      - name: Package dependencies
+        run: tar cJf deps_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/deps/
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: deps_${{ matrix.platformArch }}
+          path: deps_${{ matrix.platformArch }}.tar.xz

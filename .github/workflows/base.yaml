@@ -23,42 +23,15 @@ jobs:
       #    cache: 'pip'
       # - run: pip3 install -r requirements.txt
 
-      # Enable building dependencies by changing `false` into `true`
-      - name: Build dependencies
-        id: build_dependencies
-        run: ./build_deps.sh ${{ matrix.platformArch }}
-        if: ${{ false }} # Force disable
-
-      - name: Archive dependencies
-        run: tar cJf ros2deps_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
-        if: ${{ steps.build_dependencies.outcome == 'success' }}
-
-      - name: Publish dependencies for reuse
-        uses: actions/upload-artifact@v3
-        with:
-          name: ros2deps_${{ matrix.platformArch }}
-          path: ros2deps_${{ matrix.platformArch }}.tar.xz
-        if: ${{ steps.build_dependencies.outcome == 'success' }}
-
-      # On macOS, download prebuilt dependencies if building dependencies is disabled
-      - name: Download and extract prebuilt dependencies
-        id: download_dependencies
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.1/ros2deps_${{ matrix.platformArch }}.tar.xz && tar xzf ros2deps_${{ matrix.platformArch }}.tar.xz
-        if: ${{ false && steps.build_dependencies.outcome != 'success' && startsWith(matrix.platformArch, 'macOS') }}
-
-      # On macOS, only build ROS2 if either building or downloading dependencies succeeds
       - name: Build ROS2
         id: build_ros2
         run: source build_ros2.sh ${{ matrix.platformArch }} && buildRos2Base
-        # if: ${{ !startsWith(matrix.platformArch, 'macOS') || steps.build_dependencies.outcome == 'success' || steps.download_dependencies.outcome == 'success' }}
 
       - name: Archive ROS2 and dependencies
         run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
-        if: ${{ steps.build_ros2.outcome == 'success' }}
 
       - name: Publish ROS2 for release
         uses: actions/upload-artifact@v3
         with:
           name: ros2_${{ matrix.platformArch }}
           path: ros2_${{ matrix.platformArch }}.tar.xz
-        if: ${{ steps.build_ros2.outcome == 'success' }}

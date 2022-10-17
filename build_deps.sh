@@ -11,6 +11,7 @@ ros2SystemDependenciesPath=$REPO_ROOT/ros2_$targetPlatform/deps
 ros2HostQtPath=$REPO_ROOT/host_deps/
 
 # Where we download the source archives
+# We download and extract at different places so that it is easier to clean up
 ros2DependenciesSourceDownloadPath=$REPO_ROOT/deps_download/
 
 # Location to extract the source
@@ -43,7 +44,7 @@ function getSource() {
     # Need -L to download github releases according to https://stackoverflow.com/questions/46060010/download-github-release-with-curl
     curl -s -L -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz \
          -o libpng.tar.xz https://download.sourceforge.net/libpng/libpng-1.6.37.tar.xz \
-         -o zlib.tar.xz https://zlib.net/zlib-1.2.12.tar.xz \
+         -o zlib.tar.xz https://zlib.net/zlib-1.2.13.tar.xz \
          -o eigen.tar.bz2 https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2 \
          -o tinyxml2.tar.gz https://github.com/leethomason/tinyxml2/archive/refs/tags/9.0.0.tar.gz \
          -o bullet3.tar.gz https://github.com/bulletphysics/bullet3/archive/refs/tags/3.24.tar.gz \
@@ -52,6 +53,19 @@ function getSource() {
     # Common heavy dependencies OpenCV, Boost
     curl -s -L -o opencv.tar.gz https://github.com/opencv/opencv/archive/refs/tags/4.6.0.tar.gz \
                -o boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz
+
+    # Dependencies for MoveIt2
+    curl -s -L -o fcl.tar.gz https://github.com/flexible-collision-library/fcl/archive/refs/tags/0.7.0.tar.gz \
+        -o ccd.tar.gz https://github.com/danfis/libccd/archive/refs/tags/v2.1.tar.gz \
+        -o octomap.tar.gz https://github.com/OctoMap/octomap/archive/refs/tags/v1.9.6.tar.gz \
+        -o qhull.tgz http://www.qhull.org/download/qhull-2020-src-8.0.2.tgz \
+        -o assimp.tar.gz https://github.com/assimp/assimp/archive/refs/tags/v5.2.5.tar.gz \
+        -o ruckig.tar.gz https://github.com/pantor/ruckig/archive/refs/tags/v0.8.4.tar.gz \
+        -o glew.tgz https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.tgz \
+        -o freeglut.tar.gz https://github.com/FreeGLUTProject/freeglut/releases/download/v3.4.0/freeglut-3.4.0.tar.gz \
+        -o openssl.tar.gz https://github.com/openssl/openssl/archive/refs/tags/openssl-3.0.6.tar.gz \
+        -o omplcore.tar.gz https://github.com/ompl/ompl/archive/1.5.2.tar.gz \
+        -o openmp.tar.xz https://github.com/llvm/llvm-project/releases/download/llvmorg-14.0.6/openmp-14.0.6.src.tar.xz
 
     # Dependencies for cartographer
     if [ $targetPlatform != "macOS" ] && [ $targetPlatform != "macOS_M1" ]; then
@@ -75,9 +89,10 @@ function getSource() {
 function extractSource() {
     mkdir -p $ros2DependenciesSourceExtractionPath
     cd $ros2DependenciesSourceExtractionPath
-    local src_files=`ls $ros2DependenciesSourceDownloadPath`
-    ls -all $ros2DependenciesSourceDownloadPath
-    for f in $src_files; do
+    local src_files=($(ls $ros2DependenciesSourceDownloadPath))
+    for f in "${src_files[@]}"; do
+        echo "Extract $f"
+        file $ros2DependenciesSourceDownloadPath/$f
         tar xzf $ros2DependenciesSourceDownloadPath/$f
     done
 }
@@ -190,7 +205,7 @@ function buildHostTools() {
 
 function buildZlib() {
     echo "Build zlib"
-    cd $ros2DependenciesSourceExtractionPath/zlib-1.2.12
+    cd $ros2DependenciesSourceExtractionPath/zlib-1.2.13
 
     # Note that zlib's configure does not set --host but relies on compiler flags environment variables
     setCompilerFlags
@@ -415,9 +430,43 @@ function buildAll() {
     buildPCL
 }
 
+buildMoveItDeps() {
+    cd $ros2DependenciesSourceExtractionPath/libccd-2.1 && buildCMake
+    cd $ros2DependenciesSourceExtractionPath/octomap-1.9.6 && buildCMake
+
+    # For octomap, we need to manually add
+    #   IMPORTED_LOCATION "${_IMPORT_PREFIX}/lib/libocto(map|math).1.9.6.dylib"
+    # appropriately to the two commands
+    #   set_target_properties(octomath PROPERTIES ...)
+    #   set_target_properties(octomap PROPERTIES ...)
+    # in the generated share/octomap/octomap-targets.cmake. Without this, building fcl will fail with
+    #
+    # CMake Error in CMakeLists.txt:
+    #   IMPORTED_LOCATION not set for imported target "octomap" configuration
+    #   "Release".
+
+    sed -i.bak -E 's,set_target_properties\(octo(math|map) PROPERTIES,set_target_properties(octo\1 PROPERTIES\n  IMPORTED_LOCATION "\${_IMPORT_PREFIX}/lib/libocto\1.1.9.6.dylib",' $ros2SystemDependenciesPath/share/octomap/octomap-targets.cmake
+
+    # FCL depends on octomap and libccd
+    cd $ros2DependenciesSourceExtractionPath/fcl-0.7.0 && buildCMake -DBUILD_TESTING=NO
+    cd $ros2DependenciesSourceExtractionPath/qhull-2020.2 && buildCMake
+    cd $ros2DependenciesSourceExtractionPath/assimp-5.2.5 && buildCMake
+    cd $ros2DependenciesSourceExtractionPath/ruckig-0.8.4 && buildCMake
+    cd $ros2DependenciesSourceExtractionPath/glew-2.2.0/build/cmake && buildCMake
+
+    # FreeGLUT needs X11 (provided by XQuartz for macOS)
+    # For some reason the X11 include path is not added so we force add it
+    cd $ros2DependenciesSourceExtractionPath/freeglut-3.4.0 && buildCMake -DFREEGLUT_BUILD_DEMOS=NO -DCMAKE_C_FLAGS="-isystem /usr/X11R6/include"
+
+    cd $ros2DependenciesSourceExtractionPath/openssl-openssl-3.0.6 && ./Configure --prefix=$ros2SystemDependenciesPath && make && make install
+    cd $ros2DependenciesSourceExtractionPath/ompl-1.5.2 && buildCMake
+    cd $ros2DependenciesSourceExtractionPath/openmp-14.0.6.src && buildCMake
+}
+
 getSource
 extractSource
 setupPlatform
+
 buildHostTools
 
 case $targetPlatform in
@@ -430,7 +479,8 @@ case $targetPlatform in
         buildBullet3
         buildQt5
         buildBoost
-        buildOpenCV;;
+        buildOpenCV
+        buildMoveItDeps;;
 
     *) # Build useful dependencies for iOS
         buildTinyXML2;;
