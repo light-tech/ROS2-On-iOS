@@ -10,8 +10,11 @@ jobs:
       matrix:
         platformArch: [macOS] # iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1
     steps:
-      - uses: actions/download-artifact@v3
-      - run: echo `pwd` && cat hello/hello.txt
+      - run: echo "Hello from base workflow!" >hello.txt
+      - uses: actions/upload-artifact@v3
+        with:
+          name: hello
+          path: hello.txt
 
       - uses: actions/checkout@v3
         if: ${{ false }}

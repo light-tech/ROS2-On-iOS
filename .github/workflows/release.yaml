@@ -6,23 +6,12 @@ jobs:
   #build-deps:
   #  uses: ./.github/workflows/deps.yaml
 
-  initialization:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Hello from initialization job!" >hello.txt
-      - uses: actions/upload-artifact@v3
-        with:
-          name: hello
-          path: hello.txt
-
   build-base:
     uses: ./.github/workflows/base.yaml
-    needs: initialization
 
   build-rviz2:
     uses: ./.github/workflows/rviz2.yaml
     needs: build-base #, build-deps
-    if: ${{ false }}
 
   build-moveit2:
     uses: ./.github/workflows/moveit2.yaml
