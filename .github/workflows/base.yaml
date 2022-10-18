@@ -4,31 +4,40 @@ on:
   workflow_call:
 jobs:
   build-ros2:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 1200
     strategy:
       matrix:
         platformArch: [macOS] # iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1
     steps:
+      - uses: actions/download-artifact@v3
+      - run: echo `pwd` && cat hello/hello.txt
+
       - uses: actions/checkout@v3
+        if: ${{ false }}
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.12
         with:
           cmake-version: '3.23.x'
+        if: ${{ false }}
 
       - name: Fetch cached Python environment
         run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/python_venv.tar.xz && tar xzf python_venv.tar.xz
+        if: ${{ false }}
 
       - name: Build ROS2
         id: build_ros2
         run: source ros2PythonEnv/bin/activate && source build_ros2.sh ${{ matrix.platformArch }} && buildRos2Base
+        if: ${{ false }}
 
       - name: Archive ROS2 and dependencies
         run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
+        if: ${{ false }}
 
       - name: Publish ROS2 for release
         uses: actions/upload-artifact@v3
         with:
           name: ros2_${{ matrix.platformArch }}
           path: ros2_${{ matrix.platformArch }}.tar.xz
+        if: ${{ false }}
