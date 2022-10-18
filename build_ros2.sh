@@ -7,7 +7,6 @@
 
 REPO_ROOT=`pwd`
 targetPlatform=$1
-ros2PythonEnvPath=$REPO_ROOT/ros2PythonEnv
 
 colconVerbose=0
 colconArgs=(--merge-install --cmake-force-configure)
@@ -17,6 +16,7 @@ if [ "$colconVerbose" == "1" ]; then
 fi
 
 prepareVirtualEnv() {
+    local ros2PythonEnvPath=$REPO_ROOT/ros2PythonEnv
     python3 -m venv $ros2PythonEnvPath
     source $ros2PythonEnvPath/bin/activate
     python3 -m pip install -r requirements.txt
@@ -37,7 +37,6 @@ printPython() {
 buildRos2Base() {
     echo "Build ros2 base ( assuming dependencies are available at $ros2SystemDependenciesPath )"
 
-    test -d $ros2PythonEnvPath && source $ros2PythonEnvPath/bin/activate || prepareVirtualEnv
     # printPython
 
     cd $REPO_ROOT
@@ -114,8 +113,6 @@ patchRvizM1() {
 }
 
 buildRviz2() {
-    test -d $ros2PythonEnvPath && source $ros2PythonEnvPath/bin/activate || prepareVirtualEnv
-
     rviz2InstallPath=$REPO_ROOT/ros2_$targetPlatform/rviz2
     rviz2SystemDependenciesPath=$REPO_ROOT/ros2_$targetPlatform/deps
 
@@ -137,8 +134,6 @@ buildRviz2() {
 buildMoveIt2() {
     moveit2InstallPath=$REPO_ROOT/ros2_$targetPlatform/moveit2
     depsInstallPath=$REPO_ROOT/ros2_$targetPlatform/deps
-
-    test -d $ros2PythonEnvPath && source $ros2PythonEnvPath/bin/activate || prepareVirtualEnv
 
     # Ready the workspace
     # I used this

@@ -16,16 +16,12 @@ jobs:
         with:
           cmake-version: '3.23.x'
 
-      # - name: Setup Python
-      #  uses: actions/setup-python@v4
-      #  with:
-      #    python-version: '3.10'
-      #    cache: 'pip'
-      # - run: pip3 install -r requirements.txt
+      - name: Fetch cached Python environment
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/python_venv.tar.xz && tar xzf python_venv.tar.xz
 
       - name: Build ROS2
         id: build_ros2
-        run: source build_ros2.sh ${{ matrix.platformArch }} && buildRos2Base
+        run: source ros2PythonEnv/bin/activate && source build_ros2.sh ${{ matrix.platformArch }} && buildRos2Base
 
       - name: Archive ROS2 and dependencies
         run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/

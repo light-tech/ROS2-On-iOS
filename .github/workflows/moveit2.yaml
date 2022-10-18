@@ -16,20 +16,23 @@ jobs:
         with:
           cmake-version: '3.23.x'
 
-      - name: Fetch prebuilt ROS2 base system
+      - name: Fetch cached Python environment
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/python_venv.tar.xz && tar xzf python_venv.tar.xz
+
+      - name: Fetch prebuilt dependencies
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/deps_${{ matrix.platformArch }}.tar.xz && tar xzf deps_${{ matrix.platformArch }}.tar.xz
+
+      - name: Fetch prebuilt ROS2 base
         run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_${{ matrix.platformArch }}.tar.xz && tar xzf ros2_${{ matrix.platformArch }}.tar.xz
 
       - name: Fetch prebuilt Rviz2
         run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/rviz2_${{ matrix.platformArch }}.tar.xz && tar xzf rviz2_${{ matrix.platformArch }}.tar.xz
 
-      - name: Fetch prebuilt MoveIt2 dependencies
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/deps_${{ matrix.platformArch }}.tar.xz && tar xzf deps_${{ matrix.platformArch }}.tar.xz
-
       - name: Install X11 (XQuartz)
         run: brew install xquartz
 
       - name: Build MoveIt2
-        run: source build_ros2.sh ${{ matrix.platformArch }} && buildMoveIt2
+        run: source ros2PythonEnv/bin/activate && source build_ros2.sh ${{ matrix.platformArch }} && buildMoveIt2
 
       - name: Packaging MoveIt2 installation
         run: tar cJf moveit2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/moveit2/
