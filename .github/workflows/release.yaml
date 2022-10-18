@@ -6,14 +6,13 @@ jobs:
   #build-deps:
   #  uses: ./.github/workflows/deps.yaml
 
-  build-base:
+  build-ros2-base:
     uses: ./.github/workflows/base.yaml
 
   build-rviz2:
     uses: ./.github/workflows/rviz2.yaml
-    needs: build-base #, build-deps
+    needs: build-ros2-base #, build-deps
 
   build-moveit2:
     uses: ./.github/workflows/moveit2.yaml
     needs: build-rviz2
-    if: ${{ false }}

@@ -15,54 +15,43 @@ on:
         type: boolean
 jobs:
   build-rviz2:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 1200
     strategy:
       matrix:
         platformArch: [macOS]
     steps:
       - uses: actions/checkout@v3
-        if: ${{ false }}
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.12
         with:
           cmake-version: '3.23.x'
-        if: ${{ false }}
 
       - name: Fetch cached Python environment
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/python_venv.tar.xz && tar xzf python_venv.tar.xz
-        if: ${{ false }}
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/python_venv.tar.xz
 
       - name: Fetch prebuilt dependencies
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/deps_${{ matrix.platformArch }}.tar.xz && tar xzf deps_${{ matrix.platformArch }}.tar.xz
-        if: ${{ false }}
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/deps_${{ matrix.platformArch }}.tar.xz
 
-      - name: Called from release workflow so try fetching previous job artifacts
+      - name: Fetch prebuilt ROS2 base from Release
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_${{ matrix.platformArch }}.tar.xz
+        if: ${{ !inputs.called_from_another_workflow }}
+
+      - name: Fetch prebuilt ROS2 base from previous job artifacts
         uses: actions/download-artifact@v3
         if: ${{ inputs.called_from_another_workflow }}
 
-      - run: echo ${{ inputs.called_from_another_workflow }} && cat hello/hello.txt
-        if: ${{ inputs.called_from_another_workflow }}
-
-      - name: Called from manual trigger
-        run: echo "Manual trigger"
-        if: ${{ !inputs.called_from_another_workflow }}
-
-      - name: Fetch prebuilt ROS2 base
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_${{ matrix.platformArch }}.tar.xz && tar xzf ros2_${{ matrix.platformArch }}.tar.xz
-        if: ${{ false }}
+      - name: Extract artifacts
+        run: ./extract_artifacts.sh
 
       - name: Build Rviz2
         run: source ros2PythonEnv/bin/activate && source build_ros2.sh ${{ matrix.platformArch }} && buildRviz2
-        if: ${{ false }}
 
       - name: Packaging Rviz2 installation
         run: tar cJf rviz2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/rviz2/
-        if: ${{ false }}
 
       - uses: actions/upload-artifact@v3
         with:
           name: rviz2_${{ matrix.platformArch }}
           path: rviz2_${{ matrix.platformArch }}.tar.xz
-        if: ${{ false }}

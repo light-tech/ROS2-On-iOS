@@ -1,7 +1,18 @@
 name: Build MoveIt2
 on:
   workflow_dispatch:
+    inputs:
+      called_from_another_workflow:
+        description: 'Indicate if this workflow is being called from another workflow'
+        default: false
+        required: false
+        type: boolean
   workflow_call:
+    inputs:
+      called_from_another_workflow:
+        default: true
+        required: false
+        type: boolean
 jobs:
   build-moveit2:
     runs-on: macos-latest
@@ -18,16 +29,21 @@ jobs:
           cmake-version: '3.23.x'
 
       - name: Fetch cached Python environment
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/python_venv.tar.xz && tar xzf python_venv.tar.xz
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/python_venv.tar.xz
 
       - name: Fetch prebuilt dependencies
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/deps_${{ matrix.platformArch }}.tar.xz && tar xzf deps_${{ matrix.platformArch }}.tar.xz
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/deps_${{ matrix.platformArch }}.tar.xz
 
-      - name: Fetch prebuilt ROS2 base
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_${{ matrix.platformArch }}.tar.xz && tar xzf ros2_${{ matrix.platformArch }}.tar.xz
+      - name: Fetch prebuilt ROS2 base and Rviz2 from Release
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_${{ matrix.platformArch }}.tar.xz https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/rviz2_${{ matrix.platformArch }}.tar.xz
+        if: ${{ !inputs.called_from_another_workflow }}
 
-      - name: Fetch prebuilt Rviz2
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/rviz2_${{ matrix.platformArch }}.tar.xz && tar xzf rviz2_${{ matrix.platformArch }}.tar.xz
+      - name: Fetch prebuilt ROS2 base and Rviz2 from previous job artifacts
+        uses: actions/download-artifact@v3
+        if: ${{ inputs.called_from_another_workflow }}
+
+      - name: Extract artifacts
+        run: ./extract_artifacts.sh
 
       - name: Install X11 (XQuartz)
         run: brew install xquartz

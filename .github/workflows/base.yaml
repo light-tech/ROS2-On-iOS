@@ -3,44 +3,32 @@ on:
   workflow_dispatch: # Must have colon after this according to https://github.com/orgs/community/discussions/26780
   workflow_call:
 jobs:
-  build-ros2:
-    runs-on: ubuntu-latest
+  build-ros2-base:
+    runs-on: macos-latest
     timeout-minutes: 1200
     strategy:
       matrix:
         platformArch: [macOS] # iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1
     steps:
-      - run: echo "Hello from base workflow!" >hello.txt
-      - uses: actions/upload-artifact@v3
-        with:
-          name: hello
-          path: hello.txt
-
       - uses: actions/checkout@v3
-        if: ${{ false }}
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.12
         with:
           cmake-version: '3.23.x'
-        if: ${{ false }}
 
       - name: Fetch cached Python environment
         run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/python_venv.tar.xz && tar xzf python_venv.tar.xz
-        if: ${{ false }}
 
       - name: Build ROS2
         id: build_ros2
         run: source ros2PythonEnv/bin/activate && source build_ros2.sh ${{ matrix.platformArch }} && buildRos2Base
-        if: ${{ false }}
 
       - name: Archive ROS2 and dependencies
         run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
-        if: ${{ false }}
 
       - name: Publish ROS2 for release
         uses: actions/upload-artifact@v3
         with:
-          name: ros2_${{ matrix.platformArch }}
+          name: base_${{ matrix.platformArch }}
           path: ros2_${{ matrix.platformArch }}.tar.xz
-        if: ${{ false }}
