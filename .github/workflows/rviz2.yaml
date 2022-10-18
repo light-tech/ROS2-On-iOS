@@ -1,6 +1,7 @@
 name: Build Rviz2
 on:
   workflow_dispatch:
+  workflow_call:
 jobs:
   build-rviz2:
     runs-on: macos-latest

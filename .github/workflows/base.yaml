@@ -1,6 +1,7 @@
-name: Build ROS2 Base
+name: Build ROS2 base
 on:
   workflow_dispatch: # Must have colon after this according to https://github.com/orgs/community/discussions/26780
+  workflow_call:
 jobs:
   build-ros2:
     runs-on: macos-latest

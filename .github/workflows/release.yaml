@@ -1,0 +1,18 @@
+name: Build everything for release
+on:
+  workflow_dispatch:
+  push:
+jobs:
+  #build-deps:
+  #  uses: ./.github/workflows/deps.yaml
+
+  build-base:
+    uses: ./.github/workflows/base.yaml
+
+  build-rviz2:
+    uses: ./.github/workflows/rviz2.yaml
+    needs: build-base #, build-deps
+
+  build-moveit2:
+    uses: ./.github/workflows/moveit2.yaml
+    needs: build-rviz2
