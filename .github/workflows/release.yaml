@@ -1,6 +1,5 @@
 name: Build everything for release
 on:
-  workflow_dispatch:
   push:
     tags:
       - '**'

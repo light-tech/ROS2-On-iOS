@@ -20,8 +20,11 @@ jobs:
       - run: echo "Manually Called"
         if: ${{ github.event_name == 'workflow_dispatch' }}
 
-      - run: echo "Called from another workflow"
-        if: ${{ github.event_name == 'workflow_call' }}
+      # See https://github.com/actions/runner/issues/1548 for the fact that when called from
+      # another workflow, the github.event_name is the trigger for THAT caller workflow and
+      # not set to workflow_call!
+      - run: echo "Called from release workflow"
+        if: ${{ github.event_name == 'push' }}
 
       - uses: actions/checkout@v3
 
