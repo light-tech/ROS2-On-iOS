@@ -10,6 +10,19 @@ jobs:
       matrix:
         platformArch: [macOS] # iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1
     steps:
+      # https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#viewing-all-properties-of-an-event
+      # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+      - name: Dump github context for inspection
+        env:
+          EVENT_CONTEXT: ${{ toJSON(github) }}
+        run: echo $EVENT_CONTEXT
+
+      - run: echo "Manually Called"
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+
+      - run: echo "Called from another workflow"
+        if: ${{ github.event_name == 'workflow_call' }}
+
       - uses: actions/checkout@v3
 
       - name: Setup cmake

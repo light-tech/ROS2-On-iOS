@@ -1,18 +1,7 @@
 name: Build MoveIt2
 on:
   workflow_dispatch:
-    inputs:
-      called_from_another_workflow:
-        description: 'Indicate if this workflow is being called from another workflow'
-        default: false
-        required: false
-        type: boolean
   workflow_call:
-    inputs:
-      called_from_another_workflow:
-        default: true
-        required: false
-        type: boolean
 jobs:
   build-moveit2:
     runs-on: macos-latest
@@ -36,11 +25,11 @@ jobs:
 
       - name: Fetch prebuilt ROS2 base and Rviz2 from Release
         run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_${{ matrix.platformArch }}.tar.xz https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/rviz2_${{ matrix.platformArch }}.tar.xz
-        if: ${{ !inputs.called_from_another_workflow }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
 
       - name: Fetch prebuilt ROS2 base and Rviz2 from previous job artifacts
         uses: actions/download-artifact@v3
-        if: ${{ inputs.called_from_another_workflow }}
+        if: ${{ github.event_name == 'workflow_call' }}
 
       - name: Extract artifacts
         run: ./extract_artifacts.sh
