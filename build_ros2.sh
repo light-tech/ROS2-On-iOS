@@ -1,9 +1,16 @@
-# Usage:
+# Intended usage: At this repo root, do
 #
-#      build_ros2.sh [Platform]
+#                        source build_ros2.sh [Platform]
 #
-# where [Platform] should be either [iOS], [iOS_Simulator], [iOS_Simulator_M1], [macCatalyst], [macCatalyst_M1]
-# or [macOS] for Mac desktop.
+# where [Platform] should be either [iOS], [iOS_Simulator], [iOS_Simulator_M1],
+# [macCatalyst], [macCatalyst_M1] for iOS or [macOS] for Mac desktop.
+# This sets up the basic variables and exports several functions for building.
+# Then call `buildRos2Base`, `buildRviz2`, `buildMoveIt2` appropriately.
+# The script assumes you have activated the Python environment and already
+# builds all dependencies.
+#
+# Since you must `source` at this repo root, clone this repo where you want to
+# install ROS2 and rename the folder (for example `~/usr`) before running.
 
 REPO_ROOT=`pwd`
 targetPlatform=$1
@@ -167,4 +174,15 @@ buildMoveIt2() {
     cd $REPO_ROOT/moveit2_ws
     colcon build --install-base $moveit2InstallPath --merge-install \
         --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=NO -DCMAKE_PREFIX_PATH="$depsInstallPath"
+}
+
+buildCartographer() {
+    # TODO Implement this
+    echo "Build cartographer is not yet implemented"
+
+    # https://github.com/cartographer-project/cartographer
+    # https://github.com/cartographer-project/cartographer_ros
+    # Need basic ROS2 packages `ros2/rosbag2` and `ros-tooling/keyboard_handler`
+    # Need to get extra packages [pcl_msgs](https://github.com/ros-perception/pcl_msgs) and [perception_pcl](https://github.com/ros-perception/perception_pcl) (remember to checkout `ros2` branch)
+    # colcon build --merge-install --cmake-args -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath -DLUA_INCLUDE_DIR=$ros2SystemDependenciesPath/include -DLUA_LIBRARY=$ros2SystemDependenciesPath/lib/liblua.a -DCMAKE_CXX_FLAGS="-L$ros2SystemDependenciesPath/lib -lpcl_common"
 }

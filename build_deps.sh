@@ -68,6 +68,7 @@ function getSource() {
         -o openmp.tar.xz https://github.com/llvm/llvm-project/releases/download/llvmorg-14.0.6/openmp-14.0.6.src.tar.xz
 
     # Dependencies for cartographer
+    # For CERES, must checkout `2.0.0` to avoid https://github.com/cartographer-project/cartographer/issues/1879
     if [ $targetPlatform != "macOS" ] && [ $targetPlatform != "macOS_M1" ]; then
     curl -s -L -o abseil-cpp.tar.gz https://github.com/abseil/abseil-cpp/archive/refs/tags/20220623.0.tar.gz \
          -o gflags.tar.gz https://github.com/gflags/gflags/archive/refs/tags/v2.2.2.tar.gz \
@@ -356,11 +357,16 @@ function buildSuiteSparse() {
     echo "Build SuiteSparse"
     cd $ros2DependenciesSourceExtractionPath/SuiteSparse-5.12.0
     setCompilerFlags
-    export CMAKE_OPTIONS="-DCMAKE_INSTALL_PREFIX=$ros2SystemDependenciesPath -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake"
-    #echo $CMAKE_OPTIONS
-    #sed -i.bak 's/#define IDXTYPEWIDTH 64/#define IDXTYPEWIDTH 32/' metis-5.1.0/include/metis.h
+
+    # By default, SuiteParse uses 64-bit integer for its `idx_t` (`long long`).
+    # This unfortunately clashes with Eigen3's usage of `int`.
+    # So change this in the included `SuiteParse/metis-5.1.0/include/metis.h`.
+    sed -i.bak 's/#define IDXTYPEWIDTH 64/#define IDXTYPEWIDTH 32/' metis-5.1.0/include/metis.h
+
+    #export CMAKE_OPTIONS="-DCMAKE_INSTALL_PREFIX=$ros2SystemDependenciesPath -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake"
     #sed -i.bak 's;^CONFIG_FLAGS = ;CONFIG_FLAGS = -DCMAKE_TOOLCHAIN_FILE=\\$(prefix)/../../cmake/$targetPlatform.cmake;' metis-5.1.0/Makefile
     #sed -i.bak 's/^return system.*$/return 1;/' metis-5.1.0/GKlib/fs.c
+
     make static
     make install INSTALL=$ros2SystemDependenciesPath
 }
