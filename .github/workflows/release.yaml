@@ -2,6 +2,8 @@ name: Build everything for release
 on:
   workflow_dispatch:
   push:
+    tags:
+      - '**'
 jobs:
   #build-deps:
   #  uses: ./.github/workflows/deps.yaml
