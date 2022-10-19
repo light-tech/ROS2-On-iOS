@@ -572,6 +572,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B723B4A328FFA43600301AA2 /* extract_artifacts.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = extract_artifacts.sh; sourceTree = SOURCE_ROOT; };
+		B736E40B28FE8A9000931527 /* release.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = release.yaml; path = .github/workflows/release.yaml; sourceTree = SOURCE_ROOT; };
 		B7549AD428BC7013002D32A1 /* MACOS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MACOS.md; sourceTree = SOURCE_ROOT; };
 		B75542FF28B272FF00AAFC17 /* iOS.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = iOS.cmake; path = cmake/iOS.cmake; sourceTree = SOURCE_ROOT; };
 		B755430028B272FF00AAFC17 /* iOS_Simulator_M1.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = iOS_Simulator_M1.cmake; path = cmake/iOS_Simulator_M1.cmake; sourceTree = SOURCE_ROOT; };
@@ -1250,6 +1252,7 @@
 			children = (
 				B79E396D28BDACBA001526FF /* build_deps.sh */,
 				B7928F6D28A74865000B40D4 /* build_ros2.sh */,
+				B723B4A328FFA43600301AA2 /* extract_artifacts.sh */,
 				B7BD402D28F85F86001143EE /* fix_hardcoded_paths.sh */,
 			);
 			name = Scripts;
@@ -1275,6 +1278,7 @@
 				B7928F7528A7491A000B40D4 /* base.yaml */,
 				B7BDDA1B28FCF24B00C428CB /* rviz2.yaml */,
 				B778C1EC28F9A32F00A14994 /* moveit2.yaml */,
+				B736E40B28FE8A9000931527 /* release.yaml */,
 			);
 			name = Workflows;
 			sourceTree = "<group>";

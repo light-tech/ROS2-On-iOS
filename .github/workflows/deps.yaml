@@ -1,6 +1,7 @@
 name: Build dependencies
 on:
   workflow_dispatch:
+  workflow_call:
 jobs:
   cache-python-environment:
     runs-on: macos-latest

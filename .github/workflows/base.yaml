@@ -1,8 +1,9 @@
-name: Build ROS2 Base
+name: Build ROS2 base
 on:
   workflow_dispatch: # Must have colon after this according to https://github.com/orgs/community/discussions/26780
+  workflow_call:
 jobs:
-  build-ros2:
+  build-ros2-base:
     runs-on: macos-latest
     timeout-minutes: 1200
     strategy:
@@ -29,5 +30,5 @@ jobs:
       - name: Publish ROS2 for release
         uses: actions/upload-artifact@v3
         with:
-          name: ros2_${{ matrix.platformArch }}
+          name: base_${{ matrix.platformArch }}
           path: ros2_${{ matrix.platformArch }}.tar.xz
