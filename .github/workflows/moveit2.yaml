@@ -24,7 +24,7 @@ jobs:
         run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/deps_${{ matrix.platformArch }}.tar.xz
 
       - name: Fetch prebuilt ROS2 base and Rviz2 from Release
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_${{ matrix.platformArch }}.tar.xz https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/rviz2_${{ matrix.platformArch }}.tar.xz
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_${{ matrix.platformArch }}.tar.xz -O https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/rviz2_${{ matrix.platformArch }}.tar.xz
         if: ${{ github.event_name == 'workflow_dispatch' }}
 
       - name: Fetch prebuilt ROS2 base and Rviz2 from previous job artifacts

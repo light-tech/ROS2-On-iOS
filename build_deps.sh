@@ -1,38 +1,40 @@
+# Currently we assume that this script is invoked at the repo root where it resides.
+
 # Platform to build [macOS] or [iOS, iOS_Simulator, ...]
 targetPlatform=$1
 
-# This repo root (where this script is located)
-REPO_ROOT=`pwd`
-
-# The sysroot of the dependencies we built
-ros2SystemDependenciesPath=$REPO_ROOT/ros2_$targetPlatform/deps
+# The location of this script (the repo root) where supporting files can be found
+scriptDir=`pwd`
 
 # Prefix where we built Qt for host machine
-ros2HostQtPath=$REPO_ROOT/host_deps/
+ros2HostQtPath=$scriptDir/host_deps/
 
 # Where we download the source archives
 # We download and extract at different places so that it is easier to clean up
-ros2DependenciesSourceDownloadPath=$REPO_ROOT/deps_download/
+depsDownloadPath=$scriptDir/deps_download/
 
 # Location to extract the source
-ros2DependenciesSourceExtractionPath=$REPO_ROOT/deps_src/
+depsExtractPath=$scriptDir/deps_src/
+
+# Location to install dependencies
+depsInstallPath=$scriptDir/ros2_$targetPlatform/deps
 
 # Root for Python 3.10 to build Boost, change the match the platform such as
 # pythonRoot=/Library/Frameworks/Python.framework/Versions/3.10/
 # if use official Python instead of Homebrew's version on GitHub Action
 pythonRoot=/usr/local/opt/python@3.10/Frameworks/Python.framework/Versions/3.10/
 
-export PATH=$ros2SystemDependenciesPath/bin:$PATH
-export PKG_CONFIG=$ros2SystemDependenciesPath/bin/pkg-config
-export PKG_CONFIG_PATH=$ros2SystemDependenciesPath/lib/pkgconfig
+export PATH=$depsInstallPath/bin:$PATH
+export PKG_CONFIG=$depsInstallPath/bin/pkg-config
+export PKG_CONFIG_PATH=$depsInstallPath/lib/pkgconfig
 
-platformExtraCMakeArgs=(-DCMAKE_INSTALL_PREFIX=$ros2SystemDependenciesPath -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
-platformBasicConfigureArgs=(--prefix=$ros2SystemDependenciesPath) # Configure args for regular situation
-platformBasicConfigureArgsPixmanCairo=(--prefix=$ros2SystemDependenciesPath) # Special configure args for pixman and cairo
+platformExtraCMakeArgs=(-DCMAKE_INSTALL_PREFIX=$depsInstallPath -DCMAKE_PREFIX_PATH=$depsInstallPath)
+platformBasicConfigureArgs=(--prefix=$depsInstallPath) # Configure args for regular situation
+platformBasicConfigureArgsPixmanCairo=(--prefix=$depsInstallPath) # Special configure args for pixman and cairo
 
 function getSource() {
-    mkdir -p $ros2DependenciesSourceDownloadPath
-    cd $ros2DependenciesSourceDownloadPath
+    mkdir -p $depsDownloadPath
+    cd $depsDownloadPath
 
     curl -s -L -o pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
          #-o autoconf.tar.gz http://ftpmirror.gnu.org/autoconf/autoconf-2.69.tar.gz \
@@ -88,13 +90,13 @@ function getSource() {
 }
 
 function extractSource() {
-    mkdir -p $ros2DependenciesSourceExtractionPath
-    cd $ros2DependenciesSourceExtractionPath
-    local src_files=($(ls $ros2DependenciesSourceDownloadPath))
+    mkdir -p $depsExtractPath
+    cd $depsExtractPath
+    local src_files=($(ls $depsDownloadPath))
     for f in "${src_files[@]}"; do
         echo "Extract $f"
-        file $ros2DependenciesSourceDownloadPath/$f
-        tar xzf $ros2DependenciesSourceDownloadPath/$f
+        file $depsDownloadPath/$f
+        tar xzf $depsDownloadPath/$f
     done
 }
 
@@ -106,31 +108,31 @@ function setupPlatform() {
             targetSysroot=`xcodebuild -version -sdk iphoneos Path`
             platformBasicConfigureArgs+=(--host=aarch64-apple-darwin)
             platformBasicConfigureArgsPixmanCairo+=(--host=arm-apple-darwin) # For pixman and cairo we must use arm-apple thank to  https://gist.github.com/jvcleave/9d78de9bb27434bde2b0c3a1af355d9c
-            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
+            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$scriptDir/cmake/$targetPlatform.cmake);;
 
         "iOS_Simulator")
             targetArch=x86_64
             boostArch=ia64
             targetSysroot=`xcodebuild -version -sdk iphonesimulator Path`
-            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
+            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$scriptDir/cmake/$targetPlatform.cmake);;
 
         "iOS_Simulator_M1")
             targetArch=arm64
             boostArch=arm
             targetSysroot=`xcodebuild -version -sdk iphonesimulator Path`
-            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
+            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$scriptDir/cmake/$targetPlatform.cmake);;
 
         "macCatalyst")
             targetArch=x86_64
             boostArch=ia64
             targetSysroot=`xcodebuild -version -sdk macosx Path`
-            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
+            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$scriptDir/cmake/$targetPlatform.cmake);;
 
         "macCatalyst_M1")
             targetArch=arm64
             boostArch=arm
             targetSysroot=`xcodebuild -version -sdk macosx Path`
-            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake);;
+            platformExtraCMakeArgs+=(-DCMAKE_TOOLCHAIN_FILE=$scriptDir/cmake/$targetPlatform.cmake);;
 
         "macOS")
             targetArch=x86_64
@@ -151,13 +153,13 @@ function setupPlatform() {
 function setCompilerFlags() {
     case $targetPlatform in
         "macCatalyst")
-            export CFLAGS="-isysroot $targetSysroot -target x86_64-apple-ios14.1-macabi -I$ros2SystemDependenciesPath/include/";;
+            export CFLAGS="-isysroot $targetSysroot -target x86_64-apple-ios14.1-macabi -I$depsInstallPath/include/";;
 
         "macCatalyst_M1")
-            export CFLAGS="-isysroot $targetSysroot -target arm64-apple-ios14.1-macabi -I$ros2SystemDependenciesPath/include/";;
+            export CFLAGS="-isysroot $targetSysroot -target arm64-apple-ios14.1-macabi -I$depsInstallPath/include/";;
 
         *)
-            export CFLAGS="-isysroot $targetSysroot -arch $targetArch -I$ros2SystemDependenciesPath/include/";;
+            export CFLAGS="-isysroot $targetSysroot -arch $targetArch -I$depsInstallPath/include/";;
     esac
     export CXXFLAGS=$CFLAGS
     export CPPFLAGS=$CFLAGS # Without this, encounter error ZLIB_VERNUM != PNG_ZLIB_VERNUM when building libpng
@@ -182,132 +184,132 @@ function configureThenMakeArm() {
 }
 
 function buildHostTools() {
-    cd $ros2DependenciesSourceExtractionPath/pkg-config-0.29.2
-    ./configure --prefix=$ros2SystemDependenciesPath --with-internal-glib >/dev/null 2>&1
+    cd $depsExtractPath/pkg-config-0.29.2
+    ./configure --prefix=$depsInstallPath --with-internal-glib >/dev/null 2>&1
     make && make install >/dev/null 2>&1
 
-    #cd $ros2DependenciesSourceExtractionPath/autoconf-2.69
-    #./configure --prefix=$ros2SystemDependenciesPath
+    #cd $depsExtractPath/autoconf-2.69
+    #./configure --prefix=$depsInstallPath
     #make && make install
 
-    #cd $ros2DependenciesSourceExtractionPath/automake-1.15
-    #./configure --prefix=$ros2SystemDependenciesPath
+    #cd $depsExtractPath/automake-1.15
+    #./configure --prefix=$depsInstallPath
     #make && make install
 
-    #cd $ros2DependenciesSourceExtractionPath/libtool-2.4.6
-    #./configure --prefix=$ros2SystemDependenciesPath
+    #cd $depsExtractPath/libtool-2.4.6
+    #./configure --prefix=$depsInstallPath
     #make && make install
 
-    #cd $ros2DependenciesSourceExtractionPath/mm-common-1.0.4
+    #cd $depsExtractPath/mm-common-1.0.4
     #./autogen.sh
-    #./configure --prefix=$ros2SystemDependenciesPath
+    #./configure --prefix=$depsInstallPath
     #make USE_NETWORK=yes && make install
 }
 
 function buildZlib() {
     echo "Build zlib"
-    cd $ros2DependenciesSourceExtractionPath/zlib-1.2.13
+    cd $depsExtractPath/zlib-1.2.13
 
     # Note that zlib's configure does not set --host but relies on compiler flags environment variables
     setCompilerFlags
-    ./configure --prefix=$ros2SystemDependenciesPath "$@" # >/dev/null 2>&1
+    ./configure --prefix=$depsInstallPath "$@" # >/dev/null 2>&1
     make && make install #>/dev/null 2>&1
 }
 
 function buildTinyXML2() {
     echo "Build TinyXML2"
-    cd $ros2DependenciesSourceExtractionPath/tinyxml2-9.0.0
+    cd $depsExtractPath/tinyxml2-9.0.0
     buildCMake
 }
 
 # Needs: zlib
 function buildLibPng() {
     echo "Build libpng"
-    cd $ros2DependenciesSourceExtractionPath/libpng-1.6.37
+    cd $depsExtractPath/libpng-1.6.37
     configureThenMake
 }
 
 # Needs: libpng
 function buildPixman() {
     echo "Build pixman"
-    cd $ros2DependenciesSourceExtractionPath/pixman-0.40.0
+    cd $depsExtractPath/pixman-0.40.0
     configureThenMakeArm
 }
 
 function buildFreeType2() {
     echo "Build freetype"
-    cd $ros2DependenciesSourceExtractionPath/freetype-2.12.1
+    cd $depsExtractPath/freetype-2.12.1
     buildCMake -DFT_DISABLE_HARFBUZZ=ON -DFT_DISABLE_BZIP2=ON -DFT_DISABLE_ZLIB==ON -DFT_DISABLE_PNG=ON -DFT_DISABLE_BROTLI=ON
 }
 
 # Needs: FreeType, pixman
 function buildCairo() {
     echo "Build cairo"
-    cd $ros2DependenciesSourceExtractionPath/cairo-1.16.0
+    cd $depsExtractPath/cairo-1.16.0
     sed -i.bak 's/#define HAS_DAEMON 1/#define HAS_DAEMON 0/' boilerplate/cairo-boilerplate.c
     configureThenMakeArm --disable-xlib --enable-svg=no --enable-pdf=no --enable-full-testing=no HAS_DAEMON=0
 }
 
 function buildBullet3() {
     echo "Build Bullet3"
-    cd $ros2DependenciesSourceExtractionPath/bullet3-3.24
+    cd $depsExtractPath/bullet3-3.24
     buildCMake -DBUILD_BULLET2_DEMOS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF
 }
 
 function buildGFlags() {
     echo "Build gflags"
-    cd $ros2DependenciesSourceExtractionPath/gflags-2.2.2
+    cd $depsExtractPath/gflags-2.2.2
     buildCMake
 }
 
 # Needs: gflags
 function buildGlog() {
     echo "Build glog"
-    cd $ros2DependenciesSourceExtractionPath/glog-0.6.0
+    cd $depsExtractPath/glog-0.6.0
     buildCMake -DWITH_GTEST=OFF -DBUILD_TESTING=OFF
 }
 
 function buildGtest() {
     echo "Build GoogleTest"
-    cd $ros2DependenciesSourceExtractionPath/googletest-release-1.12.1
+    cd $depsExtractPath/googletest-release-1.12.1
     buildCMake
 }
 
 function buildAbsl() {
     echo "Build ABSL"
-    cd $ros2DependenciesSourceExtractionPath/abseil-cpp-20220623.0
+    cd $depsExtractPath/abseil-cpp-20220623.0
     buildCMake -DCMAKE_CXX_STANDARD=14
 }
 
 function buildGmp() {
     echo "Build GMP"
-    cd $ros2DependenciesSourceExtractionPath/gmp-6.2.1
+    cd $depsExtractPath/gmp-6.2.1
     configureThenMake
 }
 
 # Needs: GMP
 function buildMpfr() {
     echo "Build MPFR"
-    cd $ros2DependenciesSourceExtractionPath/mpfr-4.1.0
-    configureThenMake --with-gmp=$ros2SystemDependenciesPath
+    cd $depsExtractPath/mpfr-4.1.0
+    configureThenMake --with-gmp=$depsInstallPath
 }
 
 function buildProtoBuf() {
     echo "Build ProtoBuf"
-    cd $ros2DependenciesSourceExtractionPath/protobuf-3.21.5
+    cd $depsExtractPath/protobuf-3.21.5
     buildCMake -Dprotobuf_BUILD_TESTS=OFF
 }
 
 function buildLua() {
     echo "Build Lua"
-    cd $ros2DependenciesSourceExtractionPath/lua-5.4.4
+    cd $depsExtractPath/lua-5.4.4
     make macosx
-    make install INSTALL_TOP=$ros2SystemDependenciesPath
+    make install INSTALL_TOP=$depsInstallPath
 }
 
 function buildBoost() {
     echo "Build Boost"
-    cd $ros2DependenciesSourceExtractionPath/boost_1_80_0
+    cd $depsExtractPath/boost_1_80_0
 
     # Note: We must pass the full path to the python3 executable in --with-python-root=$pythonRoot/bin/python3
     # otherwise, will run into the issue https://github.com/boostorg/boost/issues/693.
@@ -316,7 +318,7 @@ function buildBoost() {
     # and in that file, the function-like `local rule configure`'s parameter `$cmd-or-prefix` appears to be initialized
     # with whatever passed to `--with-python-root` as it tried to find Python. Since it only tries `bin/python`,
     # it will never succeed on Mac because bin/python does not exist.
-    ./bootstrap.sh --prefix=$ros2SystemDependenciesPath \
+    ./bootstrap.sh --prefix=$depsInstallPath \
                    --with-python=$pythonRoot/bin/python3 \
                    --with-python-version=3.10 \
                    --with-python-root=$pythonRoot/bin/python3
@@ -326,19 +328,19 @@ function buildBoost() {
 
 function buildQt5Host() {
     echo "Build Qt5 for Build machine"
-    cd $ros2DependenciesSourceExtractionPath/qtbase-everywhere-src-5.15.5
+    cd $depsExtractPath/qtbase-everywhere-src-5.15.5
     ./configure -prefix $ros2HostQtPath -opensource -confirm-license -nomake examples -nomake tests -no-framework
     make && make install
 }
 
 function buildQt5() {
     echo "Build Qt5 for Host target"
-    cd $ros2DependenciesSourceExtractionPath/qtbase-everywhere-src-5.15.5
+    cd $depsExtractPath/qtbase-everywhere-src-5.15.5
 
     # Patch the source https://codereview.qt-project.org/c/qt/qtbase/+/378706
     sed -i.bak "s,QT_BEGIN_NAMESPACE,#include <CoreGraphics/CGColorSpace.h>\n#include <IOSurface/IOSurface.h>\nQT_BEGIN_NAMESPACE," src/plugins/platforms/cocoa/qiosurfacegraphicsbuffer.h
 
-    ./configure -prefix $ros2SystemDependenciesPath -opensource -confirm-license -nomake examples -nomake tests -no-framework -device-option QMAKE_APPLE_DEVICE_ARCHS=$targetArch
+    ./configure -prefix $depsInstallPath -opensource -confirm-license -nomake examples -nomake tests -no-framework -device-option QMAKE_APPLE_DEVICE_ARCHS=$targetArch
     make && make install
 }
 
@@ -349,13 +351,13 @@ function buildQt6Host() {
 
 # Build Qt https://doc.qt.io/qt-6/ios-building-from-source.html
 function buildQt6() {
-    ./configure -prefix $ros2SystemDependenciesPath -opensource -confirm-license -platform macx-ios-clang -release -qt-host-path $ros2HostQtPath # -sysroot $ros2SystemDependenciesPath -system-zlib -system-libpng -system-freetype -pkg-config
+    ./configure -prefix $depsInstallPath -opensource -confirm-license -platform macx-ios-clang -release -qt-host-path $ros2HostQtPath # -sysroot $depsInstallPath -system-zlib -system-libpng -system-freetype -pkg-config
     make && make install
 }
 
 function buildSuiteSparse() {
     echo "Build SuiteSparse"
-    cd $ros2DependenciesSourceExtractionPath/SuiteSparse-5.12.0
+    cd $depsExtractPath/SuiteSparse-5.12.0
     setCompilerFlags
 
     # By default, SuiteParse uses 64-bit integer for its `idx_t` (`long long`).
@@ -363,44 +365,44 @@ function buildSuiteSparse() {
     # So change this in the included `SuiteParse/metis-5.1.0/include/metis.h`.
     sed -i.bak 's/#define IDXTYPEWIDTH 64/#define IDXTYPEWIDTH 32/' metis-5.1.0/include/metis.h
 
-    #export CMAKE_OPTIONS="-DCMAKE_INSTALL_PREFIX=$ros2SystemDependenciesPath -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/$targetPlatform.cmake"
+    #export CMAKE_OPTIONS="-DCMAKE_INSTALL_PREFIX=$depsInstallPath -DCMAKE_TOOLCHAIN_FILE=$scriptDir/cmake/$targetPlatform.cmake"
     #sed -i.bak 's;^CONFIG_FLAGS = ;CONFIG_FLAGS = -DCMAKE_TOOLCHAIN_FILE=\\$(prefix)/../../cmake/$targetPlatform.cmake;' metis-5.1.0/Makefile
     #sed -i.bak 's/^return system.*$/return 1;/' metis-5.1.0/GKlib/fs.c
 
     make static
-    make install INSTALL=$ros2SystemDependenciesPath
+    make install INSTALL=$depsInstallPath
 }
 
 # Needs: SuiteSparse even though it is optional
 function buildEigen3() {
     echo "Build Eigen3"
-    cd $ros2DependenciesSourceExtractionPath/eigen-3.4.0
+    cd $depsExtractPath/eigen-3.4.0
     buildCMake
 }
 
 # Needs: gflags, glog, SuiteSparse
 function buildCERES() {
     echo "Build CERES"
-    cd $ros2DependenciesSourceExtractionPath/ceres-solver-2.0.0
+    cd $depsExtractPath/ceres-solver-2.0.0
     buildCMake
 }
 
 function buildFLANN() {
     echo "Build FLANN"
-    cd $ros2DependenciesSourceExtractionPath/flann-1.9.1
+    cd $depsExtractPath/flann-1.9.1
     buildCMake -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_MATLAB_BINDINGS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF
 }
 
 # Needs: Boost, FLANN, Eigen3
 function buildPCL() {
     echo "Build PCL"
-    cd $ros2DependenciesSourceExtractionPath/pcl
+    cd $depsExtractPath/pcl
     buildCMake
 }
 
 function buildOpenCV() {
     echo "Build OpenCV"
-    cd $ros2DependenciesSourceExtractionPath/opencv-4.6.0
+    cd $depsExtractPath/opencv-4.6.0
     # https://docs.opencv.org/4.x/db/d05/tutorial_config_reference.html
     buildCMake -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_JAVA=OFF -DBUILD_OBJC=OFF -DBUILD_ZLIB=NO -DBUILD_OPENEXR=YES
 }
@@ -437,8 +439,8 @@ function buildAll() {
 }
 
 buildMoveItDeps() {
-    cd $ros2DependenciesSourceExtractionPath/libccd-2.1 && buildCMake
-    cd $ros2DependenciesSourceExtractionPath/octomap-1.9.6 && buildCMake
+    cd $depsExtractPath/libccd-2.1 && buildCMake
+    cd $depsExtractPath/octomap-1.9.6 && buildCMake
 
     # For octomap, we need to manually add
     #   IMPORTED_LOCATION "${_IMPORT_PREFIX}/lib/libocto(map|math).1.9.6.dylib"
@@ -451,22 +453,22 @@ buildMoveItDeps() {
     #   IMPORTED_LOCATION not set for imported target "octomap" configuration
     #   "Release".
 
-    sed -i.bak -E 's,set_target_properties\(octo(math|map) PROPERTIES,set_target_properties(octo\1 PROPERTIES\n  IMPORTED_LOCATION "\${_IMPORT_PREFIX}/lib/libocto\1.1.9.6.dylib",' $ros2SystemDependenciesPath/share/octomap/octomap-targets.cmake
+    sed -i.bak -E 's,set_target_properties\(octo(math|map) PROPERTIES,set_target_properties(octo\1 PROPERTIES\n  IMPORTED_LOCATION "\${_IMPORT_PREFIX}/lib/libocto\1.1.9.6.dylib",' $depsInstallPath/share/octomap/octomap-targets.cmake
 
     # FCL depends on octomap and libccd
-    cd $ros2DependenciesSourceExtractionPath/fcl-0.7.0 && buildCMake -DBUILD_TESTING=NO
-    cd $ros2DependenciesSourceExtractionPath/qhull-2020.2 && buildCMake
-    cd $ros2DependenciesSourceExtractionPath/assimp-5.2.5 && buildCMake
-    cd $ros2DependenciesSourceExtractionPath/ruckig-0.8.4 && buildCMake
-    cd $ros2DependenciesSourceExtractionPath/glew-2.2.0/build/cmake && buildCMake
+    cd $depsExtractPath/fcl-0.7.0 && buildCMake -DBUILD_TESTING=NO
+    cd $depsExtractPath/qhull-2020.2 && buildCMake
+    cd $depsExtractPath/assimp-5.2.5 && buildCMake
+    cd $depsExtractPath/ruckig-0.8.4 && buildCMake
+    cd $depsExtractPath/glew-2.2.0/build/cmake && buildCMake
 
     # FreeGLUT needs X11 (provided by XQuartz for macOS)
     # For some reason the X11 include path is not added so we force add it
-    cd $ros2DependenciesSourceExtractionPath/freeglut-3.4.0 && buildCMake -DFREEGLUT_BUILD_DEMOS=NO -DCMAKE_C_FLAGS="-isystem /usr/X11R6/include"
+    cd $depsExtractPath/freeglut-3.4.0 && buildCMake -DFREEGLUT_BUILD_DEMOS=NO -DCMAKE_C_FLAGS="-isystem /usr/X11R6/include"
 
-    cd $ros2DependenciesSourceExtractionPath/openssl-openssl-3.0.6 && ./Configure --prefix=$ros2SystemDependenciesPath && make && make install
-    cd $ros2DependenciesSourceExtractionPath/ompl-1.5.2 && buildCMake
-    cd $ros2DependenciesSourceExtractionPath/openmp-14.0.6.src && buildCMake
+    cd $depsExtractPath/openssl-openssl-3.0.6 && ./Configure --prefix=$depsInstallPath && make && make install
+    cd $depsExtractPath/ompl-1.5.2 && buildCMake
+    cd $depsExtractPath/openmp-14.0.6.src && buildCMake
 }
 
 getSource
@@ -491,5 +493,3 @@ case $targetPlatform in
     *) # Build useful dependencies for iOS
         buildTinyXML2;;
 esac
-
-cd $REPO_ROOT
