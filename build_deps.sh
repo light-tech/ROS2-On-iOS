@@ -32,7 +32,7 @@ platformExtraCMakeArgs=(-DCMAKE_INSTALL_PREFIX=$depsInstallPath -DCMAKE_PREFIX_P
 platformBasicConfigureArgs=(--prefix=$depsInstallPath) # Configure args for regular situation
 platformBasicConfigureArgsPixmanCairo=(--prefix=$depsInstallPath) # Special configure args for pixman and cairo
 
-function getSource() {
+getSource() {
     mkdir -p $depsDownloadPath
     cd $depsDownloadPath
 
@@ -89,7 +89,7 @@ function getSource() {
     fi
 }
 
-function extractSource() {
+extractSource() {
     mkdir -p $depsExtractPath
     cd $depsExtractPath
     local src_files=($(ls $depsDownloadPath))
@@ -100,7 +100,7 @@ function extractSource() {
     done
 }
 
-function setupPlatform() {
+setupPlatform() {
     case $targetPlatform in
         "iOS")
             targetArch=arm64
@@ -150,7 +150,7 @@ function setupPlatform() {
     esac
 }
 
-function setCompilerFlags() {
+setCompilerFlags() {
     case $targetPlatform in
         "macCatalyst")
             export CFLAGS="-isysroot $targetSysroot -target x86_64-apple-ios14.1-macabi -I$depsInstallPath/include/";;
@@ -165,149 +165,114 @@ function setCompilerFlags() {
     export CPPFLAGS=$CFLAGS # Without this, encounter error ZLIB_VERNUM != PNG_ZLIB_VERNUM when building libpng
 }
 
-function buildCMake() {
+buildCMake() {
     rm -rf _build && mkdir _build && cd _build
-    cmake "${platformExtraCMakeArgs[@]}" "$@" .. # >/dev/null 2>&1
-    cmake --build . --target install # >/dev/null 2>&1 --parallel 1
+    cmake "${platformExtraCMakeArgs[@]}" "$@" .. && cmake --build . --target install # >/dev/null 2>&1 --parallel 1
 }
 
-function configureThenMake() {
+configureThenMake() {
     setCompilerFlags
-    ./configure "${platformBasicConfigureArgs[@]}" "$@" # >/dev/null 2>&1
-    make && make install #>/dev/null 2>&1
+    ./configure "${platformBasicConfigureArgs[@]}" "$@" && make && make install
 }
 
-function configureThenMakeArm() {
+configureThenMakeArm() {
     setCompilerFlags
-    ./configure "${platformBasicConfigureArgsPixmanCairo[@]}" "$@" # >/dev/null 2>&1
-    make && make install # >/dev/null 2>&1
+    ./configure "${platformBasicConfigureArgsPixmanCairo[@]}" "$@" && make && make install
 }
 
-function buildHostTools() {
-    cd $depsExtractPath/pkg-config-0.29.2
-    ./configure --prefix=$depsInstallPath --with-internal-glib >/dev/null 2>&1
-    make && make install >/dev/null 2>&1
-
-    #cd $depsExtractPath/autoconf-2.69
-    #./configure --prefix=$depsInstallPath
-    #make && make install
-
-    #cd $depsExtractPath/automake-1.15
-    #./configure --prefix=$depsInstallPath
-    #make && make install
-
-    #cd $depsExtractPath/libtool-2.4.6
-    #./configure --prefix=$depsInstallPath
-    #make && make install
-
-    #cd $depsExtractPath/mm-common-1.0.4
-    #./autogen.sh
-    #./configure --prefix=$depsInstallPath
-    #make USE_NETWORK=yes && make install
+buildHostTools() {
+    cd $depsExtractPath/pkg-config-0.29.2 && ./configure --prefix=$depsInstallPath --with-internal-glib && make && make install
+    #cd $depsExtractPath/autoconf-2.69 && ./configure --prefix=$depsInstallPath && make && make install
+    #cd $depsExtractPath/automake-1.15 && ./configure --prefix=$depsInstallPath && make && make install
+    #cd $depsExtractPath/libtool-2.4.6 && ./configure --prefix=$depsInstallPath && make && make install
+    #cd $depsExtractPath/mm-common-1.0.4 && ./autogen.sh && ./configure --prefix=$depsInstallPath && make USE_NETWORK=yes && make install
 }
 
-function buildZlib() {
+buildZlib() {
     echo "Build zlib"
-    cd $depsExtractPath/zlib-1.2.13
 
     # Note that zlib's configure does not set --host but relies on compiler flags environment variables
-    setCompilerFlags
-    ./configure --prefix=$depsInstallPath "$@" # >/dev/null 2>&1
-    make && make install #>/dev/null 2>&1
+    cd $depsExtractPath/zlib-1.2.13 && setCompilerFlags && ./configure --prefix=$depsInstallPath && make && make install
 }
 
-function buildTinyXML2() {
+buildTinyXML2() {
     echo "Build TinyXML2"
-    cd $depsExtractPath/tinyxml2-9.0.0
-    buildCMake
+    cd $depsExtractPath/tinyxml2-9.0.0 && buildCMake
 }
 
 # Needs: zlib
-function buildLibPng() {
+buildLibPng() {
     echo "Build libpng"
-    cd $depsExtractPath/libpng-1.6.37
-    configureThenMake
+    cd $depsExtractPath/libpng-1.6.37 && configureThenMake
 }
 
 # Needs: libpng
-function buildPixman() {
+buildPixman() {
     echo "Build pixman"
-    cd $depsExtractPath/pixman-0.40.0
-    configureThenMakeArm
+    cd $depsExtractPath/pixman-0.40.0 && configureThenMakeArm
 }
 
-function buildFreeType2() {
+buildFreeType2() {
     echo "Build freetype"
-    cd $depsExtractPath/freetype-2.12.1
-    buildCMake -DFT_DISABLE_HARFBUZZ=ON -DFT_DISABLE_BZIP2=ON -DFT_DISABLE_ZLIB==ON -DFT_DISABLE_PNG=ON -DFT_DISABLE_BROTLI=ON
+    cd $depsExtractPath/freetype-2.12.1 && buildCMake -DFT_DISABLE_HARFBUZZ=ON -DFT_DISABLE_BZIP2=ON -DFT_DISABLE_ZLIB==ON -DFT_DISABLE_PNG=ON -DFT_DISABLE_BROTLI=ON
 }
 
 # Needs: FreeType, pixman
-function buildCairo() {
+buildCairo() {
     echo "Build cairo"
     cd $depsExtractPath/cairo-1.16.0
     sed -i.bak 's/#define HAS_DAEMON 1/#define HAS_DAEMON 0/' boilerplate/cairo-boilerplate.c
     configureThenMakeArm --disable-xlib --enable-svg=no --enable-pdf=no --enable-full-testing=no HAS_DAEMON=0
 }
 
-function buildBullet3() {
+buildBullet3() {
     echo "Build Bullet3"
-    cd $depsExtractPath/bullet3-3.24
-    buildCMake -DBUILD_BULLET2_DEMOS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF
+    cd $depsExtractPath/bullet3-3.24 && buildCMake -DBUILD_BULLET2_DEMOS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF
 }
 
-function buildGFlags() {
+buildGFlags() {
     echo "Build gflags"
-    cd $depsExtractPath/gflags-2.2.2
-    buildCMake
+    cd $depsExtractPath/gflags-2.2.2 && buildCMake
 }
 
 # Needs: gflags
-function buildGlog() {
+buildGlog() {
     echo "Build glog"
-    cd $depsExtractPath/glog-0.6.0
-    buildCMake -DWITH_GTEST=OFF -DBUILD_TESTING=OFF
+    cd $depsExtractPath/glog-0.6.0 && buildCMake -DWITH_GTEST=OFF -DBUILD_TESTING=OFF
 }
 
-function buildGtest() {
+buildGtest() {
     echo "Build GoogleTest"
-    cd $depsExtractPath/googletest-release-1.12.1
-    buildCMake
+    cd $depsExtractPath/googletest-release-1.12.1 && buildCMake
 }
 
-function buildAbsl() {
+buildAbsl() {
     echo "Build ABSL"
-    cd $depsExtractPath/abseil-cpp-20220623.0
-    buildCMake -DCMAKE_CXX_STANDARD=14
+    cd $depsExtractPath/abseil-cpp-20220623.0 && buildCMake -DCMAKE_CXX_STANDARD=14
 }
 
-function buildGmp() {
+buildGmp() {
     echo "Build GMP"
-    cd $depsExtractPath/gmp-6.2.1
-    configureThenMake
+    cd $depsExtractPath/gmp-6.2.1 && configureThenMake
 }
 
 # Needs: GMP
-function buildMpfr() {
+buildMpfr() {
     echo "Build MPFR"
-    cd $depsExtractPath/mpfr-4.1.0
-    configureThenMake --with-gmp=$depsInstallPath
+    cd $depsExtractPath/mpfr-4.1.0 && configureThenMake --with-gmp=$depsInstallPath
 }
 
-function buildProtoBuf() {
+buildProtoBuf() {
     echo "Build ProtoBuf"
-    cd $depsExtractPath/protobuf-3.21.5
-    buildCMake -Dprotobuf_BUILD_TESTS=OFF
+    cd $depsExtractPath/protobuf-3.21.5 && buildCMake -Dprotobuf_BUILD_TESTS=OFF
 }
 
-function buildLua() {
+buildLua() {
     echo "Build Lua"
-    cd $depsExtractPath/lua-5.4.4
-    make macosx
-    make install INSTALL_TOP=$depsInstallPath
+    cd $depsExtractPath/lua-5.4.4 && make macosx && make install INSTALL_TOP=$depsInstallPath
 }
 
-function buildBoost() {
+buildBoost() {
     echo "Build Boost"
     cd $depsExtractPath/boost_1_80_0
 
@@ -326,15 +291,8 @@ function buildBoost() {
     ./b2 install architecture=$boostArch # --debug-configuration --debug-building --debug-generator -d+2
 }
 
-function buildQt5Host() {
-    echo "Build Qt5 for Build machine"
-    cd $depsExtractPath/qtbase-everywhere-src-5.15.5
-    ./configure -prefix $ros2HostQtPath -opensource -confirm-license -nomake examples -nomake tests -no-framework
-    make && make install
-}
-
-function buildQt5() {
-    echo "Build Qt5 for Host target"
+buildQt5() {
+    echo "Build Qt5"
     cd $depsExtractPath/qtbase-everywhere-src-5.15.5
 
     # Patch the source https://codereview.qt-project.org/c/qt/qtbase/+/378706
@@ -344,18 +302,13 @@ function buildQt5() {
     make && make install
 }
 
-function buildQt6Host() {
-    ./configure -prefix $ros2HostQtPath -opensource -confirm-license -release
-    make && make install
+buildOpenCV() {
+    echo "Build OpenCV"
+    # https://docs.opencv.org/4.x/db/d05/tutorial_config_reference.html
+    cd $depsExtractPath/opencv-4.6.0 && buildCMake -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_JAVA=OFF -DBUILD_OBJC=OFF -DBUILD_ZLIB=NO -DBUILD_OPENEXR=YES
 }
 
-# Build Qt https://doc.qt.io/qt-6/ios-building-from-source.html
-function buildQt6() {
-    ./configure -prefix $depsInstallPath -opensource -confirm-license -platform macx-ios-clang -release -qt-host-path $ros2HostQtPath # -sysroot $depsInstallPath -system-zlib -system-libpng -system-freetype -pkg-config
-    make && make install
-}
-
-function buildSuiteSparse() {
+buildSuiteSparse() {
     echo "Build SuiteSparse"
     cd $depsExtractPath/SuiteSparse-5.12.0
     setCompilerFlags
@@ -373,41 +326,30 @@ function buildSuiteSparse() {
     make install INSTALL=$depsInstallPath
 }
 
-# Needs: SuiteSparse even though it is optional
-function buildEigen3() {
+# Needs: SuiteSparse for cartographer; but optional for rviz2
+buildEigen3() {
     echo "Build Eigen3"
-    cd $depsExtractPath/eigen-3.4.0
-    buildCMake
+    cd $depsExtractPath/eigen-3.4.0 && buildCMake
 }
 
 # Needs: gflags, glog, SuiteSparse
-function buildCERES() {
+buildCERES() {
     echo "Build CERES"
-    cd $depsExtractPath/ceres-solver-2.0.0
-    buildCMake
+    cd $depsExtractPath/ceres-solver-2.0.0 && buildCMake
 }
 
-function buildFLANN() {
+buildFLANN() {
     echo "Build FLANN"
-    cd $depsExtractPath/flann-1.9.1
-    buildCMake -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_MATLAB_BINDINGS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF
+    cd $depsExtractPath/flann-1.9.1 && buildCMake -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_MATLAB_BINDINGS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF
 }
 
 # Needs: Boost, FLANN, Eigen3
-function buildPCL() {
+buildPCL() {
     echo "Build PCL"
-    cd $depsExtractPath/pcl
-    buildCMake
+    cd $depsExtractPath/pcl && buildCMake
 }
 
-function buildOpenCV() {
-    echo "Build OpenCV"
-    cd $depsExtractPath/opencv-4.6.0
-    # https://docs.opencv.org/4.x/db/d05/tutorial_config_reference.html
-    buildCMake -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_JAVA=OFF -DBUILD_OBJC=OFF -DBUILD_ZLIB=NO -DBUILD_OPENEXR=YES
-}
-
-function buildAll() {
+buildAll() {
     buildZlib
     buildTinyXML2
     buildLibPng
