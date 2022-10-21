@@ -1,9 +1,8 @@
-# ROS2 on iOS
+# ROS2 on iOS and macOS
 
 Build ROS2 stack for iOS software development.
 
-This valuable experience allows us to [build and run ROS2 on Mac](MACOS.md) **including graphical tools such as RVIZ** as well.
-Even better, you can simply download our release, add some environment variables and run.
+This valuable experience allows us to build and run ROS2 on Mac **including graphical tools such as RVIZ** as well (see below).
 
 **For the impatient**: Instead of building ROS2 from source (see below), you can download [our prebuilt libs](https://github.com/light-tech/ROS2-On-iOS/releases) and extract it.
 Then make a symlink `ros2` pointing to the extracted `ros2_$PLATFORM` where we can find the ROS2 `lib` and `include` headers
@@ -31,7 +30,7 @@ We are going to need
  * Python **3.10**
  * Xcode + Command Line tools
 
-installed. All subsequent shell commands are to be done at `$REPO_ROOT`.
+installed.
 
 Also, create a Python virtual environment for ease of package installation
 
@@ -43,77 +42,24 @@ python3 -m pip install -r requirements.txt
 
 If you have other environment management such as Anaconda, remember to **DEACTIVATE** them.
 
-## Source and workspace preparation
+## Build ROS2 core communication packages for iOS
 
- 1. We are going to disable most packages and add back only those that are necessary.
-    To do that, I deviate from the guide to get the sources into `unused_src` instead
-
-    ```shell
-    mkdir unused_src
-    vcs import unused_src < ros2.repos
-    touch unused_src/AMENT_IGNORE       # So that colcon will not find packages in unused_src
-    ```
-
-    **Note**: The better method is to use `colcon`'s `--packages-up-to`.
-
- 2. Move the minimal packages `ros2/rcl`, `ros2/rmw`, `ros2/rosidl` to `src` to start
-
-    ```shell
-    mkdir -p src/ros2
-    mv unused_src/ament src/
-    mv unused_src/eProsima src/
-    mv unused_src/ros2/rcl src/ros2/
-    mv unused_src/ros2/rmw src/ros2/
-    mv unused_src/ros2/rosidl src/ros2/
-    mv unused_src/ros2/common_interfaces src/ros2/
-    ```
-
-    It is good to have `ros2/common_interfaces` as it provides the commonly used packages such as `std_msgs`.
-
-    Certain heavy graphic-based packages such as `rviz` are obviously not easy to port.
-    We will run `colcon` commands (below) and add back more dependent packages.
-
-    **Tip**: Do `find unused_src -name PKG_NAME` in `unused_src` to find the repository containing the needed package.
-
- 3. The minimal list of repositories is available in the file `ros2_min.repos`.
-    So of course, one can simply import this instead.
-    Here, I choose to use a single RMW implementation (via Fast-DDS).
-
- 4. Create a new workspace and link the `src` in
-
-    ```shell
-    mkdir -p ros2_ws
-    cd ros2_ws
-    ln -s $REPO_ROOT/src src
-    ```
-
- 5. During development, it is good to have multiple workspaces such as
-
-     - `ament_ws`: move `ament` here, build and `source` it before moving on to
-     - `base_ws`: add `rcl` and its dependencies and once successful
-     - `rclcpp_ws`: add other desired packages such as `rclcpp`.
-
-    This way, one can minimize the amount of packages to rebuild.
-
-## Build ROS2 core packages for iOS
-
-Before building, we need to change the line `#include <net/if_arp.h>` in `src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp` into `#include <net/ethernet.h>` according to [this](https://stackoverflow.com/questions/10395041/getting-arp-table-on-iphone-ipad) as the original header is only available in the macOS SDK.
-
-We also disable the package `rcl_logging_spdlog` by
+To build for iOS simulator on Intel Macs, use the script [`build_ros2.sh`](build_ros2.sh).
+Activate your Python environment then execute
 ```shell
-touch src/ros2/rcl_logging/rcl_logging_spdlog/AMENT_IGNORE
+ # change iOS to iOS_Simulator if you want to test ROS2 on the iPhone simulator
+source build_ros2.sh iOS
+
+buildRos2Base
 ```
+at the **root of this repo** (the script must be `source`d there so you should clone this repo where you want to put your ROS2 installation).
 
-To build for iOS simulator on Intel Macs, do
-
+The key command in the script is
 ```shell
-cd ros2_ws
-
-#Prepend with VERBOSE=1 and add --executor sequential --event-handlers console_direct+ while debugging
 colcon build --merge-install \
     --cmake-force-configure \
     --cmake-args \
-        -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/iOS_Simulator.cmake \
+        -DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/iOS.cmake \
         -DBUILD_TESTING=NO \
         -DTHIRDPARTY=FORCE \
         -DCOMPILE_TOOLS=NO \
@@ -121,8 +67,6 @@ colcon build --merge-install \
         -DBUILD_MEMORY_TOOLS=OFF \
         -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop
 ```
-
-For M1 Mac or for real iPhones, you would need to change `iOS_Simulator.cmake` appropriately.
 
 After my tons of failures, here is what went going on behind the above command:
 
@@ -152,16 +96,81 @@ After my tons of failures, here is what went going on behind the above command:
 
  8. ROS2 depends significantly on dynamic linking. Do NOT add `BUILD_SHARED_LIBS=NO`, contrary to my other project [LLVM](https://github.com/light-tech/LLVM-On-iOS/) where building static libs is needed!
 
-## ROS Development Building Tip
+## Build ROS2 with graphical tools for macOS
 
-Define functions `buildCMake` and `buildColcon` in your `.zshrc` for instance
+While there is an option, namely [RoboStack](https://robostack.github.io/GettingStarted.html), to install ROS2 for macOS without having to build it from source, their prebuilt graphical tools such as `rviz2` and `gazebo` do not work.
+
+So I find a way to build ROS2 from source to use on macOS (Intel only) as well.
+There is **no need to disable SIP** like the official instruction suggested.
+I also build pretty much all dependencies so **Homebrew isn't needed either**.
+
+Unlike iOS, you first need to build the dependencies using [`build_deps.sh`](build_deps.sh).
+Then similar to iOS,
+```shell
+source build_ros2.sh macOS
+
+buildRos2Base
+buildRviz2       # Run if you need Rviz2 (depends on base)
+buildMoveIt2     # Run if you need MoveIt2 (depends on Rviz2)
+```
+
+See [`build_ros2.sh`](build_ros2.sh) for more details.
+
+## Using our prebuilt ROS2 for macOS
+
+If you want to save yourself one full working day, you can use [our release](https://github.com/light-tech/ROS2-On-iOS/releases) built using GitHub Action.
+
+**Note**: We did not manage to build native ROS2 for ARM64 Mac but you can still use the Intel version thank to [Rosetta 2](https://support.apple.com/en-us/HT211861).
+In that case, you will need to install `x86_64` version of Python.
+
+ *  If you download the file from a browser, it will be put in quarantine so you need to `xattr -d com.apple.quarantine DOWNLOADED_FILE` before extraction.
+ *  To avoid that, you could open the terminal and do
+    ```shell
+    curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/deps_macOS.tar.xz \
+         -O https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_macOS.tar.xz \
+         -O https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/rviz2_macOS.tar.xz \
+         -O https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/moveit2_macOS.tar.xz
+    ```
+    instead.
+
+After extracting the archives with `tar xzf` and move the resulting `ros2_macOS` to where you want (I usually rename it to `ros2` and move it inside `~/usr` in my home folder along with the other Linux-based software), you need to **fix hardcoded paths** to match YOUR system as `colcon` (or maybe CMake) unfortunately hardcoded a lot of paths (mostly concerning Python-based stuffs) in generated files such as CMake and package config files.
+
+ *  To do that, run our script `fix_hardcoded_paths.sh` and you will be prompt with the relevant information.
+ *  The script is not exhaustive so you will need to manually fix the path such as the path to `python3` in `bin/ros2` so you can run `ros2` command line such as `ros2 launch` and `ros2 topic list`.
+
+Next, add this to your `.zshrc`
+```shell
+activateROS2() {
+    # So that ros2 can find the Python framework that you installed yourself.
+    # Change the path /Library/Frameworks appropriately to fit your system.
+    export DYLD_FRAMEWORK_PATH=/Library/Frameworks:$DYLD_FRAMEWORK_PATH
+
+    source PATH_TO_PYTHON_ENV/bin/activate
+    source PATH_TO_EXTRACTED_ROS2/moveit2/setup.zsh
+
+    # Add the location for ROS2 to find prebuilt dependencies
+    # Do this AFTER source setup.zsh because of https://github.com/colcon/colcon-zsh/issues/12
+    export DYLD_LIBRARY_PATH=PATH_TO_EXTRACTED_ROS2/deps/lib:$DYLD_LIBRARY_PATH
+}
+```
+so that anytime you need ROS2, you can simply execute `activateROS2` in the terminal.
+
+Now you can start using ROS2 [as usual](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries.html).
+
+ *  Try following the various tutorials such as [the image transport tutorial](https://github.com/ros-perception/image_transport_tutorials) and the [URDF tutorial](https://github.com/ros/urdf_tutorial).
+
+## ROS Development Tip
+
+Define functions `buildCMake` and `buildColcon` in your `.zshrc` such as
 ```shell
 buildCMake() {
     mkdir _build && cd _build
     cmake -DCMAKE_INSTALL_PREFIX=$HOME/usr/ros2/deps -DCMAKE_PREFIX_PATH="$HOME/usr/ros2/deps" "$@" ..
     cmake --build . --config Release --target install
 }
+
+buildColcon() {
+    colcon build --symlink-install --cmake-args -DCMAKE_PREFIX_PATH=$PATH_TO_EXTRACTED_ROS2/deps -DBUILD_TESTING=NO
+}
 ```
 to avoid typing (copying and pasting) long chains of shell commands in the terminal.
-
-Also, add `activatePythonEnv` and `activateROS2` to avoid typing the setup path.

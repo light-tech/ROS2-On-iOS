@@ -55,7 +55,8 @@ buildRos2Base() {
     # wget https://raw.githubusercontent.com/ros2/ros2/humble/ros2.repos
     vcs import src < $scriptDir/ros2_min.repos
 
-    # Ignore rcl_logging_spdlog package
+    # Ignore rcl_logging_spdlog package since we are going to force using rcl_logging_noop
+    # (i.e. no op => no logging performed) for the logging backend.
     touch src/ros2/rcl_logging/rcl_logging_spdlog/AMENT_IGNORE
 
     if [ $targetPlatform == "macOS" ]; then
@@ -93,7 +94,15 @@ buildRos2Base() {
         # For iOS platform, set appropriate toolchain file
         colconArgs+=(-DCMAKE_TOOLCHAIN_FILE=$scriptDir/cmake/$targetPlatform.cmake)
 
-        # Replace if_arp.h header with ethernet.h
+        # For iOS, we need to change the line `#include <net/if_arp.h>` in
+        # `src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp` (in the original repo)
+        # into `#include <net/ethernet.h>` according to
+        # https://stackoverflow.com/questions/10395041/getting-arp-table-on-iphone-ipad
+        # as the former header is only available in the macOS SDK.
+        #
+        # Here, I am commenting out as the repos file used my own fork of `eProsima/Fast-DDS`
+        # which already patches the file.
+        #
         # sed -i.bak 's/if_arp.h/ethernet.h/g' src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp
     fi
 
