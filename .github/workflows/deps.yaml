@@ -2,6 +2,9 @@ name: Build dependencies
 on:
   workflow_dispatch:
   workflow_call:
+  push:
+    branches:
+      deps-ci
 jobs:
   cache-python-environment:
     runs-on: macos-latest
@@ -23,30 +26,37 @@ jobs:
           name: python_venv
           path: python_venv.tar.xz
 
-  build-dependencies:
-    runs-on: macos-latest
-    timeout-minutes: 1200
-    strategy:
-      matrix:
-        platformArch: [macOS] # iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1
-    steps:
-      - uses: actions/checkout@v3
+  build-core-dependencies:
+    uses: ./.github/workflows/subdeps.yaml
+    with:
+      collection: core
 
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.12
-        with:
-          cmake-version: '3.23.x'
+  build-boost:
+    needs: build-core-dependencies
+    uses: ./.github/workflows/subdeps.yaml
+    with:
+      collection: boost
 
-      - name: Install X11 (XQuartz)
-        run: brew install xquartz
+  build-opencv:
+    needs: build-core-dependencies
+    uses: ./.github/workflows/subdeps.yaml
+    with:
+      collection: opencv
 
-      - name: Build dependencies
-        run: ./build_deps.sh ${{ matrix.platformArch }}
+  build-qt5:
+    needs: build-core-dependencies
+    uses: ./.github/workflows/subdeps.yaml
+    with:
+      collection: qt5
 
-      - name: Package dependencies
-        run: tar cJf deps_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/deps/
+  build-rviz:
+    needs: build-core-dependencies
+    uses: ./.github/workflows/subdeps.yaml
+    with:
+      collection: rviz
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: deps_${{ matrix.platformArch }}
-          path: deps_${{ matrix.platformArch }}.tar.xz
+  build-moveit:
+    needs: build-core-dependencies
+    uses: ./.github/workflows/subdeps.yaml
+    with:
+      collection: moveit

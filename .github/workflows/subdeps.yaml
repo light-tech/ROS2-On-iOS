@@ -1,0 +1,41 @@
+name: Build sub-dependencies
+on:
+  workflow_call:
+    inputs:
+      collection:
+        description: 'Target dependencies collection e.g. core, rviz, moveit, ... to build'
+        required: true
+        type: string
+jobs:
+  build-sub-dependencies:
+    runs-on: macos-latest
+    timeout-minutes: 1200
+    strategy:
+      matrix:
+        platformArch: [macOS] # iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.12
+        with:
+          cmake-version: '3.23.x'
+
+      - uses: actions/download-artifact@v3
+
+      - run: ./extract_artifacts.sh
+
+      - name: Install X11 (XQuartz)
+        run: brew install xquartz
+        if: ${{ inputs.collection == 'moveit' }}
+
+      - name: Build ${{ inputs.collection }}
+        run: ./build_deps.sh ${{ matrix.platformArch }} ${{ inputs.collection }}
+
+      - name: Package ${{ inputs.collection }}
+        run: tar cJf deps_${{ inputs.collection }}_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/deps/
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: deps_${{ inputs.collection }}_${{ matrix.platformArch }}
+          path: deps_${{ inputs.collection }}_${{ matrix.platformArch }}.tar.xz

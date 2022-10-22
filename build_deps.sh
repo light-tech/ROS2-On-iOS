@@ -3,6 +3,9 @@
 # Platform to build [macOS] or [iOS, iOS_Simulator, ...]
 targetPlatform=$1
 
+# Dependencies collection should be [core, boost, opencv, ...]
+collection=$2
+
 # The location of this script (the repo root) where supporting files can be found
 scriptDir=`pwd`
 
@@ -286,7 +289,8 @@ buildBoost() {
     ./bootstrap.sh --prefix=$depsInstallPath \
                    --with-python=$pythonRoot/bin/python3 \
                    --with-python-version=3.10 \
-                   --with-python-root=$pythonRoot/bin/python3
+                   --with-python-root=$pythonRoot/bin/python3 \
+                   --without-libraries=coroutine
 
     ./b2 install architecture=$boostArch # --debug-configuration --debug-building --debug-generator -d+2
 }
@@ -413,25 +417,68 @@ buildMoveItDeps() {
     cd $depsExtractPath/openmp-14.0.6.src && buildCMake
 }
 
-getSource
+mkdir -p $depsDownloadPath
+cd $depsDownloadPath
+
+case $collection in
+    "core")
+        curl -s -L -o pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz \
+             -o libpng.tar.xz https://download.sourceforge.net/libpng/libpng-1.6.37.tar.xz \
+             -o zlib.tar.xz https://zlib.net/zlib-1.2.13.tar.xz;;
+
+    "boost")
+        curl -s -L -o boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz;;
+
+    "qt5")
+        curl -s -L -o qtbase.tar.gz https://download.qt.io/archive/qt/5.15/5.15.5/submodules/qtbase-everywhere-opensource-src-5.15.5.tar.xz;;
+
+    "opencv")
+        curl -s -L -o opencv.tar.gz https://github.com/opencv/opencv/archive/refs/tags/4.6.0.tar.gz;;
+
+    "rviz")
+        curl -s -L -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz \
+             -o eigen.tar.bz2 https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2 \
+             -o tinyxml2.tar.gz https://github.com/leethomason/tinyxml2/archive/refs/tags/9.0.0.tar.gz \
+             -o bullet3.tar.gz https://github.com/bulletphysics/bullet3/archive/refs/tags/3.24.tar.gz;;
+
+    "moveit")
+        curl -s -L -o fcl.tar.gz https://github.com/flexible-collision-library/fcl/archive/refs/tags/0.7.0.tar.gz \
+            -o ccd.tar.gz https://github.com/danfis/libccd/archive/refs/tags/v2.1.tar.gz \
+            -o octomap.tar.gz https://github.com/OctoMap/octomap/archive/refs/tags/v1.9.6.tar.gz \
+            -o qhull.tgz http://www.qhull.org/download/qhull-2020-src-8.0.2.tgz \
+            -o assimp.tar.gz https://github.com/assimp/assimp/archive/refs/tags/v5.2.5.tar.gz \
+            -o ruckig.tar.gz https://github.com/pantor/ruckig/archive/refs/tags/v0.8.4.tar.gz \
+            -o glew.tgz https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.tgz \
+            -o freeglut.tar.gz https://github.com/FreeGLUTProject/freeglut/releases/download/v3.4.0/freeglut-3.4.0.tar.gz \
+            -o openssl.tar.gz https://github.com/openssl/openssl/archive/refs/tags/openssl-3.0.6.tar.gz \
+            -o omplcore.tar.gz https://github.com/ompl/ompl/archive/1.5.2.tar.gz \
+            -o openmp.tar.xz https://github.com/llvm/llvm-project/releases/download/llvmorg-14.0.6/openmp-14.0.6.src.tar.xz;;
+esac
+
 extractSource
 setupPlatform
 
-buildHostTools
-
-case $targetPlatform in
-    "macOS"|"macOS_M1") # Build dependencies for RVIZ and OpenCV
+case $collection in
+    "core")
+        buildHostTools
         buildZlib
-        buildLibPng
+        buildLibPng;;
+
+    "boost")
+        buildBoost;;
+
+    "qt5")
+        buildQt5;;
+
+    "opencv")
+        buildOpenCV;;
+
+    "rviz")
         buildFreeType2
         buildEigen3
         buildTinyXML2
-        buildBullet3
-        buildQt5
-        buildBoost
-        buildOpenCV
-        buildMoveItDeps;;
+        buildBullet3;;
 
-    *) # Build useful dependencies for iOS
-        buildTinyXML2;;
+    "moveit")
+        buildMoveItDeps;;
 esac
