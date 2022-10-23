@@ -13,6 +13,7 @@ jobs:
     strategy:
       matrix:
         platformArch: [macOS] # iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1
+    name: Build ${{ inputs.collection }} dependencies
     steps:
       - uses: actions/checkout@v3
 
