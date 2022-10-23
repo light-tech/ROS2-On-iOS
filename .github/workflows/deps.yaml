@@ -56,7 +56,7 @@ jobs:
       collection: rviz
 
   build-moveit:
-    needs: build-core
+    needs: [build-core, build-boost, build-rviz]
     uses: ./.github/workflows/subdeps.yaml
     with:
       collection: moveit

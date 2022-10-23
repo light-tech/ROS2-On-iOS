@@ -31,7 +31,7 @@ jobs:
         if: ${{ inputs.collection == 'moveit' }}
 
       - name: Build ${{ inputs.collection }}
-        run: ./build_deps.sh ${{ matrix.platformArch }} ${{ inputs.collection }}
+        run: source build_deps.sh ${{ matrix.platformArch }} && buildCollection ${{ inputs.collection }}
 
       - name: Package ${{ inputs.collection }}
         run: tar cJf deps_${{ inputs.collection }}_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/deps/
