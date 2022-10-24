@@ -416,6 +416,31 @@ buildMoveItDeps() {
     cd $depsExtractPath/openmp-14.0.6.src && buildCMake
 }
 
+buildAllDeps() {
+    getSource
+    extractSource
+    setupPlatform
+
+    buildHostTools
+
+    case $targetPlatform in
+        "macOS"|"macOS_M1") # Build dependencies for RVIZ and OpenCV
+            buildZlib
+            buildLibPng
+            buildFreeType2
+            buildEigen3
+            buildTinyXML2
+            buildBullet3
+            buildQt5
+            buildBoost
+            buildOpenCV
+            buildMoveItDeps;;
+
+        *) # Build useful dependencies for iOS
+            buildTinyXML2;;
+    esac
+}
+
 buildCollection() {
     # Dependencies collection should be [core, boost, opencv, ...]
     collection=$1
