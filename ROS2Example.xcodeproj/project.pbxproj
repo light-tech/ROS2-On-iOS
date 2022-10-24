@@ -772,6 +772,7 @@
 		B7928F6E28A74865000B40D4 /* ros2_min.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = ros2_min.repos; sourceTree = SOURCE_ROOT; };
 		B7928F6F28A74865000B40D4 /* requirements.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = requirements.txt; sourceTree = SOURCE_ROOT; };
 		B7928F7528A7491A000B40D4 /* base.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = base.yaml; path = .github/workflows/base.yaml; sourceTree = SOURCE_ROOT; };
+		B79D721C2903CFA400854727 /* subdeps.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = subdeps.yaml; path = .github/workflows/subdeps.yaml; sourceTree = SOURCE_ROOT; };
 		B79E396D28BDACBA001526FF /* build_deps.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_deps.sh; sourceTree = SOURCE_ROOT; };
 		B7ACAC2F28A6A23F00A537EB /* ROS2Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ROS2Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7ACAC3228A6A23F00A537EB /* ROS2ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROS2ExampleApp.swift; sourceTree = "<group>"; };
@@ -1273,6 +1274,7 @@
 			isa = PBXGroup;
 			children = (
 				B76430B528FDAECB00580D19 /* deps.yaml */,
+				B79D721C2903CFA400854727 /* subdeps.yaml */,
 				B7928F7528A7491A000B40D4 /* base.yaml */,
 				B7BDDA1B28FCF24B00C428CB /* rviz2.yaml */,
 				B778C1EC28F9A32F00A14994 /* moveit2.yaml */,

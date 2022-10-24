@@ -12,9 +12,11 @@ ros2HostQtPath=$scriptDir/host_deps/
 # Where we download the source archives
 # We download and extract at different places so that it is easier to clean up
 depsDownloadPath=$scriptDir/deps_download/
+mkdir -p $depsDownloadPath
 
 # Location to extract the source
 depsExtractPath=$scriptDir/deps_src/
+mkdir -p $depsExtractPath
 
 # Location to install dependencies
 depsInstallPath=$scriptDir/ros2_$targetPlatform/deps
@@ -32,72 +34,16 @@ platformExtraCMakeArgs=(-DCMAKE_INSTALL_PREFIX=$depsInstallPath -DCMAKE_PREFIX_P
 platformBasicConfigureArgs=(--prefix=$depsInstallPath) # Configure args for regular situation
 platformBasicConfigureArgsPixmanCairo=(--prefix=$depsInstallPath) # Special configure args for pixman and cairo
 
-getSource() {
-    mkdir -p $depsDownloadPath
+downloadExtract() {
+    local outputFileName=$1
+    local url=$2
+
     cd $depsDownloadPath
+    curl -s -L -o $outputFileName $url
 
-    curl -s -L -o pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
-         #-o autoconf.tar.gz http://ftpmirror.gnu.org/autoconf/autoconf-2.69.tar.gz \
-         #-o automake.tar.gz http://ftpmirror.gnu.org/automake/automake-1.15.tar.gz \
-         #-o libtool.tar.gz http://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.gz \
-         #-o mm-common.tar.gz https://github.com/GNOME/mm-common/archive/refs/tags/1.0.4.tar.gz
-
-    # Dependencies for rviz
-    # Need -L to download github releases according to https://stackoverflow.com/questions/46060010/download-github-release-with-curl
-    curl -s -L -o freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz \
-         -o libpng.tar.xz https://download.sourceforge.net/libpng/libpng-1.6.37.tar.xz \
-         -o zlib.tar.xz https://zlib.net/zlib-1.2.13.tar.xz \
-         -o eigen.tar.bz2 https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2 \
-         -o tinyxml2.tar.gz https://github.com/leethomason/tinyxml2/archive/refs/tags/9.0.0.tar.gz \
-         -o bullet3.tar.gz https://github.com/bulletphysics/bullet3/archive/refs/tags/3.24.tar.gz \
-         -o qtbase.tar.gz https://download.qt.io/archive/qt/5.15/5.15.5/submodules/qtbase-everywhere-opensource-src-5.15.5.tar.xz
-
-    # Common heavy dependencies OpenCV, Boost
-    curl -s -L -o opencv.tar.gz https://github.com/opencv/opencv/archive/refs/tags/4.6.0.tar.gz \
-               -o boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz
-
-    # Dependencies for MoveIt2
-    curl -s -L -o fcl.tar.gz https://github.com/flexible-collision-library/fcl/archive/refs/tags/0.7.0.tar.gz \
-        -o ccd.tar.gz https://github.com/danfis/libccd/archive/refs/tags/v2.1.tar.gz \
-        -o octomap.tar.gz https://github.com/OctoMap/octomap/archive/refs/tags/v1.9.6.tar.gz \
-        -o qhull.tgz http://www.qhull.org/download/qhull-2020-src-8.0.2.tgz \
-        -o assimp.tar.gz https://github.com/assimp/assimp/archive/refs/tags/v5.2.5.tar.gz \
-        -o ruckig.tar.gz https://github.com/pantor/ruckig/archive/refs/tags/v0.8.4.tar.gz \
-        -o glew.tgz https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.tgz \
-        -o freeglut.tar.gz https://github.com/FreeGLUTProject/freeglut/releases/download/v3.4.0/freeglut-3.4.0.tar.gz \
-        -o openssl.tar.gz https://github.com/openssl/openssl/archive/refs/tags/openssl-3.0.6.tar.gz \
-        -o omplcore.tar.gz https://github.com/ompl/ompl/archive/1.5.2.tar.gz \
-        -o openmp.tar.xz https://github.com/llvm/llvm-project/releases/download/llvmorg-14.0.6/openmp-14.0.6.src.tar.xz
-
-    # Dependencies for cartographer
-    # For CERES, must checkout `2.0.0` to avoid https://github.com/cartographer-project/cartographer/issues/1879
-    if [ $targetPlatform != "macOS" ] && [ $targetPlatform != "macOS_M1" ]; then
-    curl -s -L -o abseil-cpp.tar.gz https://github.com/abseil/abseil-cpp/archive/refs/tags/20220623.0.tar.gz \
-         -o gflags.tar.gz https://github.com/gflags/gflags/archive/refs/tags/v2.2.2.tar.gz \
-         -o cairo.tar.xz https://www.cairographics.org/releases/cairo-1.16.0.tar.xz \
-         -o pixman.tar.gz https://cairographics.org/releases/pixman-0.40.0.tar.gz \
-         -o glog.tar.gz https://github.com/google/glog/archive/refs/tags/v0.6.0.tar.gz \
-         -o gmp.tar.xz https://gmplib.org/download/gmp/gmp-6.2.1.tar.xz \
-         -o protobuf.tar.gz https://github.com/protocolbuffers/protobuf/releases/download/v21.5/protobuf-cpp-3.21.5.tar.gz \
-         -o lua.tar.gz https://www.lua.org/ftp/lua-5.4.4.tar.gz \
-         -o flann.tar.gz https://github.com/flann-lib/flann/archive/refs/tags/1.9.1.tar.gz \
-         -o mpfr.tar.xz https://www.mpfr.org/mpfr-current/mpfr-4.1.0.tar.xz \
-         -o pcl.tar.gz https://github.com/PointCloudLibrary/pcl/releases/download/pcl-1.12.1/source.tar.gz \
-         -o googletest.tar.gz https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz \
-         -o SuiteSparse.tar.gz https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/refs/tags/v5.12.0.tar.gz \
-         -o ceres-solver.tar.gz http://ceres-solver.org/ceres-solver-2.0.0.tar.gz
-    fi
-}
-
-extractSource() {
-    mkdir -p $depsExtractPath
     cd $depsExtractPath
-    local src_files=($(ls $depsDownloadPath))
-    for f in "${src_files[@]}"; do
-        echo "Extract $f"
-        file $depsDownloadPath/$f
-        tar xzf $depsDownloadPath/$f
-    done
+    file $depsDownloadPath/$outputFileName
+    tar xzf $depsDownloadPath/$outputFileName
 }
 
 setupPlatform() {
@@ -181,100 +127,121 @@ configureThenMakeArm() {
 }
 
 buildHostTools() {
-    cd $depsExtractPath/pkg-config-0.29.2 && ./configure --prefix=$depsInstallPath --with-internal-glib && make && make install
-    #cd $depsExtractPath/autoconf-2.69 && ./configure --prefix=$depsInstallPath && make && make install
-    #cd $depsExtractPath/automake-1.15 && ./configure --prefix=$depsInstallPath && make && make install
-    #cd $depsExtractPath/libtool-2.4.6 && ./configure --prefix=$depsInstallPath && make && make install
-    #cd $depsExtractPath/mm-common-1.0.4 && ./autogen.sh && ./configure --prefix=$depsInstallPath && make USE_NETWORK=yes && make install
+    downloadExtract pkg-config.tar.gz https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
+    cd pkg-config-0.29.2 && ./configure --prefix=$depsInstallPath --with-internal-glib && make && make install
+
+    #downloadExtract autoconf.tar.gz http://ftpmirror.gnu.org/autoconf/autoconf-2.69.tar.gz
+    #cd autoconf-2.69 && ./configure --prefix=$depsInstallPath && make && make install
+    #downloadExtract automake.tar.gz http://ftpmirror.gnu.org/automake/automake-1.15.tar.gz
+    #cd automake-1.15 && ./configure --prefix=$depsInstallPath && make && make install
+    #downloadExtract libtool.tar.gz http://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.gz
+    #cd libtool-2.4.6 && ./configure --prefix=$depsInstallPath && make && make install
+    #downloadExtract mm-common.tar.gz https://github.com/GNOME/mm-common/archive/refs/tags/1.0.4.tar.gz
+    #cd mm-common-1.0.4 && ./autogen.sh && ./configure --prefix=$depsInstallPath && make USE_NETWORK=yes && make install
 }
 
 buildZlib() {
     echo "Build zlib"
-
+    downloadExtract zlib.tar.xz https://zlib.net/zlib-1.2.13.tar.xz
     # Note that zlib's configure does not set --host but relies on compiler flags environment variables
-    cd $depsExtractPath/zlib-1.2.13 && setCompilerFlags && ./configure --prefix=$depsInstallPath && make && make install
+    cd zlib-1.2.13 && setCompilerFlags && ./configure --prefix=$depsInstallPath && make && make install
 }
 
 buildTinyXML2() {
     echo "Build TinyXML2"
-    cd $depsExtractPath/tinyxml2-9.0.0 && buildCMake
+    downloadExtract tinyxml2.tar.gz https://github.com/leethomason/tinyxml2/archive/refs/tags/9.0.0.tar.gz
+    cd tinyxml2-9.0.0 && buildCMake
 }
 
 # Needs: zlib
 buildLibPng() {
     echo "Build libpng"
-    cd $depsExtractPath/libpng-1.6.37 && configureThenMake
+    downloadExtract libpng.tar.xz https://download.sourceforge.net/libpng/libpng-1.6.37.tar.xz
+    cd libpng-1.6.37 && configureThenMake
 }
 
 # Needs: libpng
 buildPixman() {
     echo "Build pixman"
-    cd $depsExtractPath/pixman-0.40.0 && configureThenMakeArm
+    downloadExtract pixman.tar.gz https://cairographics.org/releases/pixman-0.40.0.tar.gz
+    cd pixman-0.40.0 && configureThenMakeArm
 }
 
 buildFreeType2() {
     echo "Build freetype"
-    cd $depsExtractPath/freetype-2.12.1 && buildCMake -DFT_DISABLE_HARFBUZZ=ON -DFT_DISABLE_BZIP2=ON -DFT_DISABLE_ZLIB==ON -DFT_DISABLE_PNG=ON -DFT_DISABLE_BROTLI=ON
+    downloadExtract freetype.tar.xz https://download.savannah.gnu.org/releases/freetype/freetype-2.12.1.tar.xz
+    cd freetype-2.12.1 && buildCMake -DFT_DISABLE_HARFBUZZ=ON -DFT_DISABLE_BZIP2=ON -DFT_DISABLE_ZLIB==ON -DFT_DISABLE_PNG=ON -DFT_DISABLE_BROTLI=ON
 }
 
 # Needs: FreeType, pixman
 buildCairo() {
     echo "Build cairo"
-    cd $depsExtractPath/cairo-1.16.0
+    downloadExtract cairo.tar.xz https://www.cairographics.org/releases/cairo-1.16.0.tar.xz
+    cd cairo-1.16.0
     sed -i.bak 's/#define HAS_DAEMON 1/#define HAS_DAEMON 0/' boilerplate/cairo-boilerplate.c
     configureThenMakeArm --disable-xlib --enable-svg=no --enable-pdf=no --enable-full-testing=no HAS_DAEMON=0
 }
 
 buildBullet3() {
     echo "Build Bullet3"
-    cd $depsExtractPath/bullet3-3.24 && buildCMake -DBUILD_BULLET2_DEMOS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF
+    downloadExtract bullet3.tar.gz https://github.com/bulletphysics/bullet3/archive/refs/tags/3.24.tar.gz
+    cd bullet3-3.24 && buildCMake -DBUILD_BULLET2_DEMOS=OFF -DBUILD_OPENGL3_DEMOS=OFF -DBUILD_UNIT_TESTS=OFF
 }
 
 buildGFlags() {
     echo "Build gflags"
-    cd $depsExtractPath/gflags-2.2.2 && buildCMake
+    downloadExtract gflags.tar.gz https://github.com/gflags/gflags/archive/refs/tags/v2.2.2.tar.gz
+    cd gflags-2.2.2 && buildCMake
 }
 
 # Needs: gflags
 buildGlog() {
     echo "Build glog"
-    cd $depsExtractPath/glog-0.6.0 && buildCMake -DWITH_GTEST=OFF -DBUILD_TESTING=OFF
+    downloadExtract glog.tar.gz https://github.com/google/glog/archive/refs/tags/v0.6.0.tar.gz
+    cd glog-0.6.0 && buildCMake -DWITH_GTEST=OFF -DBUILD_TESTING=OFF
 }
 
 buildGtest() {
     echo "Build GoogleTest"
-    cd $depsExtractPath/googletest-release-1.12.1 && buildCMake
+    downloadExtract googletest.tar.gz https://github.com/google/googletest/archive/refs/tags/release-1.12.1.tar.gz
+    cd googletest-release-1.12.1 && buildCMake
 }
 
 buildAbsl() {
     echo "Build ABSL"
-    cd $depsExtractPath/abseil-cpp-20220623.0 && buildCMake -DCMAKE_CXX_STANDARD=14
+    downloadExtract abseil-cpp.tar.gz https://github.com/abseil/abseil-cpp/archive/refs/tags/20220623.0.tar.gz
+    cd abseil-cpp-20220623.0 && buildCMake -DCMAKE_CXX_STANDARD=14
 }
 
 buildGmp() {
     echo "Build GMP"
-    cd $depsExtractPath/gmp-6.2.1 && configureThenMake
+    downloadExtract gmp.tar.xz https://gmplib.org/download/gmp/gmp-6.2.1.tar.xz
+    cd gmp-6.2.1 && configureThenMake
 }
 
 # Needs: GMP
 buildMpfr() {
     echo "Build MPFR"
-    cd $depsExtractPath/mpfr-4.1.0 && configureThenMake --with-gmp=$depsInstallPath
+    downloadExtract mpfr.tar.xz https://www.mpfr.org/mpfr-current/mpfr-4.1.0.tar.xz
+    cd mpfr-4.1.0 && configureThenMake --with-gmp=$depsInstallPath
 }
 
 buildProtoBuf() {
     echo "Build ProtoBuf"
-    cd $depsExtractPath/protobuf-3.21.5 && buildCMake -Dprotobuf_BUILD_TESTS=OFF
+    downloadExtract protobuf.tar.gz https://github.com/protocolbuffers/protobuf/releases/download/v21.5/protobuf-cpp-3.21.5.tar.gz
+    cd protobuf-3.21.5 && buildCMake -Dprotobuf_BUILD_TESTS=OFF
 }
 
 buildLua() {
     echo "Build Lua"
-    cd $depsExtractPath/lua-5.4.4 && make macosx && make install INSTALL_TOP=$depsInstallPath
+    downloadExtract lua.tar.gz https://www.lua.org/ftp/lua-5.4.4.tar.gz
+    cd lua-5.4.4 && make macosx && make install INSTALL_TOP=$depsInstallPath
 }
 
 buildBoost() {
     echo "Build Boost"
-    cd $depsExtractPath/boost_1_80_0
+    downloadExtract boost.tar.gz https://boostorg.jfrog.io/artifactory/main/release/1.80.0/source/boost_1_80_0.tar.gz
+    cd boost_1_80_0
 
     # Note: We must pass the full path to the python3 executable in --with-python-root=$pythonRoot/bin/python3
     # otherwise, will run into the issue https://github.com/boostorg/boost/issues/693.
@@ -286,14 +253,16 @@ buildBoost() {
     ./bootstrap.sh --prefix=$depsInstallPath \
                    --with-python=$pythonRoot/bin/python3 \
                    --with-python-version=3.10 \
-                   --with-python-root=$pythonRoot/bin/python3
+                   --with-python-root=$pythonRoot/bin/python3 \
+                   --without-libraries=coroutine
 
     ./b2 install architecture=$boostArch # --debug-configuration --debug-building --debug-generator -d+2
 }
 
 buildQt5() {
     echo "Build Qt5"
-    cd $depsExtractPath/qtbase-everywhere-src-5.15.5
+    downloadExtract qtbase.tar.gz https://download.qt.io/archive/qt/5.15/5.15.5/submodules/qtbase-everywhere-opensource-src-5.15.5.tar.xz
+    cd qtbase-everywhere-src-5.15.5
 
     # Patch the source https://codereview.qt-project.org/c/qt/qtbase/+/378706
     sed -i.bak "s,QT_BEGIN_NAMESPACE,#include <CoreGraphics/CGColorSpace.h>\n#include <IOSurface/IOSurface.h>\nQT_BEGIN_NAMESPACE," src/plugins/platforms/cocoa/qiosurfacegraphicsbuffer.h
@@ -304,13 +273,15 @@ buildQt5() {
 
 buildOpenCV() {
     echo "Build OpenCV"
+    downloadExtract opencv.tar.gz https://github.com/opencv/opencv/archive/refs/tags/4.6.0.tar.gz
     # https://docs.opencv.org/4.x/db/d05/tutorial_config_reference.html
-    cd $depsExtractPath/opencv-4.6.0 && buildCMake -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_JAVA=OFF -DBUILD_OBJC=OFF -DBUILD_ZLIB=NO -DBUILD_OPENEXR=YES
+    cd opencv-4.6.0 && buildCMake -DCMAKE_BUILD_TYPE=Release -DBUILD_opencv_python2=OFF -DBUILD_JAVA=OFF -DBUILD_OBJC=OFF -DBUILD_ZLIB=NO -DBUILD_OPENEXR=YES
 }
 
 buildSuiteSparse() {
     echo "Build SuiteSparse"
-    cd $depsExtractPath/SuiteSparse-5.12.0
+    downloadExtract SuiteSparse.tar.gz https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/refs/tags/v5.12.0.tar.gz
+    cd SuiteSparse-5.12.0
     setCompilerFlags
 
     # By default, SuiteParse uses 64-bit integer for its `idx_t` (`long long`).
@@ -329,24 +300,29 @@ buildSuiteSparse() {
 # Needs: SuiteSparse for cartographer; but optional for rviz2
 buildEigen3() {
     echo "Build Eigen3"
-    cd $depsExtractPath/eigen-3.4.0 && buildCMake
+    downloadExtract eigen.tar.bz2 https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.bz2
+    cd eigen-3.4.0 && buildCMake
 }
 
 # Needs: gflags, glog, SuiteSparse
 buildCERES() {
     echo "Build CERES"
-    cd $depsExtractPath/ceres-solver-2.0.0 && buildCMake
+    # For CERES, must checkout `2.0.0` to avoid https://github.com/cartographer-project/cartographer/issues/1879
+    downloadExtract ceres-solver.tar.gz http://ceres-solver.org/ceres-solver-2.0.0.tar.gz
+    cd ceres-solver-2.0.0 && buildCMake
 }
 
 buildFLANN() {
     echo "Build FLANN"
-    cd $depsExtractPath/flann-1.9.1 && buildCMake -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_MATLAB_BINDINGS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF
+    downloadExtract flann.tar.gz https://github.com/flann-lib/flann/archive/refs/tags/1.9.1.tar.gz
+    cd flann-1.9.1 && buildCMake -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_MATLAB_BINDINGS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF
 }
 
 # Needs: Boost, FLANN, Eigen3
 buildPCL() {
     echo "Build PCL"
-    cd $depsExtractPath/pcl && buildCMake
+    downloadExtract pcl.tar.gz https://github.com/PointCloudLibrary/pcl/releases/download/pcl-1.12.1/source.tar.gz
+    cd pcl && buildCMake
 }
 
 buildAll() {
@@ -381,8 +357,11 @@ buildAll() {
 }
 
 buildMoveItDeps() {
-    cd $depsExtractPath/libccd-2.1 && buildCMake
-    cd $depsExtractPath/octomap-1.9.6 && buildCMake
+    downloadExtract ccd.tar.gz https://github.com/danfis/libccd/archive/refs/tags/v2.1.tar.gz
+    cd libccd-2.1 && buildCMake
+
+    downloadExtract octomap.tar.gz https://github.com/OctoMap/octomap/archive/refs/tags/v1.9.6.tar.gz
+    cd octomap-1.9.6 && buildCMake
 
     # For octomap, we need to manually add
     #   IMPORTED_LOCATION "${_IMPORT_PREFIX}/lib/libocto(map|math).1.9.6.dylib"
@@ -397,41 +376,88 @@ buildMoveItDeps() {
 
     sed -i.bak -E 's,set_target_properties\(octo(math|map) PROPERTIES,set_target_properties(octo\1 PROPERTIES\n  IMPORTED_LOCATION "\${_IMPORT_PREFIX}/lib/libocto\1.1.9.6.dylib",' $depsInstallPath/share/octomap/octomap-targets.cmake
 
-    # FCL depends on octomap and libccd
-    cd $depsExtractPath/fcl-0.7.0 && buildCMake -DBUILD_TESTING=NO
-    cd $depsExtractPath/qhull-2020.2 && buildCMake
-    cd $depsExtractPath/assimp-5.2.5 && buildCMake
-    cd $depsExtractPath/ruckig-0.8.4 && buildCMake
-    cd $depsExtractPath/glew-2.2.0/build/cmake && buildCMake
+    # FCL depends on octomap, libccd, Eigen3
+    downloadExtract fcl.tar.gz https://github.com/flexible-collision-library/fcl/archive/refs/tags/0.7.0.tar.gz
+    cd fcl-0.7.0 && buildCMake -DBUILD_TESTING=NO
+
+    downloadExtract qhull.tgz http://www.qhull.org/download/qhull-2020-src-8.0.2.tgz
+    cd qhull-2020.2 && buildCMake
+
+    downloadExtract assimp.tar.gz https://github.com/assimp/assimp/archive/refs/tags/v5.2.5.tar.gz
+    cd assimp-5.2.5 && buildCMake
+
+    downloadExtract ruckig.tar.gz https://github.com/pantor/ruckig/archive/refs/tags/v0.8.4.tar.gz
+    cd ruckig-0.8.4 && buildCMake
+
+    downloadExtract glew.tgz https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0.tgz
+    cd glew-2.2.0/build/cmake && buildCMake
 
     # FreeGLUT needs X11 (provided by XQuartz for macOS)
     # For some reason the X11 include path is not added so we force add it
-    cd $depsExtractPath/freeglut-3.4.0 && buildCMake -DFREEGLUT_BUILD_DEMOS=NO -DCMAKE_C_FLAGS="-isystem /usr/X11R6/include"
+    downloadExtract freeglut.tar.gz https://github.com/FreeGLUTProject/freeglut/releases/download/v3.4.0/freeglut-3.4.0.tar.gz
+    cd freeglut-3.4.0 && buildCMake -DFREEGLUT_BUILD_DEMOS=NO -DCMAKE_C_FLAGS="-isystem /usr/X11R6/include"
 
-    cd $depsExtractPath/openssl-openssl-3.0.6 && ./Configure --prefix=$depsInstallPath && make && make install
-    cd $depsExtractPath/ompl-1.5.2 && buildCMake
-    cd $depsExtractPath/openmp-14.0.6.src && buildCMake
+    downloadExtract openssl.tar.gz https://github.com/openssl/openssl/archive/refs/tags/openssl-3.0.6.tar.gz
+    cd openssl-openssl-3.0.6 && ./Configure --prefix=$depsInstallPath && make && make install
+
+    # Needs Boost
+    downloadExtract omplcore.tar.gz https://github.com/ompl/ompl/archive/1.5.2.tar.gz
+    cd ompl-1.5.2 && buildCMake
+
+    downloadExtract openmp.tar.xz https://github.com/llvm/llvm-project/releases/download/llvmorg-14.0.6/openmp-14.0.6.src.tar.xz
+    cd openmp-14.0.6.src && buildCMake
 }
 
-getSource
-extractSource
-setupPlatform
+buildAllDeps() {
+    setupPlatform
+    buildHostTools
 
-buildHostTools
+    case $targetPlatform in
+        "macOS"|"macOS_M1") # Build dependencies for RVIZ and OpenCV
+            buildZlib
+            buildLibPng
+            buildFreeType2
+            buildEigen3
+            buildTinyXML2
+            buildBullet3
+            buildQt5
+            buildBoost
+            buildOpenCV
+            buildMoveItDeps;;
 
-case $targetPlatform in
-    "macOS"|"macOS_M1") # Build dependencies for RVIZ and OpenCV
-        buildZlib
-        buildLibPng
-        buildFreeType2
-        buildEigen3
-        buildTinyXML2
-        buildBullet3
-        buildQt5
-        buildBoost
-        buildOpenCV
-        buildMoveItDeps;;
+        *) # Build useful dependencies for iOS
+            buildTinyXML2;;
+    esac
+}
 
-    *) # Build useful dependencies for iOS
-        buildTinyXML2;;
-esac
+buildCollection() {
+    # Dependencies collection should be [core, boost, opencv, ...]
+    collection=$1
+
+    setupPlatform
+
+    case $collection in
+        "core")
+            buildHostTools
+            buildZlib
+            buildLibPng;;
+
+        "boost")
+            buildBoost;;
+
+        "qt5")
+            buildQt5;;
+
+        "opencv")
+            buildOpenCV;;
+
+        "rviz")
+            buildFreeType2
+            buildEigen3
+            buildTinyXML2
+            buildBullet3;;
+
+        "moveit")
+            buildMoveItDeps;;
+    esac
+}

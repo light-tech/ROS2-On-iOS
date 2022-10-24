@@ -2,6 +2,9 @@ name: Build dependencies
 on:
   workflow_dispatch:
   workflow_call:
+  push:
+    branches:
+      deps-ci
 jobs:
   cache-python-environment:
     runs-on: macos-latest
@@ -23,30 +26,50 @@ jobs:
           name: python_venv
           path: python_venv.tar.xz
 
-  build-dependencies:
+  build-core:
+    uses: ./.github/workflows/subdeps.yaml
+    with:
+      collection: core
+
+  build-boost:
+    needs: build-core
+    uses: ./.github/workflows/subdeps.yaml
+    with:
+      collection: boost
+
+  build-opencv:
+    needs: build-core
+    uses: ./.github/workflows/subdeps.yaml
+    with:
+      collection: opencv
+
+  build-qt5:
+    needs: build-core
+    uses: ./.github/workflows/subdeps.yaml
+    with:
+      collection: qt5
+
+  build-rviz:
+    needs: build-core
+    uses: ./.github/workflows/subdeps.yaml
+    with:
+      collection: rviz
+
+  build-moveit:
+    needs: [build-core, build-boost, build-rviz]
+    uses: ./.github/workflows/subdeps.yaml
+    with:
+      collection: moveit
+
+  combine:
+    needs: [build-core, build-boost, build-opencv, build-qt5, build-rviz, build-moveit]
     runs-on: macos-latest
-    timeout-minutes: 1200
-    strategy:
-      matrix:
-        platformArch: [macOS] # iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1
     steps:
       - uses: actions/checkout@v3
-
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.12
-        with:
-          cmake-version: '3.23.x'
-
-      - name: Install X11 (XQuartz)
-        run: brew install xquartz
-
-      - name: Build dependencies
-        run: ./build_deps.sh ${{ matrix.platformArch }}
-
-      - name: Package dependencies
-        run: tar cJf deps_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/deps/
-
+      - uses: actions/download-artifact@v3
+      - run: ./extract_artifacts.sh
+      - run: tar cJf deps_macOS.tar.xz ros2_macOS/deps/
       - uses: actions/upload-artifact@v3
         with:
-          name: deps_${{ matrix.platformArch }}
-          path: deps_${{ matrix.platformArch }}.tar.xz
+          name: deps_macOS
+          path: deps_macOS.tar.xz
