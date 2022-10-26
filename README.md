@@ -32,7 +32,8 @@ We are going to need
 
 installed.
 
-Also, create a Python virtual environment for ease of package installation
+If you have other environment management such as Anaconda, remember to **DEACTIVATE** them.
+Then create and activate a Python virtual environment for ease of package installation
 
 ```shell
 python3 -m venv ros2PythonEnv
@@ -40,11 +41,10 @@ source ros2PythonEnv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
 
-If you have other environment management such as Anaconda, remember to **DEACTIVATE** them.
-
 ## Build ROS2 core communication packages for iOS
 
 To build for iOS simulator on Intel Macs, use the script [`build_ros2.sh`](build_ros2.sh).
+You might need to change some variable in the script to match your system.
 Activate your Python environment then execute
 ```shell
  # change iOS to iOS_Simulator if you want to test ROS2 on the iPhone simulator
@@ -104,7 +104,7 @@ So I find a way to build ROS2 from source to use on macOS (Intel only) as well.
 There is **no need to disable SIP** like the official instruction suggested.
 I also build pretty much all dependencies so **Homebrew isn't needed either**.
 
-Unlike iOS, you first need to build the dependencies using [`build_deps.sh`](build_deps.sh).
+Unlike iOS, you first need to build the dependencies using [`build_deps.sh`](build_deps.sh) and install [XQuartz](https://www.xquartz.org/) if you want to build MoveIt2.
 Then similar to iOS,
 ```shell
 source build_ros2.sh macOS
@@ -135,10 +135,10 @@ In that case, you will need to install `x86_64` version of Python.
 
 After extracting the archives with `tar xzf` and move the resulting `ros2_macOS` to where you want (I usually rename it to `ros2` and move it inside `~/usr` in my home folder along with the other Linux-based software), you need to **fix hardcoded paths** to match YOUR system as `colcon` (or maybe CMake) unfortunately hardcoded a lot of paths (mostly concerning Python-based stuffs) in generated files such as CMake and package config files.
 
- *  To do that, run our script `fix_hardcoded_paths.sh` and you will be prompt with the relevant information.
+ *  To do that, run our script `fix_hardcoded_paths.sh` and you will be prompted with the relevant information.
  *  The script is not exhaustive so you will need to manually fix the path such as the path to `python3` in `bin/ros2` so you can run `ros2` command line such as `ros2 launch` and `ros2 topic list`.
 
-Next, add this to your `.zshrc`
+Next, add this to your `.zshrc` (appropriate modification required)
 ```shell
 activateROS2() {
     # So that ros2 can find the Python framework that you installed yourself.

@@ -431,7 +431,7 @@ buildAllDeps() {
 }
 
 buildCollection() {
-    # Dependencies collection should be [core, boost, opencv, ...]
+    # Dependencies collection should be [core, boostrvizmoveit, opencv, qt5]
     collection=$1
 
     setupPlatform
@@ -442,22 +442,18 @@ buildCollection() {
             buildZlib
             buildLibPng;;
 
-        "boost")
-            buildBoost;;
+        "boostrvizmoveit")
+            buildBoost
+            buildFreeType2
+            buildEigen3
+            buildTinyXML2
+            buildBullet3
+            buildMoveItDeps;;
 
         "qt5")
             buildQt5;;
 
         "opencv")
             buildOpenCV;;
-
-        "rviz")
-            buildFreeType2
-            buildEigen3
-            buildTinyXML2
-            buildBullet3;;
-
-        "moveit")
-            buildMoveItDeps;;
     esac
 }

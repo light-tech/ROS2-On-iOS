@@ -31,11 +31,11 @@ jobs:
     with:
       collection: core
 
-  build-boost:
+  build-boostrvizmoveit:
     needs: build-core
     uses: ./.github/workflows/subdeps.yaml
     with:
-      collection: boost
+      collection: boostrvizmoveit
 
   build-opencv:
     needs: build-core
@@ -49,20 +49,8 @@ jobs:
     with:
       collection: qt5
 
-  build-rviz:
-    needs: build-core
-    uses: ./.github/workflows/subdeps.yaml
-    with:
-      collection: rviz
-
-  build-moveit:
-    needs: [build-core, build-boost, build-rviz]
-    uses: ./.github/workflows/subdeps.yaml
-    with:
-      collection: moveit
-
   combine:
-    needs: [build-core, build-boost, build-opencv, build-qt5, build-rviz, build-moveit]
+    needs: [build-core, build-boostrvizmoveit, build-opencv, build-qt5]
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3

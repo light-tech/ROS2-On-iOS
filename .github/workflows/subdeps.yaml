@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       collection:
-        description: 'Target dependencies collection e.g. core, rviz, moveit, ... to build'
+        description: 'Target dependencies collection to build'
         required: true
         type: string
 jobs:
@@ -28,7 +28,7 @@ jobs:
 
       - name: Install X11 (XQuartz)
         run: brew install xquartz
-        if: ${{ inputs.collection == 'moveit' }}
+        if: ${{ inputs.collection == 'boostrvizmoveit' }}
 
       - name: Build ${{ inputs.collection }}
         run: source build_deps.sh ${{ matrix.platformArch }} && buildCollection ${{ inputs.collection }}
