@@ -18,13 +18,13 @@ jobs:
           cmake-version: '3.23.x'
 
       - name: Fetch cached Python environment
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/python_venv.tar.xz
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.3/python_venv.tar.xz
 
       - name: Fetch prebuilt dependencies
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/deps_${{ matrix.platformArch }}.tar.xz
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.3/deps_${{ matrix.platformArch }}.tar.xz
 
       - name: Fetch prebuilt ROS2 base from Release
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_${{ matrix.platformArch }}.tar.xz
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.3/ros2_${{ matrix.platformArch }}.tar.xz
         if: ${{ github.event_name == 'workflow_dispatch' }}
 
       - name: Fetch prebuilt ROS2 base from previous job artifacts

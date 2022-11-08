@@ -17,7 +17,7 @@ scriptDir=`pwd`
 
 targetPlatform=$1
 
-colconVerbose=1
+colconVerbose=0
 colconArgs=(--merge-install --cmake-force-configure)
 
 if [ "$colconVerbose" == "1" ]; then
@@ -82,6 +82,14 @@ buildRos2Base() {
             # as there is no way to link with the ARM version of libpython*.dylib there
             # and rclpy and IDL code generation for Python needs that.
             vcs import src < $scriptDir/ros2_cli.repos
+
+            # Update pybind11 to v2.10.1
+            local pbcml=src/ros2/pybind11_vendor/CMakeLists.txt
+            sed -i.bak 's/GIT_TAG .*/GIT_TAG 80dc998efced8ceb2be59756668a7e90e8bef917/g' $pbcml
+            sed -i.bak 's/PATCH_COMMAND//g' $pbcml
+            sed -i.bak 's/.* git apply -p1 .*//g' $pbcml
+            sed -i.bak 's/.*pybind11-2.9.1-fix-windows-debug.patch.*//g' $pbcml
+            # cat $pbcml
         fi
 
         colconArgs+=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
@@ -106,6 +114,7 @@ buildRos2Base() {
         # sed -i.bak 's/if_arp.h/ethernet.h/g' src/eProsima/Fast-DDS/src/cpp/utils/IPFinder.cpp
     fi
 
+    # --packages-up-to pybind11_vendor
     VERBOSE=$colconVerbose colcon build --install-base $ros2InstallPath "${colconArgs[@]}"
 }
 

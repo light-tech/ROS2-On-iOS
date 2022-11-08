@@ -27,7 +27,7 @@ _Note_: To run Mac Catalyst app on your macOS machine, you need to sign the app 
 We are going to need
 
  * CMake **3.23** until [this issue](https://github.com/ament/ament_cmake/pull/395) is sorted out
- * Python **3.10**
+ * Python **3.11**
  * Xcode + Command Line tools
 
 installed.

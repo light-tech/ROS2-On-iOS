@@ -34,7 +34,7 @@ jobs:
           cmake-version: '3.23.x'
 
       - name: Fetch cached Python environment
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/python_venv.tar.xz && tar xzf python_venv.tar.xz
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.3/python_venv.tar.xz && tar xzf python_venv.tar.xz
 
       - name: Build ROS2
         id: build_ros2

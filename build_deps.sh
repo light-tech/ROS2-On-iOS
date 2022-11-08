@@ -21,10 +21,11 @@ mkdir -p $depsExtractPath
 # Location to install dependencies
 depsInstallPath=$scriptDir/ros2_$targetPlatform/deps
 
-# Root for Python 3.10 to build Boost, change the match the platform such as
-# pythonRoot=/Library/Frameworks/Python.framework/Versions/3.10/
+# Root for Python 3.11 to build Boost, change the match the platform such as
+# pythonRoot=/Library/Frameworks/Python.framework/Versions/$pythonVersion/
 # if use official Python instead of Homebrew's version on GitHub Action
-pythonRoot=/usr/local/opt/python@3.10/Frameworks/Python.framework/Versions/3.10/
+pythonVersion=3.11
+pythonRoot=/Library/Frameworks/Python.framework/Versions/$pythonVersion/ #/usr/local/opt/python@$pythonVersion/Frameworks/Python.framework/Versions/$pythonVersion/
 
 export PATH=$depsInstallPath/bin:$PATH
 export PKG_CONFIG=$depsInstallPath/bin/pkg-config
@@ -252,7 +253,7 @@ buildBoost() {
     # it will never succeed on Mac because bin/python does not exist.
     ./bootstrap.sh --prefix=$depsInstallPath \
                    --with-python=$pythonRoot/bin/python3 \
-                   --with-python-version=3.10 \
+                   --with-python-version=$pythonVersion \
                    --with-python-root=$pythonRoot/bin/python3 \
                    --without-libraries=coroutine
 
