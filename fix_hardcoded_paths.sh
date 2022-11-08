@@ -64,8 +64,16 @@ fixHardCodedInstallDir() {
     done
 }
 
-fixXcodeFrameworkPath() {
-    echo "You also need to change the path to OpenGL.framework in $installDir/rviz2/share/rviz_default_plugins/cmake/rviz_default_pluginsExport.cmake to match your Xcode's installation and the python3 path in $installDir/base/bin/ros2."
+fixXcodeSDKPath() {
+    local hardcodedMacOSSdkDir=/Applications/Xcode_13.2.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.1.sdk/
+    local macOSSdkDir=$(xcodebuild -version -sdk macosx Path) # /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/
+    local hardcodedFiles=($(grep -r -l --include="*.cmake" --include="*.pc" "$hardcodedMacOSSdkDir" .))
+
+    echo "Replace hardcoded path $hardcodedMacOSSdkDir -> $macOSSdkDir"
+
+    for f in "${hardcodedFiles[@]}"; do
+        confirm "In $f [y/n]? " && sed -i '' "s,$hardcodedMacOSSdkDir,$macOSSdkDir,g" $f
+    done
 }
 
 cd $installDir
@@ -86,6 +94,11 @@ echo ""
 fixHardCodedInstallDir
 
 echo ""
-echo "REMINDERS"
+echo "Fix hardcoded MacOS SDK path ..."
 echo ""
-fixXcodeFrameworkPath
+fixXcodeSDKPath
+
+echo ""
+echo "REMINDERS"
+echo "You also need to change the path to OpenGL.framework in $installDir/rviz2/share/rviz_default_plugins/cmake/rviz_default_pluginsExport.cmake to match your Xcode's installation and the python3 path in $installDir/base/bin/ros2."
+echo ""
