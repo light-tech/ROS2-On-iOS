@@ -1,0 +1,23 @@
+name: Cache Python environment
+on:
+  workflow_dispatch:
+  workflow_call:
+jobs:
+  cache-python-environment:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create Python virtual environment and install packages
+        run: python3 -m venv ros2PythonEnv
+
+      - name: Install pip packages
+        run: source ros2PythonEnv/bin/activate && python3 -m pip install -r requirements.txt
+
+      - name: Archive the environment
+        run: tar cJf python_venv.tar.xz ros2PythonEnv/
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: python_venv
+          path: python_venv.tar.xz

@@ -787,6 +787,7 @@
 		B7BDDA1728FCED1F00C428CB /* moveit2.patch */ = {isa = PBXFileReference; lastKnownFileType = text; path = moveit2.patch; sourceTree = SOURCE_ROOT; };
 		B7BDDA1B28FCF24B00C428CB /* rviz2.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = rviz2.yaml; path = .github/workflows/rviz2.yaml; sourceTree = SOURCE_ROOT; };
 		B7D8E86028DC569D00D2A11E /* ros2_cli.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = ros2_cli.repos; sourceTree = SOURCE_ROOT; };
+		B7FEDECB291A9F9800CAABFF /* pythonenv.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = pythonenv.yaml; path = .github/workflows/pythonenv.yaml; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1278,6 +1279,7 @@
 				B7928F7528A7491A000B40D4 /* base.yaml */,
 				B7BDDA1B28FCF24B00C428CB /* rviz2.yaml */,
 				B778C1EC28F9A32F00A14994 /* moveit2.yaml */,
+				B7FEDECB291A9F9800CAABFF /* pythonenv.yaml */,
 				B736E40B28FE8A9000931527 /* release.yaml */,
 			);
 			name = Workflows;
