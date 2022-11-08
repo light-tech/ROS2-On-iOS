@@ -17,7 +17,7 @@ scriptDir=`pwd`
 
 targetPlatform=$1
 
-colconVerbose=0
+colconVerbose=1
 colconArgs=(--merge-install --cmake-force-configure)
 
 if [ "$colconVerbose" == "1" ]; then
@@ -183,7 +183,7 @@ buildMoveIt2() {
 
     # And build
     cd $scriptDir/moveit2_ws
-    colcon build --install-base $moveit2InstallPath --merge-install \
+    VERBOSE=$colconVerbose colcon build --install-base $moveit2InstallPath "${colconArgs[@]}" \
         --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=NO -DCMAKE_PREFIX_PATH="$depsInstallPath"
 }
 
