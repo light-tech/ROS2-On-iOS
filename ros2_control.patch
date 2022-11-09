@@ -1,38 +1,32 @@
 diff --git a/controller_manager/src/realtime.cpp b/controller_manager/src/realtime.cpp
-index 54725f4..0fa5cbc 100644
+index 7c77044..0fa5cbc 100644
 --- a/controller_manager/src/realtime.cpp
 +++ b/controller_manager/src/realtime.cpp
-@@ -34,14 +34,7 @@ bool has_realtime_kernel()
+@@ -34,10 +34,7 @@ bool has_realtime_kernel()
  
  bool configure_sched_fifo(int priority)
  {
 -  struct sched_param schedp;
 -  memset(&schedp, 0, sizeof(schedp));
 -  schedp.sched_priority = priority;
--  if (sched_setscheduler(0, SCHED_FIFO, &schedp))
--  {
--    return false;
--  }
--  return true;
+-  return !sched_setscheduler(0, SCHED_FIFO, &schedp);
 +  return false;
  }
  
  }  // namespace controller_manager
 diff --git a/controller_manager/src/ros2_control_node.cpp b/controller_manager/src/ros2_control_node.cpp
-index 0c16e8d..6427fc8 100644
+index b846831..ff91342 100644
 --- a/controller_manager/src/ros2_control_node.cpp
 +++ b/controller_manager/src/ros2_control_node.cpp
-@@ -60,10 +60,10 @@ int main(int argc, char ** argv)
-         RCLCPP_INFO(cm->get_logger(), "RT kernel is recommended for better performance");
-       }
+@@ -62,8 +62,9 @@ int main(int argc, char ** argv)
  
--      // for calcuating sleep time
-+      // for calculating sleep time
+       // for calculating sleep time
        auto const period = std::chrono::nanoseconds(1'000'000'000 / cm->get_update_rate());
 -      std::chrono::system_clock::time_point next_iteration_time =
 -        std::chrono::system_clock::time_point(std::chrono::nanoseconds(cm->now().nanoseconds()));
 +      auto const cm_now = std::chrono::nanoseconds(cm->now().nanoseconds());
-+      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> next_iteration_time{cm_now};
++      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>
++        next_iteration_time{cm_now};
  
-       // for calclating the measured period of the loop
+       // for calculating the measured period of the loop
        rclcpp::Time previous_time = cm->now();
