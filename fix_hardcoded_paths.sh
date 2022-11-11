@@ -4,10 +4,11 @@ echo
 read -p "Where is your virtual Python environment (e.g. $HOME/usr/ros2PythonEnv)? " localPythonEnvPath
 echo
 
-read -p "Can you locate the path to libpython3.10.dylib (e.g. /Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/config-3.10-darwin/libpython3.10.dylib if you install Python using the official installer at python.org)? " localLibPythonPath
-echo
+#pythonVersion=3.11
+#read -p "Can you locate the path to libpython$pythonVersion.dylib (e.g. /Library/Frameworks/Python.framework/Versions/$pythonVersion/lib/python$pythonVersion/config-$pythonVersion-darwin/libpython$pythonVersion.dylib if you install Python using the official installer at python.org)? " localLibPythonPath
+#echo
 
-read -p "Confirm replacement? [y/n]" confirmBeforeAction
+read -p "Confirm each replacement? [y/n] " confirmBeforeAction
 echo
 
 # Helper function to confirm before doing a command
@@ -43,7 +44,7 @@ fixHardCodedPythonEnvPath() {
 }
 
 fixHardCodedLibPythonPath() {
-    local hardcodedLibPythonPath=/usr/local/opt/python@3.10/Frameworks/Python.framework/Versions/3.10/lib/python3.10/config-3.10-darwin/libpython3.10.dylib
+    local hardcodedLibPythonPath=/usr/local/opt/python@$pythonVersion/Frameworks/Python.framework/Versions/$pythonVersion/lib/python$pythonVersion/config-$pythonVersion-darwin/libpython$pythonVersion.dylib
     local hardcodedFiles=($(grep -r -l --include="*.cmake" "$hardcodedLibPythonPath" .))
 
     echo "Replacing $hardcodedLibPythonPath -> $localLibPythonPath"
@@ -65,8 +66,8 @@ fixHardCodedInstallDir() {
 }
 
 fixXcodeSDKPath() {
-    local hardcodedMacOSSdkDir=/Applications/Xcode_13.2.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.1.sdk/
-    local macOSSdkDir=$(xcodebuild -version -sdk macosx Path) # /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/
+    local hardcodedMacOSSdkDir=/Applications/Xcode_13.2.1.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.1.sdk
+    local macOSSdkDir=$(xcodebuild -version -sdk macosx Path) # /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
     local hardcodedFiles=($(grep -r -l --include="*.cmake" --include="*.pc" "$hardcodedMacOSSdkDir" .))
 
     echo "Replace hardcoded path $hardcodedMacOSSdkDir -> $macOSSdkDir"
@@ -83,10 +84,10 @@ echo "Fix hardcoded Python environment path ..."
 echo ""
 fixHardCodedPythonEnvPath
 
-echo ""
-echo "Fix hardcoded path to libpython*.dylib ..."
-echo ""
-fixHardCodedLibPythonPath
+#echo ""
+#echo "Fix hardcoded path to libpython*.dylib ..."
+#echo ""
+#fixHardCodedLibPythonPath
 
 echo ""
 echo "Fix hardcoded ROS2 and dependencies installation location ..."
@@ -100,5 +101,5 @@ fixXcodeSDKPath
 
 echo ""
 echo "REMINDERS"
-echo "You also need to change the path to OpenGL.framework in $installDir/rviz2/share/rviz_default_plugins/cmake/rviz_default_pluginsExport.cmake to match your Xcode's installation and the python3 path in $installDir/base/bin/ros2."
+echo "You also need to fix the python3 path in $installDir/base/bin/ros2."
 echo ""
