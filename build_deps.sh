@@ -141,6 +141,11 @@ buildHostTools() {
     #cd mm-common-1.0.4 && ./autogen.sh && ./configure --prefix=$depsInstallPath && make USE_NETWORK=yes && make install
 }
 
+buildZstd() {
+    downloadExtract zstd.tar.gz https://github.com/facebook/zstd/releases/download/v1.5.2/zstd-1.5.2.tar.gz
+    cd zstd-1.5.2/build/cmake && buildCMake
+}
+
 buildZlib() {
     echo "Build zlib"
     downloadExtract zlib.tar.xz https://zlib.net/zlib-1.2.13.tar.xz
@@ -237,6 +242,11 @@ buildLua() {
     echo "Build Lua"
     downloadExtract lua.tar.gz https://www.lua.org/ftp/lua-5.4.4.tar.gz
     cd lua-5.4.4 && make macosx && make install INSTALL_TOP=$depsInstallPath
+}
+
+buildPyBind11() {
+    downloadExtract pybind11.tar.gz https://github.com/pybind/pybind11/archive/refs/tags/v2.10.1.tar.gz
+    cd pybind11-2.10.1 && buildCMake
 }
 
 buildBoost() {
@@ -444,6 +454,8 @@ buildCollection() {
             buildLibPng;;
 
         "boostrvizmoveit")
+            buildZstd
+            buildPyBind11
             buildBoost
             buildFreeType2
             buildEigen3
