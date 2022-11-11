@@ -44,6 +44,7 @@ printPython() {
 }
 
 buildRos2Base() {
+    ros2SystemDependenciesPath=$scriptDir/ros2_$targetPlatform/deps
     echo "Build ros2 base ( assuming dependencies are available at $ros2SystemDependenciesPath )"
 
     # printPython
@@ -68,9 +69,9 @@ buildRos2Base() {
     fi
 
     colconArgs+=(--cmake-args -DBUILD_TESTING=NO \
+                              -DFORCE_BUILD_VENDOR_PKG=OFF \
                               -DTHIRDPARTY=FORCE \
                               -DCOMPILE_TOOLS=NO \
-                              -DFORCE_BUILD_VENDOR_PKG=ON \
                               -DBUILD_MEMORY_TOOLS=OFF \
                               -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop)
 
@@ -82,14 +83,6 @@ buildRos2Base() {
             # as there is no way to link with the ARM version of libpython*.dylib there
             # and rclpy and IDL code generation for Python needs that.
             vcs import src < $scriptDir/ros2_cli.repos
-
-            # Update pybind11 to v2.10.1
-            local pbcml=src/ros2/pybind11_vendor/CMakeLists.txt
-            sed -i.bak 's/GIT_TAG .*/GIT_TAG 80dc998efced8ceb2be59756668a7e90e8bef917/g' $pbcml
-            sed -i.bak 's/PATCH_COMMAND//g' $pbcml
-            sed -i.bak 's/.* git apply -p1 .*//g' $pbcml
-            sed -i.bak 's/.*pybind11-2.9.1-fix-windows-debug.patch.*//g' $pbcml
-            # cat $pbcml
         fi
 
         colconArgs+=(-DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath)
