@@ -163,6 +163,7 @@ buildMoveIt2() {
     mkdir -p moveit2_ws/src
     cd moveit2_ws
     vcs import src < $scriptDir/moveit2.repos
+    vcs import src < $scriptDir/tutorials.repos
 
     # macOS does not have sched_setscheduler and we need to fix the const-ness
     # also need to account for https://stackoverflow.com/questions/65397041/apple-clang-why-can-i-not-create-a-time-point-from-stdchrononanoseconds
@@ -179,6 +180,10 @@ buildMoveIt2() {
     #    "pilz_industrial_motion_planner::LimitsContainer::LimitsContainer()", referenced from:
     #        pilz_industrial_motion_planner::PlanningContextLoader::PlanningContextLoader() in planning_context_loader.cpp.o
     touch moveit_planners/pilz_industrial_motion_planner/AMENT_IGNORE
+
+    cd $scriptDir/moveit2_ws/src
+    sed -i.bak 's/computeGeneric.*}/}/g' moveit_task_constructor/core/include/moveit/task_constructor/stage.h
+    sed -i.bak 's/rviz::StringProperty/rviz_common::properties::StringProperty/g' moveit_task_constructor/visualization/motion_planning_tasks/properties/property_factory.cpp
 
     # Prepare rviz2 (and base)
     source $scriptDir/ros2_$targetPlatform/rviz2/setup.sh

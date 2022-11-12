@@ -1,0 +1,37 @@
+repositories:
+  moveit2_tutorials:
+    type: git
+    url: https://github.com/ros-planning/moveit2_tutorials.git
+    version: humble
+  moveit_task_constructor:
+    type: git
+    url: https://github.com/ros-planning/moveit_task_constructor.git
+    version: ros2
+  rviz_visual_tools:
+    type: git
+    url: https://github.com/PickNikRobotics/rviz_visual_tools.git
+    version: ros2
+  moveit_visual_tools:
+    type: git
+    url: https://github.com/ros-planning/moveit_visual_tools.git
+    version: ros2
+  xacro:
+    type: git
+    url: https://github.com/ros/xacro.git
+    version: ros2
+  robot_state_publisher:
+    type: git
+    url: https://github.com/ros/robot_state_publisher.git
+    version: ros2
+  launch_param_builder:
+    type: git
+    url: https://github.com/PickNikRobotics/launch_param_builder.git
+    version: main
+  graph_msgs:
+    type: git
+    url: https://github.com/PickNikRobotics/graph_msgs.git
+    version: ros2
+  rosparam_shortcuts:
+    type: git
+    url: https://github.com/PickNikRobotics/rosparam_shortcuts.git
+    version: ros2
