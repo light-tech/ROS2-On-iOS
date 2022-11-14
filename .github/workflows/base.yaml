@@ -8,7 +8,7 @@ jobs:
     timeout-minutes: 1200
     strategy:
       matrix:
-        platformArch: [macOS, iOS, iOS_Simulator, iOS_Simulator_M1, macCatalyst, macCatalyst_M1]
+        platformArch: [macOS]
     steps:
       # https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#viewing-all-properties-of-an-event
       # https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
@@ -38,7 +38,6 @@ jobs:
 
       - name: Fetch prebuilt dependencies
         run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.3/deps_${{ matrix.platformArch }}.tar.xz
-        if: ${{ matrix.platformArch == 'macOS' }}
 
       - name: Extract artifacts
         run: ./extract_artifacts.sh
@@ -49,11 +48,6 @@ jobs:
 
       - name: Archive ROS2 and dependencies
         run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/base/
-        if: ${{ matrix.platformArch == 'macOS' }}
-
-      - name: Archive ROS2 and dependencies
-        run: tar cJf ros2_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/
-        if: ${{ matrix.platformArch != 'macOS' }}
 
       - name: Publish ROS2 for release
         uses: actions/upload-artifact@v3

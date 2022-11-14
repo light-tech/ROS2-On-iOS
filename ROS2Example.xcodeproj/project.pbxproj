@@ -574,7 +574,7 @@
 /* Begin PBXFileReference section */
 		B723B4A328FFA43600301AA2 /* extract_artifacts.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = extract_artifacts.sh; sourceTree = SOURCE_ROOT; };
 		B736E40B28FE8A9000931527 /* release.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = release.yaml; path = .github/workflows/release.yaml; sourceTree = SOURCE_ROOT; };
-		B750E61C292123C300F19E94 /* tutorials.repos */ = {isa = PBXFileReference; lastKnownFileType = file; path = tutorials.repos; sourceTree = SOURCE_ROOT; };
+		B750E61C292123C300F19E94 /* tutorials.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = tutorials.repos; sourceTree = SOURCE_ROOT; };
 		B75542FF28B272FF00AAFC17 /* iOS.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = iOS.cmake; path = cmake/iOS.cmake; sourceTree = SOURCE_ROOT; };
 		B755430028B272FF00AAFC17 /* iOS_Simulator_M1.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = iOS_Simulator_M1.cmake; path = cmake/iOS_Simulator_M1.cmake; sourceTree = SOURCE_ROOT; };
 		B755430128B272FF00AAFC17 /* iOS_Simulator.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = iOS_Simulator.cmake; path = cmake/iOS_Simulator.cmake; sourceTree = SOURCE_ROOT; };
@@ -782,6 +782,8 @@
 		B7ACAC3928A6A24000A537EB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B7B6618B28CEE1D600407B44 /* macCatalyst_M1.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = macCatalyst_M1.cmake; path = cmake/macCatalyst_M1.cmake; sourceTree = SOURCE_ROOT; };
 		B7B6618C28CEE1D600407B44 /* macCatalyst.cmake */ = {isa = PBXFileReference; lastKnownFileType = text; name = macCatalyst.cmake; path = cmake/macCatalyst.cmake; sourceTree = SOURCE_ROOT; };
+		B7BA4E6A2921DCA8006C681A /* base_ios.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = base_ios.yaml; path = .github/workflows/base_ios.yaml; sourceTree = SOURCE_ROOT; };
+		B7BA4E6B2921DCA8006C681A /* tutorials.yaml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = tutorials.yaml; path = .github/workflows/tutorials.yaml; sourceTree = SOURCE_ROOT; };
 		B7BD402D28F85F86001143EE /* fix_hardcoded_paths.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = fix_hardcoded_paths.sh; sourceTree = SOURCE_ROOT; };
 		B7BD402E28F85F86001143EE /* moveit2.repos */ = {isa = PBXFileReference; lastKnownFileType = text; path = moveit2.repos; sourceTree = SOURCE_ROOT; };
 		B7BDDA1628FCED1F00C428CB /* ros2_control.patch */ = {isa = PBXFileReference; lastKnownFileType = text; path = ros2_control.patch; sourceTree = SOURCE_ROOT; };
@@ -1276,12 +1278,14 @@
 		B7EC3F7D28FC590800FB237D /* Workflows */ = {
 			isa = PBXGroup;
 			children = (
+				B7FEDECB291A9F9800CAABFF /* pythonenv.yaml */,
 				B76430B528FDAECB00580D19 /* deps.yaml */,
 				B79D721C2903CFA400854727 /* subdeps.yaml */,
+				B7BA4E6A2921DCA8006C681A /* base_ios.yaml */,
 				B7928F7528A7491A000B40D4 /* base.yaml */,
 				B7BDDA1B28FCF24B00C428CB /* rviz2.yaml */,
 				B778C1EC28F9A32F00A14994 /* moveit2.yaml */,
-				B7FEDECB291A9F9800CAABFF /* pythonenv.yaml */,
+				B7BA4E6B2921DCA8006C681A /* tutorials.yaml */,
 				B736E40B28FE8A9000931527 /* release.yaml */,
 			);
 			name = Workflows;
