@@ -35,3 +35,15 @@ repositories:
     type: git
     url: https://github.com/PickNikRobotics/rosparam_shortcuts.git
     version: ros2
+  urdf_tutorial:
+    type: git
+    url: https://github.com/ros/urdf_tutorial.git
+    version: ros2
+  joint_state_publisher:
+    type: git
+    url: https://github.com/ros/joint_state_publisher.git
+    version: ros2
+  image_transport_tutorials:
+    type: git
+    url: https://github.com/ros-perception/image_transport_tutorials.git
+    version: main
