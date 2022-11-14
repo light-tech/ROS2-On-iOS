@@ -17,3 +17,7 @@ jobs:
   build-moveit2:
     uses: ./.github/workflows/moveit2.yaml
     needs: build-rviz2
+
+  build-tutorials:
+    uses: ./.github/workflows/tutorials.yaml
+    needs: build-moveit2

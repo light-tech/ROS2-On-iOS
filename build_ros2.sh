@@ -181,16 +181,32 @@ buildMoveIt2() {
     #        pilz_industrial_motion_planner::PlanningContextLoader::PlanningContextLoader() in planning_context_loader.cpp.o
     touch moveit_planners/pilz_industrial_motion_planner/AMENT_IGNORE
 
-    cd $scriptDir/moveit2_ws/src
-    sed -i.bak 's/computeGeneric.*}/}/g' moveit_task_constructor/core/include/moveit/task_constructor/stage.h
-    sed -i.bak 's/rviz::StringProperty/rviz_common::properties::StringProperty/g' moveit_task_constructor/visualization/motion_planning_tasks/properties/property_factory.cpp
-
     # Prepare rviz2 (and base)
     source $scriptDir/ros2_$targetPlatform/rviz2/setup.sh
 
     # And build
     cd $scriptDir/moveit2_ws
     VERBOSE=$colconVerbose colcon build --install-base $moveit2InstallPath "${colconArgs[@]}" \
+        --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=NO -DCMAKE_PREFIX_PATH="$depsInstallPath"
+}
+
+buildTutorials() {
+    tutorialsInstallPath=$scriptDir/ros2_$targetPlatform/tutorials
+    depsInstallPath=$scriptDir/ros2_$targetPlatform/deps
+
+    cd $scriptDir
+    mkdir -p tutorials_ws/src
+    cd tutorials_ws
+    vcs import src < $scriptDir/tutorials.repos
+
+    sed -i.bak 's/computeGeneric.*}/}/g' src/moveit_task_constructor/core/include/moveit/task_constructor/stage.h
+    sed -i.bak 's/rviz::StringProperty/rviz_common::properties::StringProperty/g' src/moveit_task_constructor/visualization/motion_planning_tasks/properties/property_factory.cpp
+
+    # Prepare moveit2
+    source $scriptDir/ros2_$targetPlatform/moveit2/setup.sh
+
+    # And build
+    VERBOSE=$colconVerbose colcon build --install-base $tutorialsInstallPath "${colconArgs[@]}" \
         --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=NO -DCMAKE_PREFIX_PATH="$depsInstallPath"
 }
 
