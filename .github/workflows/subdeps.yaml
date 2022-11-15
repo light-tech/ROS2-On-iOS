@@ -1,5 +1,11 @@
 name: Build sub-dependencies
 on:
+  workflow_dispatch:
+    inputs:
+      collection:
+        description: 'Target dependencies collection to build'
+        required: true
+        type: string
   workflow_call:
     inputs:
       collection:

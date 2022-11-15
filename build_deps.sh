@@ -280,6 +280,11 @@ buildQt5() {
 
     ./configure -prefix $depsInstallPath -opensource -confirm-license -nomake examples -nomake tests -no-framework -device-option QMAKE_APPLE_DEVICE_ARCHS=$targetArch
     make && make install
+
+    export PATH=$depsInstallPath/bin:$PATH
+    downloadExtract qtsvg.tar.gz https://download.qt.io/archive/qt/5.15/5.15.5/submodules/qtsvg-everywhere-opensource-src-5.15.5.tar.xz
+    cd qtsvg-everywhere-src-5.15.5
+    qmake -makefile -Wall && make && make install
 }
 
 buildOpenCV() {
