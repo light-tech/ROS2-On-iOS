@@ -341,6 +341,11 @@ buildPCL() {
     cd pcl && buildCMake
 }
 
+buildFmt() {
+    downloadExtract fmt.tar.gz https://github.com/fmtlib/fmt/archive/refs/tags/9.1.0.tar.gz
+    cd fmt-9.1.0 && buildCMake
+}
+
 buildAll() {
     buildZlib
     buildTinyXML2
@@ -466,6 +471,7 @@ buildCollection() {
             buildEigen3
             buildTinyXML2
             buildBullet3
+            buildFmt
             buildMoveItDeps;;
 
         "qt5")

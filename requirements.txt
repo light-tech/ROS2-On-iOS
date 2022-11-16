@@ -32,3 +32,5 @@ rosdistro
 setuptools==59.6.0
 vcstool
 #pygraphviz
+jinja2
+typeguard

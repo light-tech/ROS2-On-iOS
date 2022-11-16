@@ -47,3 +47,7 @@ repositories:
     type: git
     url: https://github.com/ros-perception/image_transport_tutorials.git
     version: main
+  ros2_control_demos:
+    type: git
+    url: https://github.com/ros-controls/ros2_control_demos.git
+    version: master

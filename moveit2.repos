@@ -67,3 +67,27 @@ repositories:
     type: git
     url: https://github.com/ros-planning/warehouse_ros.git
     version: ros2
+  generate_parameter_library:
+    type: git
+    url: https://github.com/PickNikRobotics/generate_parameter_library.git
+    version: main
+  ros2_controllers:
+    type: git
+    url: https://github.com/ros-controls/ros2_controllers.git
+    version: 2.13.0
+  cpp_polyfills:
+    type: git
+    url: https://github.com/PickNikRobotics/cpp_polyfills.git
+    version: main
+  kinematics_interface:
+    type: git
+    url: https://github.com/ros-controls/kinematics_interface.git
+    version: main
+  ackermann_msgs:
+    type: git
+    url: https://github.com/ros-controls/kinematics_interface.git
+    version: main
+  rsl:
+    type: git
+    url: https://github.com/PickNikRobotics/RSL.git
+    version: main
