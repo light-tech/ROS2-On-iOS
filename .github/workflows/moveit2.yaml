@@ -18,13 +18,13 @@ jobs:
           cmake-version: '3.23.x'
 
       - name: Fetch cached Python environment
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.3/python_venv.tar.xz
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.4/python_venv.tar.xz
 
       - name: Fetch prebuilt dependencies
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.3/deps_${{ matrix.platformArch }}.tar.xz
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.4/deps_${{ matrix.platformArch }}.tar.xz
 
       - name: Fetch prebuilt ROS2 base and Rviz2 from Release
-        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.3/ros2_${{ matrix.platformArch }}.tar.xz -O https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.3/rviz2_${{ matrix.platformArch }}.tar.xz
+        run: curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.4/ros2_${{ matrix.platformArch }}.tar.xz -O https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.4/rviz2_${{ matrix.platformArch }}.tar.xz
         if: ${{ github.event_name == 'workflow_dispatch' }}
 
       - name: Fetch prebuilt ROS2 base and Rviz2 from previous job artifacts
@@ -36,6 +36,7 @@ jobs:
 
       - name: Install X11 (XQuartz)
         run: brew install xquartz
+        if: ${{ false }}
 
       - name: Build MoveIt2
         run: source ros2PythonEnv/bin/activate && source build_ros2.sh ${{ matrix.platformArch }} && buildMoveIt2

@@ -6,7 +6,7 @@ repositories:
   control_msgs:
     type: git
     url: https://github.com/ros-controls/control_msgs.git
-    version: galactic-devel
+    version: humble
   control_toolbox:
     type: git
     url: https://github.com/ros-controls/control_toolbox.git
@@ -82,11 +82,11 @@ repositories:
   kinematics_interface:
     type: git
     url: https://github.com/ros-controls/kinematics_interface.git
-    version: main
+    version: master
   ackermann_msgs:
     type: git
-    url: https://github.com/ros-controls/kinematics_interface.git
-    version: main
+    url: https://github.com/ros-drivers/ackermann_msgs.git
+    version: ros2
   rsl:
     type: git
     url: https://github.com/PickNikRobotics/RSL.git
