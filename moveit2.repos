@@ -69,12 +69,12 @@ repositories:
     version: ros2
   generate_parameter_library:
     type: git
-    url: https://github.com/PickNikRobotics/generate_parameter_library.git
+    url: https://github.com/light-tech/generate_parameter_library.git
     version: main
   ros2_controllers:
     type: git
-    url: https://github.com/ros-controls/ros2_controllers.git
-    version: 2.13.0
+    url: https://github.com/light-tech/ros2_controllers.git
+    version: master
   cpp_polyfills:
     type: git
     url: https://github.com/PickNikRobotics/cpp_polyfills.git
@@ -89,5 +89,5 @@ repositories:
     version: ros2
   rsl:
     type: git
-    url: https://github.com/PickNikRobotics/RSL.git
+    url: https://github.com/light-tech/RSL.git
     version: main

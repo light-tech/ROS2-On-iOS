@@ -163,7 +163,6 @@ buildMoveIt2() {
     mkdir -p moveit2_ws/src
     cd moveit2_ws
     vcs import src < $scriptDir/moveit2.repos
-    vcs import src < $scriptDir/tutorials.repos
 
     # macOS does not have sched_setscheduler and we need to fix the const-ness
     # also need to account for https://stackoverflow.com/questions/65397041/apple-clang-why-can-i-not-create-a-time-point-from-stdchrononanoseconds
