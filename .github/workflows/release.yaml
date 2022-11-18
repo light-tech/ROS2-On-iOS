@@ -8,16 +8,24 @@ jobs:
   #  uses: ./.github/workflows/deps.yaml
 
   build-ros2-base:
-    uses: ./.github/workflows/base.yaml
+    uses: ./.github/workflows/ros2_ws.yaml
+    with:
+      workspace: base
 
   build-rviz2:
-    uses: ./.github/workflows/rviz2.yaml
+    uses: ./.github/workflows/ros2_ws.yaml
     needs: build-ros2-base #, build-deps
+    with:
+      workspace: rviz2
 
   build-moveit2:
-    uses: ./.github/workflows/moveit2.yaml
+    uses: ./.github/workflows/ros2_ws.yaml
     needs: build-rviz2
+    with:
+      workspace: moveit2
 
   build-tutorials:
-    uses: ./.github/workflows/tutorials.yaml
+    uses: ./.github/workflows/ros2_ws.yaml
     needs: build-moveit2
+    with:
+      workspace: tutorials

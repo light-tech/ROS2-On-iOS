@@ -219,3 +219,23 @@ buildCartographer() {
     # Need to get extra packages [pcl_msgs](https://github.com/ros-perception/pcl_msgs) and [perception_pcl](https://github.com/ros-perception/perception_pcl) (remember to checkout `ros2` branch)
     # colcon build --merge-install --cmake-args -DCMAKE_PREFIX_PATH=$ros2SystemDependenciesPath -DLUA_INCLUDE_DIR=$ros2SystemDependenciesPath/include -DLUA_LIBRARY=$ros2SystemDependenciesPath/lib/liblua.a -DCMAKE_CXX_FLAGS="-L$ros2SystemDependenciesPath/lib -lpcl_common"
 }
+
+buildWorkspace() {
+    workspaceToBuild=$1
+    case $workspaceToBuild in
+        "base")
+            buildRos2Base;;
+
+        "rviz2")
+            buildRviz2;;
+
+        "moveit2")
+            buildMoveIt2;;
+
+        "tutorials")
+            buildTutorials;;
+
+        *)
+            echo "Unknown workspace to build";;
+    esac
+}

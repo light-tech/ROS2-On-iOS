@@ -1,0 +1,57 @@
+name: Build ROS2 Workspace
+on:
+  workflow_dispatch:
+    inputs:
+      workspace:
+        description: 'Target workspace to build, should be one of [base, rviz2, moveit2, tutorials]'
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      workspace:
+        description: 'Target workspace to build, should be one of [base, rviz2, moveit2, tutorials]'
+        required: true
+        type: string
+jobs:
+  build-ros2-workspace:
+    runs-on: macos-latest
+    timeout-minutes: 1200
+    strategy:
+      matrix:
+        platformArch: [macOS]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.12
+        with:
+          cmake-version: '3.23.x'
+
+      - name: Fetch cached Python environment and prebuilt dependencies
+        run: source ci_helper.sh ${{ matrix.platformArch }} && fetchCachedPythonEnvAndPrebuiltDeps
+
+      - name: Fetch prebuilt depdendent workspaces from published releases
+        run: source ci_helper.sh ${{ matrix.platformArch }} && fetchPrebuiltWorkspace ${{ inputs.workspace }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+
+      - name: Fetch prebuilt dependent workspaces from previous job artifacts
+        uses: actions/download-artifact@v3
+        if: ${{ github.event_name == 'push' }}
+
+      - name: Extract artifacts
+        run: source ci_helper.sh ${{ matrix.platformArch }} && extractArtifacts
+
+      - name: Install X11 (XQuartz)
+        run: brew install xquartz
+        if: ${{ inputs.workspace == 'moveit2' }}
+
+      - name: Build workspace ${{ inputs.workspace }}
+        run: source ros2PythonEnv/bin/activate && source build_ros2.sh ${{ matrix.platformArch }} && buildWorkspace ${{ inputs.workspace }}
+
+      - name: Packaging MoveIt2 installation
+        run: tar cJf ${{ inputs.workspace }}_${{ matrix.platformArch }}.tar.xz ros2_${{ matrix.platformArch }}/${{ inputs.workspace }}/
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.workspace }}_${{ matrix.platformArch }}
+          path: ${{ inputs.workspace }}_${{ matrix.platformArch }}.tar.xz
