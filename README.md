@@ -63,7 +63,6 @@ colcon build --merge-install \
         -DBUILD_TESTING=NO \
         -DTHIRDPARTY=FORCE \
         -DCOMPILE_TOOLS=NO \
-        -DFORCE_BUILD_VENDOR_PKG=ON \
         -DBUILD_MEMORY_TOOLS=OFF \
         -DRCL_LOGGING_IMPLEMENTATION=rcl_logging_noop
 ```
@@ -87,14 +86,12 @@ After my tons of failures, here is what went going on behind the above command:
 
  4. `COMPILE_TOOLS=NO` for `Fast-DDS` to **NOT** compile the fast discovery server executable.
 
- 5. `FORCE_BUILD_VENDOR_PKG=ON` is to build and use the `*_vendor` packages such as `libyaml_vendor`, again so that we do not have to install it to the system with Homebrew
+ 5. `BUILD_MEMORY_TOOLS=OFF` is for `foonathan_memory` to disable building `nodesize_db` program
 
- 6. `BUILD_MEMORY_TOOLS=OFF` is for `foonathan_memory` to disable building `nodesize_db` program
-
- 7. `RCL_LOGGING_IMPLEMENTATION=rcl_logging_noop` is to select the logging backend for `rcl_logging`.
+ 6. `RCL_LOGGING_IMPLEMENTATION=rcl_logging_noop` is to select the logging backend for `rcl_logging`.
     Here, I am using `noop` one to avoid one more dependency `spdlog_vendor`.
 
- 8. ROS2 depends significantly on dynamic linking. Do NOT add `BUILD_SHARED_LIBS=NO`, contrary to my other project [LLVM](https://github.com/light-tech/LLVM-On-iOS/) where building static libs is needed!
+ 7. ROS2 depends significantly on dynamic linking. Do NOT add `BUILD_SHARED_LIBS=NO`, contrary to my other project [LLVM](https://github.com/light-tech/LLVM-On-iOS/) where building static libs is needed!
 
 ## Build ROS2 with graphical tools for macOS
 
@@ -126,10 +123,12 @@ In that case, you will need to install `x86_64` version of Python.
  *  If you download the file from a browser, it will be put in quarantine so you need to `xattr -d com.apple.quarantine DOWNLOADED_FILE` before extraction.
  *  To avoid that, you could open the terminal and do
     ```shell
-    curl -OL https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/deps_macOS.tar.xz \
-         -O https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/ros2_macOS.tar.xz \
-         -O https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/rviz2_macOS.tar.xz \
-         -O https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.2/moveit2_macOS.tar.xz
+    baseUrl=https://github.com/light-tech/ROS2-On-iOS/releases/download/humble-1.4
+    curl -OL $baseUrl/deps_macOS.tar.xz \
+         -O $baseUrl/base_macOS.tar.xz \
+         -O $baseUrl/rviz2_macOS.tar.xz \
+         -O $baseUrl/moveit2_macOS.tar.xz \
+         -O $baseUrl/tutorials_macOS.tar.xz
     ```
     instead.
 

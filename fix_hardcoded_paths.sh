@@ -38,6 +38,10 @@ fixHardCodedPythonEnvPath() {
 
     echo "Replacing $hardcodedPythonEnvPath -> $localPythonEnvPath"
 
+    # Python scripts
+    hardcodedFiles+=($(ls $installDir/base/bin))
+    hardcodedFiles+=($installDir/moveit2/bin/xacro $installDir/moveit2/lib/controller_manager/spawner $installDir/moveit2/lib/controller_manager/unspawner)
+
     for f in "${hardcodedFiles[@]}"; do
         confirm "In $f [y/n]? " && sed -i '' "s,$hardcodedPythonEnvPath,$localPythonEnvPath,g" $f
     done
@@ -101,5 +105,5 @@ fixXcodeSDKPath
 
 echo ""
 echo "REMINDERS"
-echo "You also need to fix the python3 path in $installDir/base/bin/ros2."
+echo "You sometimes need to fix the python3 path in $installDir/base/bin/ros2."
 echo ""

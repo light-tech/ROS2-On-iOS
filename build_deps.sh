@@ -21,11 +21,12 @@ mkdir -p $depsExtractPath
 # Location to install dependencies
 depsInstallPath=$scriptDir/ros2_$targetPlatform/deps
 
-# Root for Python 3.11 to build Boost, change the match the platform such as
-# pythonRoot=/Library/Frameworks/Python.framework/Versions/$pythonVersion/
-# if use official Python instead of Homebrew's version on GitHub Action
 pythonVersion=3.11
-pythonRoot=/Library/Frameworks/Python.framework/Versions/$pythonVersion/ #/usr/local/opt/python@$pythonVersion/Frameworks/Python.framework/Versions/$pythonVersion/
+
+# Python path to build Boost, change the match the platform such as
+# pythonRoot=/usr/local/opt/python@$pythonVersion/Frameworks/Python.framework/Versions/$pythonVersion/
+# if using Homebrew's Python instead of the official Python.
+pythonRoot=/Library/Frameworks/Python.framework/Versions/$pythonVersion/
 
 export PATH=$depsInstallPath/bin:$PATH
 export PKG_CONFIG=$depsInstallPath/bin/pkg-config
