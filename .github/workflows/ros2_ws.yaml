@@ -42,7 +42,7 @@ jobs:
         run: source ci_helper.sh ${{ matrix.platformArch }} && extractArtifacts
 
       - name: Install X11 (XQuartz)
-        run: brew install xquartz
+        run: brew install xquartz doxygen
         if: ${{ inputs.workspace == 'moveit2' }}
 
       - name: Build workspace ${{ inputs.workspace }}

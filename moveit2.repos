@@ -89,5 +89,5 @@ repositories:
     version: ros2
   rsl:
     type: git
-    url: https://github.com/light-tech/RSL.git
+    url: https://github.com/PickNikRobotics/RSL.git
     version: main
