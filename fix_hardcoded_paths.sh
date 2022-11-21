@@ -39,8 +39,10 @@ fixHardCodedPythonEnvPath() {
     echo "Replacing $hardcodedPythonEnvPath -> $localPythonEnvPath"
 
     # Python scripts
-    hardcodedFiles+=($(ls $installDir/base/bin))
-    hardcodedFiles+=($installDir/moveit2/bin/xacro $installDir/moveit2/lib/controller_manager/spawner $installDir/moveit2/lib/controller_manager/unspawner)
+    hardcodedFiles+=($(find $installDir/base/bin -type f))
+    hardcodedFiles+=($installDir/moveit2/bin/generate_parameter_library_py $installDir/moveit2/bin/rqt_joint_trajectory_controller $installDir/moveit2/lib/controller_manager/spawner $installDir/moveit2/lib/controller_manager/unspawner)
+    hardcodedFiles+=($(find $installDir/tutorials/bin -type f))
+    hardcodedFiles+=($installDir/tutorials/lib/joint_state_publisher_gui/joint_state_publisher_gui $installDir/tutorials/lib/xacro/xacro)
 
     for f in "${hardcodedFiles[@]}"; do
         confirm "In $f [y/n]? " && sed -i '' "s,$hardcodedPythonEnvPath,$localPythonEnvPath,g" $f
